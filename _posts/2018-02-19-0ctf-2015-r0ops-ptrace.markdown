@@ -1,0 +1,367 @@
+---
+layout: post
+title:  "0ctf-2015-r0ops-ptrace"
+date:   2018-2-19 16:00:21 +0800
+categories: tech
+---
+
+# 0x01 简介
+15年第一接触CTF的时候做的第一道逆向题就是这个，橘子花了半个通宵弄出来了，当时被ROP弄得不知所措，硬是一点一点人工把代码理顺了才解出来。最近用ptrace比较多，于是想了下看能不能借助ptrace来解决这个题。
+
+# 0x02 题目分析
+这道题的难点在于分析，程序是通过jmp+ret这种方式，由栈中数据引导程序流程运行的：
+
+``` nasm
+.text:000000000DEAD40E  mov eax, offset qword_E0B10C0
+.text:000000000DEAD413  mov rdi, rax
+.text:000000000DEAD416  mov eax, offset unk_E0B20C0
+.text:000000000DEAD41B  mov rsi, rax
+.text:000000000DEAD41E  mov eax, offset dword_E0AF8A0
+.text:000000000DEAD423  mov rsp, rax
+.text:000000000DEAD426  retn
+```
+
+其中程序将栈换成了dword_E0AF8A0：
+``` nasm
+.data:000000000E0B08A0  dq offset sub_DEAD1F4
+.data:000000000E0B08A8  dq 8
+.data:000000000E0B08B0  dq offset sub_DEAD271
+.data:000000000E0B08B8  dq 1337DEADBEEF0095h
+.data:000000000E0B08C0  dq offset sub_DEAD123
+.data:000000000E0B08C8  dq offset sub_DEAD0ED
+.data:000000000E0B08D0  dq offset sub_DEAD204
+.data:000000000E0B08D8  dq offset sub_DEAD267
+.data:000000000E0B08E0  dq offset sub_DEAD0F8
+.data:000000000E0B08E8  dq offset sub_DEAD103
+```
+
+然后程序通过ROP的方式运行，包含这样的片段：
+``` nasm
+.text:000000000DEAD1F4  jmp     short loc_DEAD1F8
+.text:000000000DEAD1F6  align 8
+.text:000000000DEAD1F8  pop     rcx         
+.text:000000000DEAD1F9  retn
+```
+
+``` nasm
+.text:000000000DEAD271  jmp     short loc_DEAD275
+.text:000000000DEAD273  db 0E4h, 0DDh
+.text:000000000DEAD275  pop     r9
+.text:000000000DEAD277  retn
+```
+
+``` nasm
+.text:000000000DEAD0F8  jmp     short loc_DEAD0FC
+.text:000000000DEAD0FA  dw 87ACh
+.text:000000000DEAD0FC  sub     rsi, 8
+.text:000000000DEAD100  retn
+```
+
+这样一个片段一般只包含一条指令，如pop rcx，pop r9，sub rsi,8等，这些指令中其实大多都是垃圾指令，真正有意义的指令潜藏着某些片段之中，但想要找到有意义的片段，是一个挺麻烦的工作。
+
+由于IDA等静态分析工具并不能直接将这些片段拼接起来，所以这里使用ptrace来分析。
+
+# 0x03 Ptrace
+我们使用ptrace跟踪目标程序的每一条指令的执行，并将其记录下来：
+``` nasm
+[0x21CBC900] 0xdead000: xor     ebp, ebp
+[0x21CBC900] 0xdead002: mov     r9, rdx
+[0x21CBC900] 0xdead005: pop     rsi
+[0x21CBC908] 0xdead006: mov     rdx, rsp
+[0x21CBC908] 0xdead009: and     rsp, 0xfffffffffffffff0
+[0x21CBC900] 0xdead00d: push    rax
+[0x21CBC8F8] 0xdead00e: push    rsp
+[0x21CBC8F0] 0xdead00f: mov     r8, 0xdead530
+[0x21CBC8F0] 0xdead016: mov     rcx, 0xdead4c0
+[0x21CBC8F0] 0xdead01d: mov     rdi, 0xdead429
+[0x21CBC8F0] 0xdead024: call    0x4006d0
+......
+......
+[0x21CBC7D8] 0xdead405: mov     rdi, rdx
+[0x21CBC7D8] 0xdead408: mov     rcx, rax
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+......
+......
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40e: mov     eax, 0xe0b10c0
+[0x21CBC7D8] 0xdead413: mov     rdi, rax
+[0x21CBC7D8] 0xdead416: mov     eax, 0xe0b20c0
+[0x21CBC7D8] 0xdead41b: mov     rsi, rax
+[0x21CBC7D8] 0xdead41e: mov     eax, 0xe0af8a0
+[0x21CBC7D8] 0xdead423: mov     rsp, rax
+[0xE0B08A0] 0xdead426:  ret
+[0xE0B08A8] 0xdead1f4:  jmp     0xdead1f8
+[0xE0B08A8] 0xdead1f8:  pop     rcx
+[0xE0B08B0] 0xdead1f9:  ret
+[0xE0B08B8] 0xdead271:  jmp     0xdead275
+[0xE0B08B8] 0xdead275:  pop     r9
+[0xE0B08C0] 0xdead277:  ret
+[0xE0B08C8] 0xdead123:  jmp     0xdead127
+[0xE0B08C8] 0xdead127:  mov     rax, qword ptr [rdi]
+[0xE0B08C8] 0xdead12a:  ret
+[0xE0B08D0] 0xdead0ed:  jmp     0xdead0f1
+[0xE0B08D0] 0xdead0f1:  add     rsi, 8
+[0xE0B08D0] 0xdead0f5:  ret
+[0xE0B08D8] 0xdead204:  jmp     0xdead208
+[0xE0B08D8] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B08D8] 0xdead20b:  ret
+[0xE0B08E0] 0xdead267:  jmp     0xdead26b
+[0xE0B08E0] 0xdead26b:  mov     r8, qword ptr [rsi]
+[0xE0B08E0] 0xdead26e:  ret
+[0xE0B08E8] 0xdead0f8:  jmp     0xdead0fc
+[0xE0B08E8] 0xdead0fc:  sub     rsi, 8
+[0xE0B08E8] 0xdead100:  ret
+[0xE0B08F0] 0xdead103:  jmp     0xdead107
+[0xE0B08F0] 0xdead107:  add     rdi, 8
+[0xE0B08F0] 0xdead10b:  ret
+[0xE0B08F8] 0xdead0ed:  jmp     0xdead0f1
+[0xE0B08F8] 0xdead0f1:  add     rsi, 8
+[0xE0B08F8] 0xdead0f5:  ret
+[0xE0B0900] 0xdead27a:  jmp     0xdead27e
+[0xE0B0900] 0xdead27e:  mov     qword ptr [rsi], r9
+[0xE0B0900] 0xdead281:  ret
+[0xE0B0908] 0xdead20e:  jmp     0xdead212
+[0xE0B0908] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0908] 0xdead215:  ret
+[0xE0B0910] 0xdead0f8:  jmp     0xdead0fc
+[0xE0B0910] 0xdead0fc:  sub     rsi, 8
+[0xE0B0910] 0xdead100:  ret
+[0xE0B0918] 0xdead1ec:  jmp     0xdead1f0
+[0xE0B0918] 0xdead1f0:  pop     rbx
+[0xE0B0920] 0xdead1f1:  ret
+[0xE0B0928] 0xdead141:  jmp     0xdead145
+[0xE0B0928] 0xdead145:  imul    rax, rbx
+        RAX: 1337DEADBEEF0095, RBX: CAFE
+[0xE0B0928] 0xdead149:  ret
+[0xE0B0930] 0xdead0ed:  jmp     0xdead0f1
+```
+格式是[当前栈指针+0x1000] RIP：指令（这里记录栈指针时候，将其加上了0x1000，方便在IDA中对照，因为程序在运行时，原始数据被往前挪了0x1000）
+
+我们可以看到，从0xdead426开始，程序由栈引导，我们可以发现可以清理掉很多指令，包含add rsi,8、sub rsi,8、ret、jmp等：
+``` nasm
+[0x21CBC900] 0xdead000: xor     ebp, ebp
+[0x21CBC900] 0xdead002: mov     r9, rdx
+[0x21CBC900] 0xdead005: pop     rsi
+[0x21CBC908] 0xdead006: mov     rdx, rsp
+[0x21CBC908] 0xdead009: and     rsp, 0xfffffffffffffff0
+[0x21CBC900] 0xdead00d: push    rax
+[0x21CBC8F8] 0xdead00e: push    rsp
+[0x21CBC8F0] 0xdead00f: mov     r8, 0xdead530
+[0x21CBC8F0] 0xdead016: mov     rcx, 0xdead4c0
+[0x21CBC8F0] 0xdead01d: mov     rdi, 0xdead429
+[0x21CBC8F0] 0xdead024: call    0x4006d0
+......
+......
+[0x21CBC7D8] 0xdead405: mov     rdi, rdx
+[0x21CBC7D8] 0xdead408: mov     rcx, rax
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+......
+......
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40b: rep movsq qword ptr [rdi], qword ptr [rsi]
+[0x21CBC7D8] 0xdead40e: mov     eax, 0xe0b10c0
+[0x21CBC7D8] 0xdead413: mov     rdi, rax
+[0x21CBC7D8] 0xdead416: mov     eax, 0xe0b20c0
+[0x21CBC7D8] 0xdead41b: mov     rsi, rax
+[0x21CBC7D8] 0xdead41e: mov     eax, 0xe0af8a0
+[0x21CBC7D8] 0xdead423: mov     rsp, rax
+[0xE0B08A8] 0xdead1f8:  pop     rcx
+[0xE0B08B8] 0xdead275:  pop     r9
+[0xE0B08C8] 0xdead127:  mov     rax, qword ptr [rdi]
+[0xE0B08D8] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B08E0] 0xdead26b:  mov     r8, qword ptr [rsi]
+[0xE0B08F0] 0xdead107:  add     rdi, 8
+[0xE0B0900] 0xdead27e:  mov     qword ptr [rsi], r9
+[0xE0B0908] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0918] 0xdead1f0:  pop     rbx
+[0xE0B0928] 0xdead145:  imul    rax, rbx
+        RAX: 1337DEADBEEF0095, RBX: CAFE
+[0xE0B0938] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B0940] 0xdead288:  mov     r9, qword ptr [rsi]
+[0xE0B0958] 0xdead27e:  mov     qword ptr [rsi], r9
+[0xE0B0960] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0970] 0xdead1f0:  pop     rbx
+[0xE0B0980] 0xdead131:  add     rax, rbx
+[0xE0B0990] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B0998] 0xdead288:  mov     r9, qword ptr [rsi]
+[0xE0B09A8] 0xdead2cc:  pop     r12
+[0xE0B09B8] 0xdead292:  pop     r10
+[0xE0B09C8] 0xdead1e8:  pop     rax
+[0xE0B09D8] 0xdead1f0:  pop     rbx
+[0xE0B09E8] 0xdead200:  pop     rdx
+[0xE0B09F8] 0xdead19f:  cmp     rax, rbx
+        RAX: 0, RBX: 0
+[0xE0B09F8] 0xdead1a2:  jne     0xdead1a7
+[0xE0B09F8] 0xdead1a4:  add     rsp, rdx
+[0xE0B0BE0] 0xdead29b:  mov     qword ptr [rsi], r10
+[0xE0B0BE8] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0BF8] 0xdead1f0:  pop     rbx
+[0xE0B0C08] 0xdead200:  pop     rdx
+[0xE0B0C18] 0xdead1ae:  cmp     rax, rbx
+        RAX: 3419, RBX: 0
+[0xE0B0C18] 0xdead1b1:  je      0xdead1b6
+[0xE0B0C18] 0xdead1b3:  add     rsp, rdx
+[0xE0B0A08] 0xdead29b:  mov     qword ptr [rsi], r10
+[0xE0B0A10] 0xdead2c2:  mov     r11, qword ptr [rsi]
+[0xE0B0A28] 0xdead2b8:  mov     qword ptr [rsi], r11
+[0xE0B0A30] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0A40] 0xdead1f0:  pop     rbx
+[0xE0B0A50] 0xdead177:  and     rax, rbx
+[0xE0B0A60] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B0A68] 0xdead2c2:  mov     r11, qword ptr [rsi]
+[0xE0B0A80] 0xdead2b8:  mov     qword ptr [rsi], r11
+[0xE0B0A88] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0A98] 0xdead1f0:  pop     rbx
+[0xE0B0AA8] 0xdead200:  pop     rdx
+[0xE0B0AB8] 0xdead1ae:  cmp     rax, rbx
+        RAX: 1, RBX: 1
+[0xE0B0AB8] 0xdead1b1:  je      0xdead1b6
+[0xE0B0AC8] 0xdead2d5:  mov     qword ptr [rsi], r12
+[0xE0B0AD0] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0AE8] 0xdead261:  mov     qword ptr [rsi], r8
+[0xE0B0AF0] 0xdead226:  mov     rbx, qword ptr [rsi]
+[0xE0B0B00] 0xdead145:  imul    rax, rbx
+        RAX: 1, RBX: 33333333C97155A5
+[0xE0B0B10] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B0B18] 0xdead2df:  mov     r12, qword ptr [rsi]
+[0xE0B0B30] 0xdead261:  mov     qword ptr [rsi], r8
+[0xE0B0B38] 0xdead212:  mov     rax, qword ptr [rsi]
+[0xE0B0B50] 0xdead261:  mov     qword ptr [rsi], r8
+[0xE0B0B58] 0xdead226:  mov     rbx, qword ptr [rsi]
+[0xE0B0B68] 0xdead145:  imul    rax, rbx
+        RAX: 33333333C97155A5, RBX: 33333333C97155A5
+```
+这样代码就清晰很多了，可以看到程序处理数据主要由两方面：一是用户的输入（通过套接字）；二是栈上设置好的数据（通过pop传入）。
+``` nasm
+[0xE0B08C8] 0xdead127:  mov     rax, qword ptr [rdi]
+[0xE0B08D8] 0xdead208:  mov     qword ptr [rsi], rax
+[0xE0B08E0] 0xdead26b:  mov     r8, qword ptr [rsi]
+[0xE0B08F0] 0xdead107:  add     rdi, 8
+```
+用户输入由rdi作为索引，循环读取，每次8字节（QWORD）
+``` nasm
+[0xE0B08B8] 0xdead275:  pop     r9
+```
+读取栈上数据通过pop完成，这里就将栈上0xE0B08B8这个位置的8个字节数据放到r9中。
+
+其他部分就没有什么坑了，剩下的就是读汇编，最后程序的c语言代码大致如下：
+``` c
+_int64 seed = 0x1337DEADBEEF0095;
+_int64 input[8] = "xxxx...";//用户输入
+
+for(int i=0;i<8;i++)
+{
+    r9 = seed * 0xcafe;
+    r9 += 0xbeef;
+    seed = r9;
+    r12 = 1;
+    r8 = input[i];
+    for(int r10=0x3419; r10!=0; r10 = r10 >> 1)
+    {
+        r11 = r10 & 1;
+        if(r11)
+            r12 = r12 * r8;
+        r8 = r8*r8;
+    }
+    if(r12 != r9)
+        return -1;//失败
+}
+
+......//打印flag
+
+```
+
+简化的伪代码：
+``` c
+_int64 seed = 0x1337DEADBEEF0095;
+_int64 input[8] = "xxxx...";//用户输入
+
+for(int i=0;i<8;i++)
+{
+    seed = seed * 0xcafe + 0xbeef
+    r8 = input[i];
+    r12 = r8^13337;//这里是13337次方
+    if(r12 != seed)
+        return -1;//失败
+}
+
+......//打印flag
+```
+
+# 0x04 ptrace分析源码
+使用了capstone进行反汇编
+``` c
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/ptrace.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/user.h>
+
+#include <inttypes.h>
+#include <capstone/capstone.h>
+
+
+int main()
+{
+    struct user_regs_struct regs;
+    pid_t child;
+    int status;
+    long ins;
+
+    csh handle;
+    cs_insn *insn;
+    size_t count;
+
+    child = fork();
+
+    if(!child)
+    {
+        //child
+        ptrace(PTRACE_TRACEME,0,NULL,NULL);
+        execve("./r0ops",NULL,NULL);
+    }
+    else
+    {
+        if (cs_open(CS_ARCH_X86, CS_MODE_64, &handle) != CS_ERR_OK)
+            return -1;
+
+        //parent
+        while(1)
+        {
+            ptrace(PTRACE_SINGLESTEP,child, NULL,NULL);
+            wait(&status);
+            if(WIFEXITED(status))
+            {
+                break;
+            }
+            ptrace(PTRACE_GETREGS, child, NULL, &regs);
+            ins = ptrace(PTRACE_PEEKTEXT, child, regs.rip, NULL);
+            count = cs_disasm(handle, &ins, sizeof(long), regs.rip, 0, &insn);
+            if(0xDEAD000 == (regs.rip & 0x000000000DEAD000))
+            {
+                if(count > 0)
+                {
+                    printf("[0x%X] 0x%"PRIx64":\t%s\t%s\n",regs.rsp + 0x1000, insn[0].address, insn[0].mnemonic, insn[0].op_str);
+                    if(strncmp(insn[0].mnemonic,"cmp",3) == 0 || strncmp(insn[0].mnemonic,"imul",4) == 0 )
+                    {
+                        printf("\tRAX: %llX, RBX: %llX\n",regs.rax,regs.rbx);
+                    }
+                }
+                else
+                {
+                    printf("EIP: %lx Instruction executed: %lx\n", regs.rip, ins);
+                }
+            }
+        }
+    }
+
+    return 0;
+
+}
+
+
+```

@@ -1,0 +1,555 @@
+---
+layout: post
+title:  "fcg4 note"
+date:   2018-3-28 21:43:21 +0800
+categories: tech
+---
+
+> 
+
+## Chapter 1
+
+### 1.1 Numeriacl Issues
+
+Almost all modern computers conform to the IEEE *floationg-point* standard
+
+Three "special" values:
+
+1. Infinity($$∞$$)
+1. Minus infinity($$-∞$$)
+1. Not a number(NaN)
+
+for any positive real number a:
+
+$$ \begin{eqnarray}
++a/+\infty &=& +0 \\
+-a/+\infty &=& -0 \\
++a/-\infty &=& -0 \\
+-a/-\infty &=& +0 \\
+&&\\
+\infty+\infty &=& \infty \\
+\infty-\infty &=& NaN \\
+\infty*\infty &=& \infty \\
+\infty/\infty &=& NaN \\
+\infty/a &=& \infty \\
+\infty/0 &=& \infty \\
+0/0 &=& NaN 
+\end{eqnarray} $$
+
+
+
+
+1. Any arithmetic expression that includes NaN results in NaN.
+1. Any Boolean expression involving NaN is false
+
+$$ +a/+0=+\infty $$
+
+$$ -a/+0=-\infty $$
+
+consider the expression:
+
+$$ f(x) = \frac{1}{\frac{1}{b} + \frac{1}{c}} $$
+
+if b or c is zero, then f(x) is zero.
+
+```python
+a = f(x)
+if a > 0 then
+    do something
+```
+
+## Chapter 2
+
+### 2.1 Solving Quadratic Equations
+
+$$ Ax^2 + Bx + C = 0 $$
+
+The roots:
+
+$$ x = \frac{-B\pm\sqrt{B^2-4AC}}{2A} $$
+
+or (<span style="color:red">depending on the sign of B</span>)
+
+$$ x = \frac{2C}{-B\mp\sqrt{B^2-4AC}} $$
+
+### 2.2 Dot Product and Cross Product
+
+$$ \boldsymbol{a}\cdot\boldsymbol{b} = (x_a\boldsymbol{x}+y_a\boldsymbol{y})\cdot(x_b\boldsymbol{x}+y_b\boldsymbol{y}) $$
+
+$$ \boldsymbol{x}\cdot\boldsymbol{x} = \boldsymbol{y}\cdot\boldsymbol{y} = 1 $$
+
+$$ \boldsymbol{x}\cdot\boldsymbol{y} = 0 $$
+
+$$ \boldsymbol{a}\times\boldsymbol{b}=(x_a\boldsymbol{x}+y_a\boldsymbol{y}+z_a\boldsymbol{z})\times(x_b\boldsymbol{x}+y_b\boldsymbol{y}+z_b\boldsymbol{z}) $$
+
+$$\begin{eqnarray}
+\boldsymbol{x}\times\boldsymbol{y}&=&+\boldsymbol{z} \\
+\boldsymbol{y}\times\boldsymbol{x}&=&-\boldsymbol{z} \\
+\boldsymbol{y}\times\boldsymbol{z}&=&+\boldsymbol{x} \\
+\boldsymbol{z}\times\boldsymbol{y}&=&-\boldsymbol{x} \\
+\boldsymbol{z}\times\boldsymbol{x}&=&+\boldsymbol{y} \\
+\boldsymbol{x}\times\boldsymbol{z}&=&-\boldsymbol{y}
+\end{eqnarray} $$
+
+
+### 2.3 The 2D Gradient ###
+
+![gradient](https://cdn.pbrd.co/images/He4NZtP.png "gradient"){: .left-img}
+
+
+$$ \nabla f(x,y) = (\frac{\partial{f}}{\partial{x}}, \frac{\partial{f}}{\partial{y}}) $$
+
+In left figure, we see the vector $$ \boldsymbol{a} $$ travels along a path where f does not change.
+
+$$ (\nabla f)\cdot\boldsymbol{a} \equiv (x_\nabla,y_\nabla)\cdot(x_a,y_a) = x_\nabla \Delta x + y_\nabla \Delta y = 0 $$
+
+$$ \Delta f = \frac{\partial f}{\partial x}\Delta x + \frac{\partial f}{\partial y}\Delta y \equiv \frac{\partial f}{\partial x}x_a + \frac{\partial f}{\partial y}y_a = 0 $$
+
+The gradient vector is perpendicular to the 2D curves, which can be expanded to 3D surface.
+
+
+### 2.4 Distance ###
+
+$$ f(x,y) = Ax+By+C $$
+
+for the line $$ f(x,y) = 0 $$, the gradient vector $$ \nabla f(x,y) = (A,B) $$ is perpendicular to the line. for the point $$ (x,y) + k(A,B) $$, the distance is $$ k\sqrt{A^2 + B^2} $$ and $$ f(x+kA,y+kB) = k(A^2+B^2) $$, so the form to get the distance from the point $$ (a,b) $$ to the line $$ f(x,y) = 0 $$ is:
+
+$$ distance = \frac{f(a,b)}{\sqrt{A^2+B^2}} $$
+
+### 2.5 Curves and Surface ###
+
+Implicit curves in 2D or surface in 3D are defined by scalar-valued functions of two or three variables. $$ f: \!R^2 \to \!R $$ or $$ f: \!R^3 \to \!R $$
+
+$$ S = \{\boldsymbol{p} | f(\boldsymbol{p}) = 0\} $$
+
+Parametric curves in 2D or 3D. $$ \boldsymbol{p}: D\subset \!R \to \!R^2 $$ or $$ \boldsymbol{p}: D\subset \!R \to \!R^3 $$
+
+$$ S = \{\boldsymbol{p}(t)|t\in D\} $$
+
+Parametric surfaces in 3D are defined by vector-valued functions of two variables. $$ \boldsymbol{p}: D\subset \!R^2 \to \!R^3 $$
+
+$$ S = \{\boldsymbol{p}(t)|(u,v)\in D\}$$
+
+### 2.6 Barycentric coordinates ###
+
+$$ \boldsymbol{p}(\alpha,\beta,\gamma) = \alpha\boldsymbol{a} + \beta\boldsymbol{b} + \gamma\boldsymbol{c} $$
+
+$$ \alpha + \beta + \gamma = 1 $$
+
+a point $$ \boldsymbol{p} $$ is inside the triangle formed by $$ \boldsymbol{a} $$, $$ \boldsymbol{b} $$ and $$ \boldsymbol{c} $$ if and only if:
+
+$$ 0 < \alpha < 1 $$
+
+$$ 0 < \beta < 1 $$
+
+$$ 0 < \gamma < 1 $$
+
+One geometric property of barycentric coordinates is that they are the signed scaled distance from the lines through the triangle sides.
+
+$$ \beta = \frac{f_{ac}(x,y)}{f_{ac}(x_b,y_b)} $$
+
+so:
+
+$$\begin{eqnarray}
+\alpha & = & A_a/A \\
+\beta & = & A_b/A \\
+\gamma & = & A_c/A \\
+
+\end{eqnarray}$$
+
+$$ A $$ is the area of the triangle and $$ A_x $$ is the area of the triangle whose point $$ x $$ is replaced with point $$ \boldsymbol{p} $$.
+
+
+## chapter 3
+
+### 3.1 Raster Image ###
+
+![screen](https://cdn.pbrd.co/images/He6PZTu.png) 
+
+the rectangular domain of a $$ n_x \times n_y $$ image is
+
+$$ R = [-0.5,n_x-0.5]\times[-0.5,n_y-0.5] $$
+ 
+### 3.2 Gamma
+
+$$ displayed\ intensity = (maximum\ intensity)\alpha^\gamma $$
+
+### 3.3 Alpha Compositing ###
+
+If we want to composite a foreground color $$ \boldsymbol{c}_f $$ over background color $$ \boldsymbol{c}_b $$, and the fraction of the pixel covered by the foreground is $$\alpha$$:
+
+$$ \boldsymbol{c} = \alpha\boldsymbol{c}_f + (1-\alpha)\boldsymbol{c}_b $$
+
+## chapter 4
+
+### 4.1 The Basic Ray-Tracing Algorithm ###
+
+1. ***ray generation***, which computes the origin and direction of each pixel's viewing ray based on the camera geometry;
+1. ***ray intersection***, which finds the closest object intersecting the viewing ray;
+1. ***shading***, which computes the pixel color based on the results of ray intersection.
+
+### 4.2 Computing Viewing Rays ###
+
+![projection](https://cdn.pbrd.co/images/He6WZ7M.png) 
+
+$$ \boldsymbol{p}(t) = \boldsymbol{e} + t\boldsymbol{d} $$
+
+#### orthographic views ####
+
+ray.direction $$ \gets -\boldsymbol{w} $$
+
+ray.origin $$ \gets \boldsymbol{e} + u\boldsymbol{u}+v\boldsymbol{v} $$
+
+
+#### perspective views ####
+
+ray.direction $$ \gets -d\boldsymbol{w} + u\boldsymbol{u}+v\boldsymbol{v}   $$
+
+ray.origin $$ \gets \boldsymbol{e}$$
+
+### 4.3 Ray-Object Intersection ###
+
+#### Ray-Triangle Intersection ####
+
+$$ \boldsymbol{e} + t\boldsymbol{d} = \boldsymbol{f}(u,v) $$
+
+$$ \boldsymbol{e} + t\boldsymbol{d} = \boldsymbol{a} + \beta(\boldsymbol{b} - \boldsymbol{a}) + \gamma(\boldsymbol{c}+\boldsymbol{a}) $$
+
+$$ 
+\left[ 
+\begin{array}{ccc}
+x_a-x_b & x_a-x_c & x_d \\
+y_a-y_b & y_a-y_c & y_d \\
+z_a-z_b & z_a-z_c & z_d \\
+\end{array}
+\right]
+\left[ 
+\begin{array}{c}
+\beta \\
+\gamma \\
+t \\
+\end{array}
+\right]
+
+=
+
+\left[ 
+\begin{array}{ccc}
+x_a-x_e  \\
+y_a-y_e  \\
+z_a-z_e  \\
+\end{array}
+\right]
+
+$$
+
+####  Ray-Polygon Intersection ####
+
+Given a planar polygon with $$ m $$ vertices $$\boldsymbol{p}_1$$ through $$\boldsymbol{p}_m$$ and surface normal $$\boldsymbol{n}$$
+
+$$ (\boldsymbol{p} - \boldsymbol{p}_1)\cdot\boldsymbol{n} = 0 $$
+
+$$ t = \frac{(\boldsymbol{p}_1 - \boldsymbol{e})\cdot\boldsymbol{n}}{\boldsymbol{d}\cdot\boldsymbol{n}} $$
+
+We can answer the question of whether $$ \boldsymbol{p} $$ is inside the polygon by projecting the point and polygon vertices to the $$ xy $$ plane and answering it there. The easiest way to do this is to send any 2D ray out from $$ \boldsymbol{p} $$ and to count the number of intersections between that ray and the boundary of the polygon.
+
+### 4.4 Shading ###
+
+#### Lambertian Shading ####
+
+$$ L = k_d I max(0,\boldsymbol{n}\cdot\boldsymbol{l}) $$
+
+where $$L$$ is the pixel color; $$k_d$$ is the *diffuse coefficient*, or the surface color; and $$I$$ is the intensity of the light source; $$\boldsymbol{l}$$ is the light direction and $$\boldsymbol{n}$$ is the surface normal.
+
+
+#### Blinn-Phong Shading ####
+
+$$ L = k_d I max(0,\boldsymbol{n}\cdot\boldsymbol{l}) + k_s I max(0,\boldsymbol{n}\cdot\boldsymbol{h})^p$$
+
+$$ h = \frac{\boldsymbol{v} + \boldsymbol{l}}{\parallel\boldsymbol{v} + \boldsymbol{l}\parallel} $$
+
+where $$k_s$$ is the *specular coefficient* and $$\boldsymbol{v}$$ is the view direction.
+
+#### Ambient Shading ####
+
+$$ L = k_aI_a + k_d I max(0,\boldsymbol{n}\cdot\boldsymbol{l}) + k_s I max(0,\boldsymbol{n}\cdot\boldsymbol{h})^p$$
+
+where $$k_a$$ is the surface's *ambient coefficient* and $$I_a$$ is the ambient light intensity.
+
+#### Multiple Point Lights ####
+
+$$ L = k_aI_a + \sum_{i=1}^{N}[k_d I_i max(0,\boldsymbol{n}\cdot\boldsymbol{l}_i) + k_s I_i max(0,\boldsymbol{n}\cdot\boldsymbol{h}_i)^p] $$
+
+
+## chapter 5
+
+#### 5.2 Vector Operations in Matrix Form  ####
+
+
+$$ 
+
+\left[ 
+\begin{array}{c}
+| \\
+\boldsymbol{y} \\
+| \\
+\end{array}
+\right]
+
+=
+
+\left[ 
+\begin{array}{c}
+-\ \boldsymbol{r}_1\ - \\
+-\ \boldsymbol{r}_2\ - \\
+-\ \boldsymbol{r}_3\ - \\
+\end{array}
+\right]
+
+\left[ 
+\begin{array}{c}
+| \\
+\boldsymbol{x} \\
+|
+\end{array}
+\right]
+
+$$
+
+$$
+y_i = \boldsymbol{r}_i \cdot \boldsymbol{x}.
+$$
+
+$$ 
+
+\left[ 
+\begin{array}{c}
+| \\
+\boldsymbol{y} \\
+| \\
+\end{array}
+\right]
+
+=
+
+\left[ 
+\begin{array}{ccc}
+| & |  & | \\
+\boldsymbol{c}_1 & \boldsymbol{c}_2 & \boldsymbol{c}_3 \\
+| & |  & | \\
+\end{array}
+\right]
+
+\left[ 
+\begin{array}{c} 
+x_1 \\
+x_2 \\
+x_3 \\
+\end{array} 
+\right]
+
+$$
+
+$$
+\boldsymbol{y} = x_1\boldsymbol{c}_1 + x_2\boldsymbol{c}_2 + x_3\boldsymbol{c}_3.
+$$
+
+## chapter 6
+
+### 6.2 Coordinate Transformations
+
+$$ 
+
+\boldsymbol{P}_{xy}
+
+=
+
+\left[ 
+\begin{array}{ccc}
+\boldsymbol{u} & \boldsymbol{v} & \boldsymbol{e} \\
+0 & 0  & 1 \\
+\end{array}
+\right]
+
+\boldsymbol{P}_{uv}.
+
+$$
+
+$$ 
+
+\boldsymbol{P}_{uv}
+
+=
+
+\left[ 
+\begin{array}{ccc}
+\boldsymbol{x}_{uv} & \boldsymbol{y}_{uv} & \boldsymbol{o}_{uv} \\
+0 & 0  & 1 \\
+\end{array}
+\right]
+
+\boldsymbol{P}_{xy}.
+
+$$
+
+## chapter 7
+
+### 7.1 Viewing Transformations ###
+
+* A *camera transformation* or *eye transformation*, which is a rigid body transformation that places the camera at the origin in a convenient orientation. It depends only on the position and orientation, or pose, of the camera.
+
+* A *projection transformation*, which projects points from camera space so that all visible points fall in the range −1 to 1 in x and y. It depends only on the type of projection desired.
+
+* A *viewport transformation* or *windowing transformation*, which maps this unit image rectangle to the desired rectangle in pixel coordinates. It depends only on the size and position of the output image.
+
+
+![sequence](https://cdn.pbrd.co/images/Hjh49Yz.png "sequence")
+
+#### 7.1.1 The Viewport Transformation ####
+
+$$
+
+\boldsymbol{M}_{vp}
+
+=
+
+\left[ 
+\begin{array}{cccc}
+\frac{n_x}{2} & 0 & 0 & \frac{n_x - 1}{2}\\
+0 &\frac{n_y}{2} & 0 &\frac{n_y - 1}{2} \\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1\\
+\end{array}
+\right]
+
+$$
+
+#### 7.1.2 The Orthographic Projection Transformation ####
+
+$$
+
+\boldsymbol{M}_{orth}
+
+=
+
+\left[ 
+\begin{array}{cccc}
+\frac{2}{r-l} & 0 & 0 & -\frac{r+l}{r-l}\\
+0 &\frac{2}{t-b} & 0 & -\frac{t+b}{t-b} \\
+0 & 0 & \frac{2}{n-f} & -\frac{n+f}{n-f}\\
+0 & 0 & 0 & 1\\
+\end{array}
+\right]
+
+$$
+
+#### 7.1.3 The Camera Transformation ####
+
+
+$$ 
+
+\boldsymbol{M}_{cam}
+
+=
+
+\left[ 
+\begin{array}{cccc}
+\boldsymbol{u} & \boldsymbol{v} & \boldsymbol{w} & \boldsymbol{e} \\
+0 & 0  & 0 & 1 \\
+\end{array}
+\right]^{-1}
+
+$$
+
+### 7.3 Perspective Projection ###
+
+
+$$
+
+\boldsymbol{P}
+
+=
+
+\left[ 
+\begin{array}{cccc}
+n & 0 & 0 & 0\\
+0 & n & 0 & 0 \\
+0 & 0 & n+f & -fn\\
+0 & 0 & 1 & 0\\
+\end{array}
+\right]
+
+$$
+
+### Perspective Transform ###
+
+$$
+\boldsymbol{M}_{per} = \boldsymbol{M}_{orth} \boldsymbol{P}.
+$$
+
+$$
+\boldsymbol{M} = \boldsymbol{M}_{vp} \boldsymbol{M}_{per} \boldsymbol{M}_{cam}.
+$$
+
+
+## Chapter 8 The Graphics Pipeline ##
+
+![The stages of a graphics pipeline](http://vps.ya0db9.com:4000/storage/1BBOApuh.png "pipeline")
+
+### 8.1 Rasterization ###
+
+For each primitive that comes in, the rasterizer has two jobs. it *enumerates* the pixels that are covered by the primitive and it *interpolates* values, called attributes, across the primitive. The output of the rasterizer is a set of *fragments*.
+
+
+#### 8.1.1 Line Drawing ####
+
+![line drawing](http://vps.ya0db9.com:4000/storage/1BFnWCfJ.png "line")
+
+The pixel (x, y) has just been drawn and we want to make a choice between (x+1, y) and (x+1, y+1). An effective way is to look at the *midpoint* of the two potential pixel.
+
+![incremental relationship](http://vps.ya0db9.com:4000/storage/1BGHx9ij.png "incremental")
+
+Also we use an *incremental* method to reuse computation from the previous step.
+
+#### 8.1.2 Triangle Rasterization ####
+
+![Triangle Rasterization](http://vps.ya0db9.com:4000/storage/1BFiGC0E.png "triangle")
+
+(-1, -1) is the *off-screen* point which is used to deal with pixels on triangle edges.
+
+### 8.1.3 Clipping ###
+
+Usually we perform clipping in the 4D transformed space before the homogeneous divede, because divisions are expensive operations. Instead of testing e.g. `|x| > 1` in NDC space, we can just test `|x| > |w|` in homogeneous clip space.
+
+### 8.2 Operations Before and After Rasterization ###
+
+#### 8.2.3 Using a z-Buffer for Hidden Surfaces ####
+
+$$
+
+z = n + f - \frac{fn}{z_w} \\
+
+\Delta z \approx \frac{fn\Delta z_w}{z^2_{w}} \\
+
+\Delta z_w \approx \frac{z^2_{\Delta z}}{fn}
+$$
+
+When $ z' = f $:
+
+$$
+
+\Delta z^{max}_{w} \approx \frac{f\Delta z}{n}
+
+$$
+
+to make $ \Delta z^{max}_{w} $ as small as possible, we want to minimize f and maximum n.
+
+#### 8.2.4 Per-vertex Shading ####
+
+Per-vertex shading has the disadvantage that it cannot produce any details in the shading that are smaller than the primitives used to draw the surface, because it only computes shading once for each vertex and never in between vertices.
+
+
+#### 8.2.7 Shading Frequency ####
+
+The decision about where to place shading computations depends on how fast the color changes—the *scale* of the details being computed.
+

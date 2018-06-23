@@ -1,0 +1,124 @@
+---
+layout: post
+title:  "dsc6 note"
+date:   2018-5-10 15:46:45 +0800
+categories: tech
+---
+
+> 
+
+## Chapter 3
+
+### 3.3 Basic Structure of SQL Queries  ###
+
+* The **select** clause is used to list the attributes desired in the result of a query.
+* The **from** clause is a list of the relations to be accessed in the evaluation of the query.
+* The **where** clause is a predicate involving attributes of the relation in the from clause.
+
+
+### operations ###
+
+* **join** *R* **using** (*A list*)
+
+* The **as** clause is used in **select** or **from** clause
+
+* The '%' character matches any substring and the '_' character matches any character
+
+* SQL expresses patterns by using the **like** comparison operator.
+
+* **where** *A* **like** 'ab\%cd%' **escape** '\\' matches all strings beginning with 'ab%cd'.
+
+* The **order by** clause causes the result appear in sorted order. 
+
+* **order by** *A1* **desc**, *A2* **asc**; The **desc** denote that the result will be listed in descending order and the **asc** denote to be ascending order.
+
+* **where** (v1, v2,..., vn) == (u1, u2,..., un);
+
+* **union**, **intersect**, **except** denote $ \cup, \cap, \setminus $ respectively.
+
+* the **all** following **union**, **intersect**, **except** causes the results retain all duplicates.
+
+* The result of any comparison involving a *null* value is treated as **unknown**.
+
+* *true* **and** *unknown* is *unknown*, *false* **and** *unknown* is *false*, *unknown* **and** *unknown* is *unknown*.
+
+* *true* **or** *unknown* is *true*, *false* **or** *unknown* is *unknown*, *unknown* **or** *unknown* is *unknown*.
+
+* **not** *unknown* is *unknown*.
+
+### aggregate ###
+
+built-in aggregate functions: **avg, min, max, sum count**
+
+* By using keyword **distinct** , we can eliminate duplicates.
+
+* The aggregate function will be applied to a group of sets of tuples with **group by** clause.
+
+* We use the **having** clause to express a query with a condition that applies to groups rather than to tuples.
+
+* All aggregate functions except **count (\*)** ignore null values in their input collection. 
+
+* The **count** of an empty collection is defined to be 0, and all other aggregate operations return a value of null when applied on an empty collection.
+
+The sequence of operations of a query containing aggregation:
+
+1. The **from** clause is first evaluated to get a relation.
+
+1. If a **where** clause is present, the predicate in the **where** clause is applied on the result relation of the **from** clause.
+
+1. Tuples satisfying the where predicate are then placed into groups by the **group by** clause if it is present. If the **group by** clause is absent, the entire set of tuples satisfying the **where** predicate is treated as being in one group.
+
+1. The **having** clause, if it is present, is applied to each group; the groups that do not satisfy the **having** clause predicate are removed.
+
+1. The **select** clause uses the remaining groups to generate tuples of the result of the query, applying the aggregate functions to get a single result tuple for each group.
+
+### Nested Subqueries ###
+
+* (**not**) **in** tests.
+
+* Comparison to **some** or **all** .
+
+* **exists** for empty test and **not exists** equal 'except'
+
+* **correlated subquery** denote that it uses a correlation name from an outer query.
+
+* The **unique** construct returns the value true if the argument subquery contains no duplicate tuples.
+
+* SQL allows a subquery expression to be used in the **from** clause.
+
+* A subquery in the **from** clause that is prefixed by the **lateral** keyword can access attributes of preceding tables or subqueries in the **from** clause.
+
+![subquery prefixed by lateral](http://vps.ya0db9.com:4000/storage/1GMS4gT0.png "subquery")
+
+* The **with** clause defines a temporary relation.
+
+![with](http://vps.ya0db9.com:4000/storage/1GN44DZQ.png "with")
+
+* SQL allows subqueries to occur wherever an expression returning a value is permitted, provided the subquery returns only one tuple containing a single attribute; such subqueries are called **scalar subqueries**.
+
+![scalar](http://vps.ya0db9.com:4000/storage/1GNVg8Q4.png "scalar")
+
+
+## 3.9 Modification of the Database ##
+
+* if some tuples are deleted before other tuples have been tested and the final result of the **delete** would depend on the order in which the tuples were processed!
+
+* SQL evaluates the **select** statement first, giving a set of tuples that is then inserted into the relation.
+
+* the **select** statement is evaluated before we carry out any insertions.
+
+* the order of the two **update** statements is important.
+
+* SQL provides a **case** construct that we can use to perform both the updates with a single **update** statement.
+
+![case](http://vps.ya0db9.com:4000/storage/1GPCc1Ml.png "case")
+
+* The general form of the case statement is as follows:
+
+![case](http://vps.ya0db9.com:4000/storage/1GPDHSiX.png "case")
+
+* Scalar subqueries are also useful in SQL **update** statements,where they can be used in the **set** clause.
+
+![scalar](http://vps.ya0db9.com:4000/storage/1GPLdct5.png "scalar in set")
+
+

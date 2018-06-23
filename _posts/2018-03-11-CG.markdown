@@ -1,0 +1,95 @@
+---
+layout: post
+title:  "似水流年"
+date:   2018-3-11 22:11:20 +0800
+categories: tech
+---
+
+> 胶片已断，紧握着缺口，看那未完的电影，随着风，在身后飘散...
+
+在最二的年纪，有了最好的时光，也接触到了图形学，才知道这些年闭眼太久，浑浑噩噩。最二的年纪已经过去，往事都随风......
+
+# 关于
+
+仅以此文作为图形学的开端。文章描述没有顺序，一遍做一边写。
+
+# 主窗口、DX设备及SwapChain初始化
+
+创建主窗口时候需要注意的唯一一点是封装窗口消息处理函数，因使用C++类封装，我们想在成员函数中进行消息处理，但成员函数不能直接作为窗口消息处理函数赋值给`WNDCLASS::lpfnWndProc`，所以需要做如下封装：
+
+```c++
+D3Dbase *ThisApp = NULL;
+
+LRESULT CALLBACK MainWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	return ThisApp->MsgProc(hwnd, msg, wParam, lParam);
+}
+
+```
+
+`D3Dbase`是程序主类，在`D3Dbase`实例化时候将`this`赋值给`ThisApp`，使用`MainWndProc`间接调用成员函数。
+
+然后用`D3D11CreateDevice`创建DX设备，然后创建SwapChain。
+
+# RenderTargetView、DepthStencilView和ViewPorts
+
+通常`pipeline`不能够直接使用资源，需要创建一个资源`view`来将资源绑定到`pipeline`。例如需要创建一个`render target view`将`merger stage`会要使用的back buffer绑定到`pipeline`，类似的还有`depth stencil view`，它将在`pipeline`中进行depth test和stencil test。
+
+`ViewPorts`决定我们需要绘制back buffer的哪些部分。
+
+这里需要注意的是，当用户调整窗口大小时，我们可能会考虑调整back buffer，以上部分也会受到影响，所以实现一个`OnResize()`函数，在收到窗口大小改变的消息时调用。
+
+# 消息循环
+
+做完以上初始化工作，就可以进入Windows消息循环了。在循环中，使用非阻塞函数`PeekMessage`，有消息就进行处理，没有消息进行渲染。这里使用了`UpdateScene()`和`DrawScene()`两个接口，前者用于更新状态，后者用于绘图。
+
+到这里，程序的基础框架就完成了，剩下的就是绘图。
+
+# 输入缓存
+
+任何3维的图形，都是由点、线和三角形构成的，所以需要一个保存输入这些元素的缓冲区，包括顶点缓存和索引缓存。顶点缓存中的每个元素就是一个点，一般包括点的坐标、颜色、纹理和法向量等。
+
+在DX绘制图形时候，会根据`ID3D11DeviceContext::IASetPrimitiveTopology`指定的方法进行绘制，这里使用`D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST`模式绘制。索引用于将顶点缓存描述为三角形链(3个点为一个三角形)。
+
+构建好顶点和索引缓存后，需要使用`ID3D11DeviceContext::IASetInputLayout`函数将缓存的布局告诉DX。类似于：
+
+```c++
+D3D11_INPUT_ELEMENT_DESC vertexDesc[] =
+{
+    { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    { "NORMAL",    0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 28, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+};
+
+D3DX11_PASS_DESC passDesc;
+m_Tech->GetPassByIndex(0)->GetDesc(&passDesc);
+m_D3DDevice->CreateInputLayout(vertexDesc, 3, passDesc.pIAInputSignature,
+passDesc.IAInputSignatureSize, &m_InputLayout);
+...
+...
+m_D3DContext->IASetInputLayout(m_InputLayout);
+
+```
+
+# world、view和proj矩阵
+
+world矩阵用于将本地绘制的图形对象变换到`world`参考系，再使用view矩阵将`world`参考系的对象变换到视角参考系，也就是以摄像机(眼睛)为基，最后使用proj矩阵将视角参考系中的对象投影到屏幕(除以`w`进行裁剪)。
+
+每个对象都有一个world矩阵，每个摄像机都有一个view矩阵，每个程序对话框对应一个proj矩阵。所以world矩阵改变的条件是对象在`world`参考系中位置发生变化，view矩阵变化的条件是摄像机的位置改变，proj矩阵变化的条件是程序窗口大小(比例)的改变。
+
+# 着色器(Shader)
+
+主要使用顶点着色器(VS)和像素着色器(PS)。
+
+顶点着色器通常用于位置的变换，而像素着色器处理颜色，输出最后的2D图像对应位置的颜色。
+
+着色器的代码是用于GPU执行的，其执行所需要的矩阵、变量每帧都可能变化，所以需要跟CPU通信。这里使用微软提供的Effect接口进行操作。
+
+# 绘制
+
+1. 清空Render Target和Depth Stencil View
+1. 设置输入元数据描述
+1. 设置输入元数据、索引缓存
+1. 更新着色器中world、view和proj矩阵
+1. 绘制
+1. IDXGISwapChain::Present

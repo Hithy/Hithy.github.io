@@ -1,0 +1,80 @@
+---
+layout: post
+title:  "关于折腾"
+date:   2018-5-6 19:49:59 +0800
+categories: tech
+---
+
+顺手打开[chiphell](https://www.chiphell.com/ "chiphell")的新闻区，提示要绑定手机才能看，觉得很不爽，遂考虑注册一个匿名号码。
+
+# 匿名
+
+对于现在国内的行情，几乎处处都是实名。对于各种软件服务，基本上都是需要绑定手机号的，匿名号码对于普通用户来说，很难通过合法渠道获取。所以考虑用国外的虚拟号码。
+
+# 虚拟号码
+Google Voice(GV)在国内的口碑还行，毕竟大厂，没那么多广告，也不会无理由回收。但GV很难申请，需要国外的手机号才行，不过国外也有很多免费的虚拟号码可以用来申请，所以按照教程跟着走，尝试了Text Now，Talkatone、flyp，号码都能用，chiphell短信能过，美国和加拿大可以免费打电话，能收到国内手机发送的短信（电话应该也能接，没测试），但就是不能用于申请GV。最后也没办法，偶然在telegram群组中看到了卖的，就花30块钱买了一个“靓号”，转过来直接能用。
+
+# 教育邮箱
+
+在telegram群组中看到了这帮人也有刷edu邮箱的教程，大致流程就是去申请一个社区大学的program得到学号和教育邮箱，或者wiki大佬信息去申请校友邮箱，这些邮箱是托管在Google或者Microsoft的，可以访问office 365和google suite全家桶。流程麻烦，但是确实有效。
+
+![office](http://vps.ya0db9.com:4000/storage/1ALum37w.png "office")
+
+![gdrive](http://vps.ya0db9.com:4000/storage/1ALINwmh.png "gdrive")
+
+
+# VPS
+
+折腾的时候为啥整VPS，我也忘了原因了。
+
+首先是看到了一个叫[turnkeyinternet](https://turnkeyinternet.net "turnkeyinternet")的运营商，提供1Gbps端口和无限流量方案，最低月供4刀，经过测试，我能够用到的网络都能跑到带宽上限，挂SS应该很合适，于是考虑买。但运营商有些傲娇，不卖，可能是把我识别为一个高风险用户吧。后来又看了下搬瓦工之类的爆款VPS，用的人都说不错，没忍住买了一年的，挂上SS，还是比较稳定。
+
+在看VPS的时候偶然发现一个Docker虚拟化服务提供商[arukas](https://arukas.io "arukas")，然后也提供一个免费的Docker实例，所以尝试在Docker中挂SS。经过测试，就用户体验来说，这个方案是最好的。
+
+![arukas](http://vps.ya0db9.com:4000/storage/1AOtmD6v.png "arukas")
+
+# google-drive-ocamlfuse
+
+### 挂载google drive
+
+在Github上面找到google-drive-ocamlfuse，可以用来把Google Drive挂载到本地，使用fuse实现。这里折腾了下google api，然后也成功了。这样可以算是给VPS扩容了？
+
+![mount](http://vps.ya0db9.com:4000/storage/1AP00RtV.png "mount")
+
+从这样可以算是给VPS扩容了？
+
+
+从VPS上下载google drive的数据是很快的，所以这个挂载之后还是有很多用处的
+
+### 图床 ###
+
+[pasteboard](https://github.com/JoelBesada/pasteboard "pasteboard")是一个开源的图片剪切板，上传之后，会返回一个图片的URL，便于分享或者插入博客。作者自己也提供了一个可以免费使用的页面，并且链接也是长期有效了（前几个月的链接还没挂）。但如果打算写博客存档，还是不太放心把图片放到没有保障的服务器上。所以在VPS上面搭建了这样一个图床，然后把图片存在google drive文件系统中。
+
+![pasteboard](http://vps.ya0db9.com:4000/storage/1APG8jfB.png "pasteboard")
+
+### web 代理浏览
+
+使用nginx目录浏览功能直接可以访问到fuse文件系统
+
+![nginx](http://vps.ya0db9.com:4000/storage/1AQ5iPAA.png "nginx")
+
+# 回顾
+
+除此之外，还研究了下阿里云国际版啥的，不过都没啥结果了。虽然折腾了这么多，还是有很多问题：
+
+- GV除了打国际长途和注册一些小众的东西外几乎没有什么用
+- 教育邮箱来路不正，也没有时间仔细研究乱七八糟的协议，所以不能保证长期稳定使用
+- 搬瓦工的VPS实际体验并不突出
+- arukas每月带宽只有100G，现处于测试阶段，未来对VPN的政策也不好说
+- google-drive-ocamlfuse在小内存VPS上面跑得不稳定，随时可能被kill
+
+总的来说，arukas因为速度快，实用性还是可以的。pasteboard本来也是不错，但是其稳定性也得看google-drive-ocamlfuse
+
+花了两天时间折腾这些有的没的，看看收益：
+
+要说技术，大概是熟悉了下怎么走国外大学的program，把nginx、php安装流程熟悉了一遍，或者说看到了arukas的广告？
+
+而物质上，无非就是省点钱，免费用office、google drive，在国内也能用上GV。然而office学校有正版，google drive 100G/年也就100块钱，GV账号15到30价格不等，为了这些随时可能被封杀的东西花了两天时间。
+
+回过头来，上chiphell绑定GV，结果网站说不支持这个号码。。。
+

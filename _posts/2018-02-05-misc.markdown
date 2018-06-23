@@ -1,0 +1,62 @@
+---
+layout: post
+title:  "Misc"
+date:   2018-02-04 12:23:55 +0800
+categories: tech
+---
+
+# IP Address
+
+<<<<<<< HEAD
+hiwifi wan 172.17.169.111
+
+=======
+ryzen HIT-WLAN 172.20.45.249
+
+hiwifi wan 172.17.169.111
+
+ya0lab 202.118.236.178
+
+ya0win 202.118.236.164
+
+nas 202.118.236.157
+
+aliyun 47.94.7.184
+
+>>>>>>> 7047cd88430d891af3ac99b079ff066d8290d9bc
+google-dns: 2001:4860:4860::8888
+
+---
+
+# PI
+
+89793238462643383279502884197169399375105820974944
+
+<<<<<<< HEAD
+29059
+
+=======
+>>>>>>> 7047cd88430d891af3ac99b079ff066d8290d9bc
+---
+
+# WSL中Jekyll搭建
+
+需要的软件包：`ruby`,`bundle`,`gcc`,`g++`,`libtool`,`autoconf`,`make`
+
+安装bindler和jekyll：`gem install bundle`和`gem install jekyll`
+
+使用`bundle install`安装依赖，然后`bundle exec {command}`
+
+
+---
+
+# emacs支持中文
+
+```lisp
+(set-language-environment 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+;;(set-clipboard-coding-system 'utf-16le-dos)
+(set-terminal-coding-system 'utf-8)
+(set-buffer-file-coding-system 'utf-8)
+;;(set-selection-coding-system 'utf-8)
+```
