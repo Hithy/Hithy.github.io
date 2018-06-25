@@ -43,7 +43,7 @@ google-dns: 2001:4860:4860::8888
 ;;(set-selection-coding-system 'utf-8)
 ```
 
-# 修改windows Keymap
+# 修改windows keymap
 
 ```
 Windows Registry Editor Version 5.00
