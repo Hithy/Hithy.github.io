@@ -63,3 +63,26 @@ Windows Registry Editor Version 5.00
 [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Keyboard Layout]
 "Scancode Map"=hex:00,00,00,00,00,00,00,00,02,00,00,00,1d,00,3a,00,00,00,00,00
 ```
+
+## adblock
+
+```
+baike.baidu.com##DIV[id="fc_guess_like_new"][class="fc-guess-like new"]
+baike.baidu.com##DIV[id="BOTTOM_PRO_AD"]
+baike.baidu.com##DIV[id="side_box_unionAd"][class="unionAd side-box union"]
+##IFRAME[src*="pos.baidu.com"]
+blog.csdn.net##DIV[class="csdn-tracking-statistics mb8 box-shadow"]
+
+www.zhihu.com##DIV[class="AdblockBanner"]
+www.baidu.com##DIV[style*="important"]
+www.baidu.com##div.result.c-container[id="1"]
+www.baidu.com##div.hint_toprq_tips
+www.baidu.com##div[id="rs"]
+www.baidu.com##div[id="rs_top_new"]
+www.baidu.com##div[id="content_right"]
+www.baidu.com##div.result-op.xpath-log
+www.baidu.com##span.rrecom-btn-parent.rrecom-btn-s
+www.baidu.com##div.c-recommend
+
+tieba.baidu.com##div[class*="l_post l_post_bright j_l_post clearfix "]:not([class="l_post l_post_bright j_l_post clearfix  "])
+```
