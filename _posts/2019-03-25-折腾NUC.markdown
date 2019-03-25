@@ -5,7 +5,9 @@ date:   2019-03-25 00:25:17 +0800
 categories: tech
 ---
 
-# 前言
+# 0x00 前言
+
+### 背景
 
 从过年回来到现在，一直在寻找路由器的替代品，一台设备集成路由、防火墙和基础的私有云。因为现在还不稳定的原因，不能组一台高性能网关（没地方放），而且这种设备基本上是通宵开机，不能影响休息，所以噪音不能太大，所以带机械硬盘和大风扇的就不用考虑了。
 
@@ -25,7 +27,7 @@ categories: tech
 回过头来看，才发现NUC真的不错：小巧、core i系列处理器、pcie m.2、7mm sata、自带无线网卡......近乎完美，然而，它只有一个网口。虽然也能配置成单臂路由，但是也需要额外的设备（交换机支持VLAN）。最后，只能折中一下，在usb口上插一张胡会长同款有线网卡。
 
 
-# 开工
+### 方案
 
 最初本想在BSD上面搭建，但是折腾一段时间后弃疗了，Linux真香！
 
@@ -41,6 +43,39 @@ categories: tech
 1. 远程下载：transmission-daemon
 1. 代理：v2ray+shadowsocks-libev
 1. 透明代理：iptables tproxy（待续）
+
+# 0x01 开工
+
+### 系统
+
+这里选择ubuntu桌面版的唯一原因是：省事。
+
+系统安装没什么说的，pcie硬盘装系统，sata装数据。
+
+### 网络配置
+
+三张网卡：eth0、eth1和wlan0。第一个是板载网卡，第二个是usb网卡，第三个是无线。
+
+使用systemd-networkd配置网络。eth0作为wan口，只需要配置一个能上网的IP就行，这里配置为192.168.1.233/24。建一个网桥lan-br0，作为lan的虚拟交换机，然后将 eth1桥接到lan-br0上。wlan0暂时不用管，后面由hostapd统一管理。在lan-br0上配置好IP，作为内网网关，这里暂用192.168.133.1/24。在配置文件中打开IPForward以支持包转发。
+
+iptables里面配置NAT，将192.168.133.0/24过来的数据包做MASQUERADE。iptables使用白名单配置，INPUT和FORWARD链默认禁用，根据使用state模块跟踪内网链接状态。允许来自内网的访问，允许外部icmp、https等服务协议访问。
+
+filter表配置如下：
+
+
+![iptable](https://s2.ax1x.com/2019/03/25/ANpzLT.png)
+
+使用dnsmasq作为DNS缓存和DHCP服务，将本机的域名写入host来避免内网NAT相关的问题（或者通过NAT loopback解决）。dnsmasq服务开机自启时会因lan-br0未就绪而启动失败，所以考虑在systemd服务配置文件中增加`Restart=on-failure`和`RestartSec=3`，用于在失败后自动重启，后面的ss和v2ray同理。
+
+最后在ddclient中配置好动态域名，在光猫上做好转发，基础网络配置就差不多了。
+
+### AP
+
+这台NUC集成了intel的8260ac无线网卡，本以为能用来作为5g 802.11ac热点，然而试了下发现不行（折腾了下国家代码啥的，似乎也没什么用）：
+
+![8260ac](https://s2.ax1x.com/2019/03/26/ANVKJS.png)
+
+翻了下intel的官方坛子，得到的结果是5g频段只支持作为客户端连接到AP......考虑到在家对无线网的需求不高，将就用2.4g了。hostapd配置就不贴了，需要注意的是，如果要用systemd来管理，需要在/etc/default/hostapd中，把配置文件路径赋值给`DAEMON_CONF`变量，然后unmask掉对应的hostapd服务。
 
 
 # 未完待续
