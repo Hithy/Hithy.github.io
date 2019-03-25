@@ -58,9 +58,7 @@ categories: tech
 
 使用systemd-networkd配置网络。eth0作为wan口，只需要配置一个能上网的IP就行，这里配置为192.168.1.233/24。建一个网桥lan-br0，作为lan的虚拟交换机，然后将 eth1桥接到lan-br0上。wlan0暂时不用管，后面由hostapd统一管理。在lan-br0上配置好IP，作为内网网关，这里暂用192.168.133.1/24。在配置文件中打开IPForward以支持包转发。
 
-iptables里面配置NAT，将192.168.133.0/24过来的数据包做MASQUERADE。iptables使用白名单配置，INPUT和FORWARD链默认禁用，根据使用state模块跟踪内网链接状态。允许来自内网的访问，允许外部icmp、https等服务协议访问。
-
-filter表配置如下：
+iptables里面配置NAT，将192.168.133.0/24过来的数据包做MASQUERADE。iptables使用白名单配置，INPUT和FORWARD链默认禁用，允许来自内网的访问，允许外部icmp、https等服务协议访问：
 
 
 ![iptable](https://s2.ax1x.com/2019/03/25/ANpzLT.png)
@@ -75,7 +73,7 @@ filter表配置如下：
 
 ![8260ac](https://s2.ax1x.com/2019/03/26/ANVKJS.png)
 
-翻了下intel的官方坛子，得到的结果是5g频段只支持作为客户端连接到AP......考虑到在家对无线网的需求不高，将就用2.4g了。hostapd配置就不贴了，需要注意的是，如果要用systemd来管理，需要在/etc/default/hostapd中，把配置文件路径赋值给`DAEMON_CONF`变量，然后unmask掉对应的hostapd服务。
+翻了下intel的官方坛子，得到的结果是5g频段只支持作为客户端连接到AP......考虑到在家对无线网的需求不高，将就用2.4g了。hostapd配置就不贴了，需要注意的是，如果要用systemd来管理，需要在`/etc/default/hostapd`中，把配置文件路径赋值给`DAEMON_CONF`变量，然后unmask掉对应的hostapd服务。
 
 
 # 未完待续
