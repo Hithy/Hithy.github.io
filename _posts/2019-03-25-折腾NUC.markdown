@@ -71,8 +71,55 @@ iptables里面配置NAT，将192.168.133.0/24过来的数据包做MASQUERADE。i
 
 翻了下intel的官方坛子，得到的结果是5g频段只支持作为客户端连接到AP......考虑到在家对无线网的需求不高，将就用2.4g了。hostapd配置就不贴了，需要注意的是，如果要用systemd来管理，需要在`/etc/default/hostapd`中，把配置文件路径赋值给`DAEMON_CONF`变量，然后unmask掉对应的hostapd服务。
 
+# 0x02 软件部分
 
-# 未完待续
+软件主要基于web，包括nextcloud、emby和transmission，除此之外，还包括ss和v2ray用于科学上网。
+
+web服务器使用apache2，原因是nextcloud官方文档默认用的apache进行配置，省事。对apache2的配置主要包括https和代理。
+
+### https
+
+首先配置https，生成一对服务器秘钥，然后生成包含密钥的CSR(Certificate Signing Request)，向CA申请。有不少免费的可以用，例如[letsencrypt](https://letsencrypt.org/)，不过3个月就得重新申一次，比较麻烦。
+
+这里也可以自签名，但相对来说，考虑到安全性，自签名证书得提前手动导入客户端，使用起来还是比较麻烦。拿到CA的证书后，apache配置如下：
+
+![apache config](https://i.loli.net/2019/03/26/5c99b26aded9e.png)
+
+
+### nextcloud & emby & transmission
+
+nextcloud跟icloud很像，除了网盘功能，还带照片自动上传、联系人备份功能。按照官方文档配就行，数据目录设置为sata盘的时候需要注意权限的管理。
+
+emby对我来说貌似没太大的需要，用官方docker镜像就行了。
+
+transmission用apt get官方仓库的transmission-daemon。
+
+![nextcloud](https://i.loli.net/2019/03/26/5c99b475a4023.png)
+
+### http代理
+
+transmission和emby提供了独立的web服务，也就是说他们在主机开了独立的服务端口，这里考虑使用apache代理提供外部访问服务，一方面继承了https，另一方面可以使用apache的授权模块，授权信息通过htpasswd配置：
+
+![apache_proxy](https://i.loli.net/2019/03/26/5c99b7a076e05.png)
+
+![transmission](https://i.loli.net/2019/03/26/5c99b5e0298d3.png)
+
+### 科学上网
+
+本打算折腾透明代理，但做的时候发现维护起来并不算舒服（也有可能没找到正确的姿势），这里就仅仅在NUC的内网段开了两个端口，作为ss和v2ray的服务，客户端配合浏览器插件使用。
+
+安装似乎没什么折腾的，v2ray用官方脚本，ss用apt get安装shadowsocks-libev。
+
+ss安装后包含了server、local、tunnel和redir几个服务，我们这里只需要用到local，在`/etc/shadowsocks-libev`中添加一个配置文件（暂定local.json），执行`systemctl status shadowsocks-libev-local@local`，命令中最后一个local对应配置文件名字。
+
+# 0x03 收工
+
+虽然踩坑很多，但写起来似乎也就这样了，有需要再补充吧。
+
+![netdata](https://i.loli.net/2019/03/26/5c99bb6837aa0.png)
+
+
+
 
 
 
