@@ -3,15 +3,26 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>http://home.ya0db9.com/posts/first-hugo-post/</loc>
+    <lastmod>2020-01-09T20:16:41+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://home.ya0db9.com/posts/</loc>
+    <lastmod>2020-01-09T20:16:41+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://home.ya0db9.com/</loc>
+    <lastmod>2020-01-09T20:16:41+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>http://home.ya0db9.com/categories/</loc>
   </url>
   
   <url>
     <loc>http://home.ya0db9.com/tags/</loc>
-  </url>
-  
-  <url>
-    <loc>http://home.ya0db9.com/</loc>
   </url>
   
 </urlset>
