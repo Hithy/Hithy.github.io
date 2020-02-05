@@ -6,10 +6,19 @@
     <description>Recent content in Posts on ya0db9&#39;s Site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 09 Jan 2020 20:16:41 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 03 Feb 2020 16:10:46 +0800</lastBuildDate>
     
 	<atom:link href="http://home.ya0db9.com/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Effective C&#43;&#43;笔记</title>
+      <link>http://home.ya0db9.com/post/effective-cxx/</link>
+      <pubDate>Mon, 03 Feb 2020 16:10:46 +0800</pubDate>
+      
+      <guid>http://home.ya0db9.com/post/effective-cxx/</guid>
+      <description>effecitve c++ 笔记  Ch-1  Item 1: view C++ as a federation of languages   c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库  这四个部分可以看做四种子语言，相对独立 Item 2: Prefer consts, enums, and inlines to #defines     使用const变量替换掉#define，后者只是做简单替换，对编译器透明，可能会导致生成重复对象代码(obj文件?)    相对于双重const的指针的char*字符串，更推荐使用const限定的string对象    类成员常量(部分如int, char, bool等内置类型)如果不被取址，可以只声明，不定义 class GamePlayer { private: static const int NumTurns = 5; // constant declaration  int scores[NumTurns]; // use of constant  };    如果需要取址，需要在实现文件中定义: const int GamePlayer::NumTruns;    除此之外，可以使用枚举变量替换常量，以兼容一些老的编译器，以支持用作数组声明: class GamePlayer { private: enum { NumTurns = 5 }; // &amp;#34;the enum hack&amp;#34; — makes  // NumTurns a symbolic name for 5  int scores[NumTurns]; // fine  };      使用内联模板函数替代#define实现的宏函数，以降低复杂度   Item 3: Use const whenever possible     指针*之前的cosnt限定指向的数据，*之后的const限定指针变量本身    迭代器的const等价于T* const，而const_iterator等价于const* T const std::vector&amp;lt;int&amp;gt;::iterator iter = vec.</description>
+    </item>
     
     <item>
       <title>Hugo &amp; org mode</title>

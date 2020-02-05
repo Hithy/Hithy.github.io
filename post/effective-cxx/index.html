@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Effective C&#43;&#43;笔记 - ya0db9&#39;s Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <link rel="canonical" href="http://home.ya0db9.com/post/effective-cxx/">
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <link rel="stylesheet" type="text/css" href="http://home.ya0db9.com//css/combined-min.css">
+  <link rel="stylesheet" type="text/css" href="http://home.ya0db9.com//tipuesearch/tipuesearch.css">
+
+</head>
+<body class="">
+
+<div class="site-wrap">
+  <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://home.ya0db9.com/" class="site-title">ya0db9&#39;s Site</a>
+      <nav class="site-nav right">
+      <a href="http://home.ya0db9.com//about/">About</a>
+<a href="http://home.ya0db9.com//tags/">Tags</a>
+<a href="http://home.ya0db9.com//contact/">Contact</a>
+<form class="navbar-search" action="http://home.ya0db9.com//search/index.html"
+    onsubmit="return validateForm(this.elements['q'].value);">
+    <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input">
+
+</form>
+
+      </nav>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</header>
+
+  <div class="post p2 p-responsive wrap" role="main">
+    <div class="measure">
+      <div class="post-header mb2">
+        <h1 class="py2">Effective C&#43;&#43;笔记</h1>
+        <span class="post-meta">Feb 3, 2020 </span><br>
+        
+      </div>
+
+      <article class="post-content">
+      
+<blockquote>
+<p>
+effecitve c++ 笔记
+</p>
+</blockquote>
+<h2 id="headline-1">
+Ch-1
+</h2>
+<h3 id="headline-2">
+Item 1: view C++ as a federation of languages
+</h3>
+<p>
+c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库
+</p>
+<p>
+   这四个部分可以看做四种子语言，相对独立
+</p>
+<h3 id="headline-3">
+Item 2: Prefer consts, enums, and inlines to #defines
+</h3>
+<ul>
+<li>
+<p>
+使用const变量替换掉#define，后者只是做简单替换，对编译器透明，可能会导致生成重复对象代码(obj文件?)
+</p>
+</li>
+<li>
+<p>
+相对于双重const的指针的char*字符串，更推荐使用const限定的string对象
+</p>
+</li>
+<li>
+<p>
+类成员常量(部分如int, char, bool等内置类型)如果不被取址，可以只声明，不定义
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GamePlayer</span> {
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> NumTurns <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span>; <span style="color:#75715e">// constant declaration
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">int</span> scores[NumTurns]; <span style="color:#75715e">// use of constant
+</span><span style="color:#75715e"></span>  };
+</code></pre></div>
+</div>
+<p>
+如果需要取址，需要在实现文件中定义:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> GamePlayer<span style="color:#f92672">:</span><span style="color:#f92672">:</span>NumTruns;
+</code></pre></div>
+</div>
+<p>
+除此之外，可以使用枚举变量替换常量，以兼容一些老的编译器，以支持用作数组声明:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GamePlayer</span> {
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">enum</span> { NumTurns <span style="color:#f92672">=</span> <span style="color:#ae81ff">5</span> }; <span style="color:#75715e">// &#34;the enum hack&#34; — makes
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// NumTurns a symbolic name for 5
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">int</span> scores[NumTurns]; <span style="color:#75715e">// fine
+</span><span style="color:#75715e"></span>  };
+</code></pre></div>
+</div>
+</li>
+<li>
+<p>
+使用内联模板函数替代#define实现的宏函数，以降低复杂度
+</p>
+</li>
+</ul>
+<h3 id="headline-4">
+Item 3: Use const whenever possible
+</h3>
+<ul>
+<li>
+<p>
+指针*之前的cosnt限定指向的数据，*之后的const限定指针变量本身
+</p>
+</li>
+<li>
+<p>
+迭代器的const等价于T* const，而const_iterator等价于const* T
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>iterator iter <span style="color:#f92672">=</span> vec.begin();
+  <span style="color:#f92672">*</span>iter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// OK, changes what iter points to
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">+</span><span style="color:#f92672">+</span>iter; <span style="color:#75715e">// error! iter is const
+</span><span style="color:#75715e"></span>
+  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator cIter <span style="color:#f92672">=</span> vec.begin();
+  <span style="color:#f92672">*</span>cIter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// error! *cIter is const
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">+</span><span style="color:#f92672">+</span>cIter; <span style="color:#75715e">// fine, changes cIter
+</span></code></pre></div>
+</div>
+</li>
+</ul>
+<h4 id="headline-5">
+const 成员函数
+</h4>
+<ul>
+<li>
+<p>
+bitwise constness(physical constness)含义是成员函数不应该修改对象的数据成员
+</p>
+</li>
+<li>
+<p>
+logical constness在不违背逻辑的情况下，可以修改部分数据成员(使用mutable修饰)
+</p>
+<p>
+这两种constness是我们理解层面的概念，c++的const修饰符保证了大部分情况bitwise；如果要实现logical constness，需要使用mutable修饰符，让对应变量可以在const函数中被修改
+</p>
+<p>
+在一些不好的实现中，使用const修饰符还是不能保证bitwise:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CTextBlock</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#66d9ef">const</span> 
+      {
+          <span style="color:#75715e">// inappropriate (but bitwise const) 
+</span><span style="color:#75715e"></span>          <span style="color:#75715e">// declaration of operator[]
+</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">return</span> pText[position];
+      }
+
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pText;
+  };
+
+  <span style="color:#66d9ef">const</span> CTextBlock <span style="color:#a6e22e">cctb</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>cctb[<span style="color:#ae81ff">0</span>];
+  <span style="color:#f92672">*</span>pc <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">J</span><span style="color:#e6db74">&#39;</span>;
+</code></pre></div>
+</div>
+</li>
+</ul>
+<h4 id="headline-6">
+避免在const和非const成员函数中的代码重复
+</h4>
+<p>
+很多时候我们需要分别实现const和non-const版本的成员函数，这里面可能包含很多重复代码(比如debug相关代码、日志代码、数据完整性验证)
+</p>
+<p>
+    通常情况下我们可以在non-const函数中调用const函数，反过来不行:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextBlock</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+
+  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#66d9ef">const</span> <span style="color:#75715e">// same as before
+</span><span style="color:#75715e"></span>  {
+      <span style="color:#66d9ef">return</span> text[position];
+  }
+  <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#75715e">// now just calls const op[]
+</span><span style="color:#75715e"></span>  {
+      <span style="color:#66d9ef">return</span> 
+          <span style="color:#66d9ef">const_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&gt;</span>( 
+                            <span style="color:#75715e">// cast away const on
+</span><span style="color:#75715e"></span>                            <span style="color:#75715e">// op[]&#39;s return type;
+</span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> TextBlock<span style="color:#f92672">&amp;</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>)[position]
+                            <span style="color:#75715e">// add const to *this&#39;s type;
+</span><span style="color:#75715e"></span>                            <span style="color:#75715e">// call const version of op[]
+</span><span style="color:#75715e"></span>                             );
+  }
+</code></pre></div>
+</div>
+<h3 id="headline-7">
+Item 4: Make sure that objects are initialized before they&#39;re used
+</h3>
+<ul>
+<li>
+<p>
+为简单处理，所有的变量都需要初始化，优先使用构造函数列表来初始化成员函数(老的编译器需要程序员保证顺序)
+</p>
+</li>
+<li>
+<p>
+函数内的static变量可以当做单例使用
+</p>
+</li>
+</ul>
+<h2 id="headline-8">
+Ch-2
+</h2>
+<h3 id="headline-9">
+Item 5: Know what functions C++ silentlywrites and calls
+</h3>
+<p>
+如果没有声明，编译器会隐式生成构造、拷贝构造和析构函数。但如果遇到一些意外情况，编译器会报错：
+</p>
+<ul>
+<li>
+<p>
+成员变量是引用或者带有const修饰，不会生成拷贝构造函数
+</p>
+</li>
+<li>
+<p>
+基类拷贝构造函数被声明为private
+</p>
+</li>
+<li>
+<p>
+等等
+</p>
+</li>
+</ul>
+<h3 id="headline-10">
+Item 6: Explicitly disallow the use of compiler-generated functions you do not want
+</h3>
+<p>
+   如果不希望编译器自动生成部分函数，可以在private下面声明他们，然后不实现
+</p>
+<p>
+   特别的，如果一个类不希望被拷贝，可以考虑私有继承 <em>Uncopyable</em> 类:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Uncopyable</span> {
+  <span style="color:#66d9ef">protected</span><span style="color:#f92672">:</span> <span style="color:#75715e">// allow construction
+</span><span style="color:#75715e"></span>      Uncopyable() {} <span style="color:#75715e">// and destruction of
+</span><span style="color:#75715e"></span>      <span style="color:#f92672">~</span>Uncopyable() {} <span style="color:#75715e">// derived objects...
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      Uncopyable(<span style="color:#66d9ef">const</span> Uncopyable<span style="color:#f92672">&amp;</span>); <span style="color:#75715e">// ...but prevent copying
+</span><span style="color:#75715e"></span>      Uncopyable<span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span><span style="color:#f92672">=</span>(<span style="color:#66d9ef">const</span> Uncopyable<span style="color:#f92672">&amp;</span>);
+  };
+</code></pre></div>
+</div>
+<h3 id="headline-11">
+Item 7: Declare destructors virtual in polymorphic base classes
+</h3>
+<ul>
+<li>
+<p>
+需要用作多态的类型的类需要虚析构函数
+</p>
+</li>
+<li>
+<p>
+不用于派生的类不建议使用虚析构函数，一方面增加了一个虚表的开销，另一方面数据结构和c等外部语言不兼容
+</p>
+</li>
+</ul>
+<h3 id="headline-12">
+Item 8: Prevent exceptions from leaving destructors
+</h3>
+<ul>
+<li>
+<p>
+析构函数不应该异常，如果发生了，要么终止程序，要么吞掉所以异常
+</p>
+</li>
+<li>
+<p>
+某些可能抛异常的清理操作尽量放在独立的函数(类似于close或者destroy这样的)，由外部调用并处理异常
+</p>
+</li>
+</ul>
+<h3 id="headline-13">
+Item 9: Never call virtual functions during construction or destruction
+</h3>
+<p>
+对象构造和析构的时候调用虚函数会存在无定义行为，通常这种需求可以转换为在构造时传递参数或者使用对应类的静态构建函数
+</p>
+<h3 id="headline-14">
+Item 10: Have assignment operators return a reference to *this
+</h3>
+<p>
+赋值操作符最好返回*this(所有内置类型都遵守这个惯例)，连等的操作就是通过这样实现的
+</p>
+<h3 id="headline-15">
+Item 11: Handle assignment to self in operator=
+</h3>
+<p>
+赋值操作符需要考虑到自我赋值的情况，一般来说构建一个临时变量，然后swap
+</p>
+<p>
+   也可以做分支判断，如果是自己就直接返回。但一般这种操作是低频的，而且会带来取址、缓存命中和管线的开销。
+</p>
+<h3 id="headline-16">
+Item 12: Copy all parts of an object
+</h3>
+<p>
+拷贝函数包括构造拷贝函数和赋值操作符，如果要自己实现拷贝函数，需要覆盖掉所有可能的情况(特别是在后面增加成员的时候)，编译器是不会报错的
+</p>
+<p>
+   两个拷贝函数无法相互调用，要实现代码复用，只能在增加一个private的公共代码函数
+</p>
+<h2 id="headline-17">
+Ch-3 Resource Management
+</h2>
+<p>
+资源就是一种一旦你使用了，就需要返回(给系统)的东西。如果不还，就会出问题
+</p>
+<h3 id="headline-18">
+Item 13: Use objects to manage resources.
+</h3>
+<p>
+   通常从API申请到资源之后，返回的是指针(或者句柄)，例如：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>()
+  {
+      Investment <span style="color:#f92672">*</span>pInv <span style="color:#f92672">=</span> createInvestment(); <span style="color:#75715e">// call factory function
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// use pInv
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">delete</span> pInv; <span style="color:#75715e">// release object
+</span><span style="color:#75715e"></span>  }
+</code></pre></div>
+</div>
+<p>
+   函数f中第一行申请了pInv，最后一行释放了pInv。在中间的使用过程中，如果出现了异常，最后一行可能执行不到，一个比较好的办法就是把pInv放到局部对象来管理，在栈清理时候自动调用对象析构释放资源，auto_ptr就是这个作用：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>()
+  {
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv(createInvestment()); <span style="color:#75715e">// call factory
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// function
+</span><span style="color:#75715e"></span>      ... <span style="color:#75715e">// use pInv as
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// before
+</span><span style="color:#75715e"></span>  }
+</code></pre></div>
+</div>
+<p>
+   由于auto_ptr在拷贝时候的语义很奇怪，后面被废弃了，而是使用unique_ptr替代，unique_ptr不允许拷贝，只允许使用std::move显式转移，并且支持deleter和数组
+</p>
+<p>
+   这种资源管理方式经常叫做RAII(<em>Resource Acquisition Is Initialization</em>)
+</p>
+<p>
+   unique_ptr独占一个资源，如果要共享，可以使用shared_ptr。shared_ptr使用引用计数来维护声明周期，在引用计数降为0时，调用deleter
+</p>
+<p>
+   引用计数会带来循环引用的问题，所以可以考虑使用弱引用(weak_ptr)来解决，weak_ptr在使用时必须先转为shared_ptr
+</p>
+<h3 id="headline-19">
+Item 14: Think carefully about copying behavior in resource-managing classes.
+</h3>
+<p>
+一般来说涉及资源管理拷贝的情况分为四种：
+</p>
+<ul>
+<li>
+<p>
+禁止拷贝
+比如说锁，拿到一把锁之后，极少可能性会把锁的资源管理类进行复制：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+  <span style="color:#66d9ef">explicit</span> Lock(Mutex <span style="color:#f92672">*</span>pm)
+  <span style="color:#f92672">:</span> mutexPtr(pm)
+      { lock(mutexPtr); } <span style="color:#75715e">// acquire resource
+</span><span style="color:#75715e"></span>      <span style="color:#f92672">~</span>Lock() { unlock(mutexPtr); } <span style="color:#75715e">// release resource
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      Mutex <span style="color:#f92672">*</span>mutexPtr;
+  };
+</code></pre></div>
+</div>
+</li>
+<li>
+<p>
+对下层资源计算引用计数
+当拷贝资源管理类时，增加一个引用计数，类似于shared_ptr。当引用计数降为0时，调用deleter做清理操作
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">explicit</span> Lock(Mutex <span style="color:#f92672">*</span>pm) <span style="color:#75715e">// init shared_ptr with the Mutex
+</span><span style="color:#75715e"></span>          <span style="color:#f92672">:</span> mutexPtr(pm, unlock) <span style="color:#75715e">// to point to and the unlock func
+</span><span style="color:#75715e"></span>      { <span style="color:#75715e">// as the deleter
+</span><span style="color:#75715e"></span>          lock(mutexPtr.get()); <span style="color:#75715e">// see Item 15 for info on &#34;get&#34;
+</span><span style="color:#75715e"></span>      }
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Mutex<span style="color:#f92672">&gt;</span> mutexPtr; <span style="color:#75715e">// use shared_ptr
+</span><span style="color:#75715e"></span>  }; <span style="color:#75715e">// instead of raw pointer
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>
+拷贝下层资源
+如果希望复制多份资源时候，就需要拷贝下层资源，各个资源管理类需要自行清理掉自己管理的资源副本，简称“深拷贝”，std::string就是这样做的
+</p>
+</li>
+<li>
+<p>
+转移下层资源的拥有权
+类似于auto_ptr或者unique_ptr这样的独占管理类
+</p>
+</li>
+</ul>
+<h3 id="headline-20">
+Item 15: Provide access to raw resources in resource-managing classes.
+</h3>
+<p>
+资源管理类都会提供API访问下层资源，c++支持显式或者隐式，前者安全，后者方便：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Font</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">operator</span> FontHandle() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> f; } <span style="color:#75715e">// implicit conversion function
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      FontHandle f; <span style="color:#75715e">// the raw font resource 
+</span><span style="color:#75715e"></span>  };
+
+  Font <span style="color:#a6e22e">f1</span>(getFont());
+
+  FontHandle f2 <span style="color:#f92672">=</span> f1; <span style="color:#75715e">// oops! meant to copy a Font
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// object, but instead implicitly
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// converted f1 into its underlying
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// FontHandle, then copied that
+</span></code></pre></div>
+</div>
+<p>
+   f1被清理的时候，会释放掉底层资源，也就是f2会变成野指针
+</p>
+<h3 id="headline-21">
+Item 16: Use the same form in corresponding uses of new and delete.
+</h3>
+<p>
+new/delete和new []/delete []成对使用
+</p>
+<h3 id="headline-22">
+Item 17: Store newed objects in smart pointers in standalone statements.
+</h3>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  processWidget(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Widget), priority());
+</code></pre></div>
+</div>
+<p>
+   以上代码可能会出现内存泄露的风险：
+</p>
+<ol>
+<li>
+<p>
+执行new Widget
+</p>
+</li>
+<li>
+<p>
+调用priority()
+</p>
+</li>
+<li>
+<p>
+调用std::shared_ptr
+</p>
+</li>
+</ol>
+<p>
+如果在第二步出现异常，会导致第一步申请的资源得不到释放。其原因还是在于c++没有定义代码执行的顺序，保险的方案是把资源申请独立出来：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw(<span style="color:#66d9ef">new</span> Widget); <span style="color:#75715e">// store newed object
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// in a smart pointer in a
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// standalone statement
+</span><span style="color:#75715e"></span>  processWidget(pw, priority()); <span style="color:#75715e">// this call won&#39;t leak
+</span></code></pre></div>
+</div>
+<h2 id="headline-23">
+Ch-4 Designs and Declarations
+</h2>
+<p>
+  本章主要讲述c++类型设计和声明
+</p>
+<h3 id="headline-24">
+Item 18: Make interfaces easy to use correctly and hard to use incorrectly
+</h3>
+<ul>
+<li>
+<p>
+接口使用专用类型，而不是简单的int等内置类型
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      Date(<span style="color:#66d9ef">int</span> month, <span style="color:#66d9ef">int</span> day, <span style="color:#66d9ef">int</span> year);
+      ...
+  };
+</code></pre></div>
+</div>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      Date(<span style="color:#66d9ef">const</span> Month<span style="color:#f92672">&amp;</span> m, <span style="color:#66d9ef">const</span> Day<span style="color:#f92672">&amp;</span> d, <span style="color:#66d9ef">const</span> Year<span style="color:#f92672">&amp;</span> y);
+      ...
+  };
+  Date <span style="color:#a6e22e">d</span>(<span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1995</span>); <span style="color:#75715e">// error! wrong types
+</span><span style="color:#75715e"></span>  Date <span style="color:#a6e22e">d</span>(Day(<span style="color:#ae81ff">30</span>), Month(<span style="color:#ae81ff">3</span>), Year(<span style="color:#ae81ff">1995</span>)); <span style="color:#75715e">// error! wrong types
+</span><span style="color:#75715e"></span>  Date <span style="color:#a6e22e">d</span>(Month(<span style="color:#ae81ff">3</span>), Day(<span style="color:#ae81ff">30</span>), Year(<span style="color:#ae81ff">1995</span>)); <span style="color:#75715e">// okay, types are correct
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>
+shared_ptr之类的deleter可以避免跨dll时new/delete不一致导致的问题
+</p>
+</li>
+<li>
+<p>
+factory创建对象时候，直接返回智能指针而不是裸指针可以减少用户手动RAII的工作量
+</p>
+</li>
+</ul>
+<h3 id="headline-25">
+Item 19: Treat class design as type design
+</h3>
+<p>
+类的设计相当于类型设计，需要考虑到一下一些因素：
+</p>
+<h4 id="headline-26">
+对象是如何创建和删除
+</h4>
+<p>
+这将影响到构造和析构函数的设计，也影响到内存分配的选择
+</p>
+<h4 id="headline-27">
+如何区分对象的初始化和赋值
+</h4>
+<p>
+这个区别实际上就是构造函数和拷贝函数的区别
+</p>
+<h4 id="headline-28">
+设计的对象按值传递时有什么含义
+</h4>
+<p>
+拷贝构造函数决定了按值传递的实现
+</p>
+<h4 id="headline-29">
+类型对值的合法性作何限定
+</h4>
+<p>
+数据成员的值组合，只有一部分是合法的，这些组合决定了类型需要维护的不变量，而这些不变量决定了怎样做错误检查，并影响异常的实现
+</p>
+<h4 id="headline-30">
+类型是否适合继承图
+</h4>
+<p>
+如果继承于已有的类，这些类会有一些束缚，例如它们的函数是否虚化？如果允许别的类继承自己的类，自身的函数是否要虚化，尤其是析构函数？
+</p>
+<h4 id="headline-31">
+类型能够做哪些类型转换
+</h4>
+<p>
+能否转换？隐式的？显式的？
+</p>
+<h4 id="headline-32">
+类型支持哪些操作符
+</h4>
+<p>
++,-,*,/……
+</p>
+<h4 id="headline-33">
+哪些标准函数需要禁用
+</h4>
+<p>
+声明为private并只做声明不实现
+</p>
+<h4 id="headline-34">
+谁能够访问类型的成员
+</h4>
+<p>
+这将决定public、protected和private的使用
+</p>
+<h4 id="headline-35">
+类型有哪些隐性接口
+</h4>
+<p>
+例如提供了哪些保证(guarantees)，包括对性能、异常安全以及资源使用(锁、动态内存分配)，这些保证将是在实现时候的约束
+</p>
+<h4 id="headline-36">
+通用性怎么样
+</h4>
+<p>
+是否考虑用模板
+</p>
+<h4 id="headline-37">
+真的需要一个新的类型
+</h4>
+<p>
+也许只需要定义成非成员函数或者模板就能实现？
+</p>
+<h3 id="headline-38">
+Item 20: Prefer pass-by-reference-to-const to pass-by-value
+</h3>
+<ul>
+<li>
+<p>
+自定义类型即便很小，也建议传const引用，因为自定义变量很可能随着时间有变化
+</p>
+</li>
+<li>
+<p>
+传引用(指针)一定能够放到寄存器的，而其他类型不一定了(看编译器)
+</p>
+</li>
+<li>
+<p>
+对于内置类型、STL迭代器和函数对象类型，传值更合适
+</p>
+</li>
+</ul>
+<h3 id="headline-39">
+Item 21: Don&#39;t try to return a reference when you must return an object
+</h3>
+<p>
+避免返回栈上对象的引用、函数静态成员以及new出来的对象
+</p>
+<h3 id="headline-40">
+Item 22: Declare data members private
+</h3>
+<ul>
+<li>
+<p>
+unencapsulated means unchangeable
+</p>
+</li>
+<li>
+<p>
+protected成员也是违背封装的，跟public一样
+</p>
+</li>
+</ul>
+<h3 id="headline-41">
+Item 23: Prefer non-member non-friend functions to member functions
+</h3>
+<ul>
+<li>
+<p>
+非友元并且非成员函数不会增加访问私有变量的接口，提高了封装性，注意一定是非友元并且非成员
+</p>
+</li>
+<li>
+<p>
+这种函数一般都属于 <em>convenience functions</em> ，即便没有这些函数，用户可以组合成员函数来实现功能
+</p>
+</li>
+<li>
+<p>
+对c++来说，这样的函数往往可以写到命名空间里面，然后按功能放在不同的头文件里面，提供了强大的可扩展性。很多标准库就是这样组织的，使用成员函数无法实现这种组织方式
+</p>
+</li>
+</ul>
+<h3 id="headline-42">
+Item 24: Declare non-member functions when type conversions should apply to all parameters      
+</h3>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> Rational <span style="color:#66d9ef">operator</span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">const</span> Rational<span style="color:#f92672">&amp;</span> lhs, <span style="color:#75715e">// now a non-member
+</span><span style="color:#75715e"></span>                           <span style="color:#66d9ef">const</span> Rational<span style="color:#f92672">&amp;</span> rhs) <span style="color:#75715e">// function
+</span><span style="color:#75715e"></span>  {
+      <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">Rational</span>(lhs.numerator() <span style="color:#f92672">*</span> rhs.numerator(),
+                      lhs.denominator() <span style="color:#f92672">*</span> rhs.denominator());
+  }
+</code></pre></div>
+</div>
+<p>
+   如果*操作符作为Raitonal的成员函数，第一个参数就定死为this了，无法处理int * Ratinal的情况，除此之外，不必是友元函数。
+</p>
+<h3 id="headline-43">
+Item 25: Consider support for a non-throwing swap
+</h3>
+<p>
+要实现一个自定义swap，三步：
+</p>
+<ol>
+<li>
+<p>
+写一个交换数据用的成员函数
+</p>
+</li>
+<li>
+<p>
+在当前同一个命名空间里面提供一个非成员版的swap函数
+</p>
+</li>
+<li>
+<p>
+如果swap一个类(非类模板)，特化std::swap，让它调用已实现的swap成员函数
+</p>
+</li>
+</ol>
+<p>
+需要注意swap不能抛异常
+</p>
+
+      </article>
+
+      
+
+      
+
+    </div>
+  </div>
+</div>
+    <footer class="footer">
+      <div class="p2 wrap">
+        <div class="measure mt1 center">
+      <nav class="social-icons icons">
+<a class="fa fa-rss rss" href="/index.xml"></a>
+
+</nav>
+
+          <small>
+            Copyright &#169; 2017<br>
+            Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> &amp; <a href="https://github.com/azmelanar/hugo-theme-pixyll" target="_blank">Pixyll</a>
+          </small>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-156425913-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
+
