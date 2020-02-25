@@ -735,7 +735,286 @@ Item 25: Consider support for a non-throwing swap
 </li>
 </ol>
 <p>
-需要注意swap不能抛异常
+需要注意swap不能抛
+</p>
+<h2 id="headline-44">
+ch-5 Implementations
+</h2>
+<h3 id="headline-45">
+Item 26: Postpone variable definitions as long as possible  
+</h3>
+<p>
+一些局部变量放到需要的时候才初始化，避免不必要的构造开销
+</p>
+<p>
+   循环变量的定义位置跟构造函数和赋值操作的性能相关，如果构造的开销小于赋值，则放在里面
+</p>
+<h3 id="headline-46">
+Item 27: Minimize casting
+</h3>
+<p>
+几种cast:
+</p>
+<ol>
+<li>
+<p>
+<em>const_cast</em> 用来去掉const属性，其他cast都不行
+</p>
+</li>
+<li>
+<p>
+<em>dynamic_cast</em> 一般用来将基类安全地转换为派生类，有较大的运行时开销
+</p>
+</li>
+<li>
+<p>
+<em>reinterpret_cast</em> 下层转换，常用来把指针转为int，高级代码尽量不要用
+</p>
+</li>
+<li>
+<p>
+<em>static_cast</em> 用于强制隐式转换
+</p>
+</li>
+</ol>
+<p>
+旧的转换方案也是可以用的，一般用于函数传参。新的cast一方面方便grep查找，另一方面便于编译器优化
+</p>
+<p>
+   cast方案可能会被误用：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span> { <span style="color:#75715e">// base class
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> onResize() { ... } <span style="color:#75715e">// base onResize impl
+</span><span style="color:#75715e"></span>      ...
+  };
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SpecialWindow</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Window
+  {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> onResize() {
+          <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span>Window<span style="color:#f92672">&gt;</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>).onResize(); <span style="color:#75715e">// doesn&#39;t work!
+</span><span style="color:#75715e"></span>          ...
+      }
+      ...
+  };
+</code></pre></div>
+</div>
+<p>
+   这里使用static_cast实际上创建了一个临时对象，复制了一份*this，正确方法应该是：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SpecialWindow</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Window {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> onResize() {
+          Window<span style="color:#f92672">:</span><span style="color:#f92672">:</span>onResize(); <span style="color:#75715e">// call Window::onResize
+</span><span style="color:#75715e"></span>          ... <span style="color:#75715e">// on *this
+</span><span style="color:#75715e"></span>      }
+      ...
+  };
+</code></pre></div>
+</div>
+<p>
+   如果这里用指针，会有无限递归的问题
+</p>
+<p>
+   dynamic_cast可以通过容器或者虚函数来避免，一定不要写出级联的dynamic_cast代码:
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Window<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> VPW;
+  VPW winPtrs;
+
+  <span style="color:#66d9ef">for</span> (VPW<span style="color:#f92672">:</span><span style="color:#f92672">:</span>iterator iter <span style="color:#f92672">=</span> winPtrs.begin(); iter <span style="color:#f92672">!</span><span style="color:#f92672">=</span> winPtrs.end(); <span style="color:#f92672">+</span><span style="color:#f92672">+</span>iter)
+  {
+      <span style="color:#66d9ef">if</span> (SpecialWindow1 <span style="color:#f92672">*</span>psw1 <span style="color:#f92672">=</span> 
+          <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow1<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+      <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (SpecialWindow2 <span style="color:#f92672">*</span>psw2 <span style="color:#f92672">=</span>
+               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow2<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+      <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (SpecialWindow3 <span style="color:#f92672">*</span>psw3 <span style="color:#f92672">=</span>
+               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow3<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+   }
+</code></pre></div>
+</div>
+<ul>
+<li>
+<p>
+尽量避免转换，特别是 <em>dynamic_cast</em>
+</p>
+</li>
+<li>
+<p>
+如果一定要做转换，尽量隐藏到函数中，而不是让客户代码自己做转换
+</p>
+</li>
+<li>
+<p>
+优先使用c++风格的转换，更加明确
+</p>
+</li>
+</ul>
+<h3 id="headline-47">
+Item 28: Avoid returning &#34;handles&#34; to object internals   
+</h3>
+<p>
+不要返回任何对象内部的句柄(引用、指针或者迭代器)，一方面破坏封装，另一方面生命周期不可预期。
+</p>
+<h3 id="headline-48">
+Item29: Strive for exception-safe code.
+</h3>
+<p>
+尽量写异常安全代码，异常安全有三个级别：
+</p>
+<ul>
+<li>
+<p>
+<em><strong>the basic guarantee</strong></em>: 如果发生异常，程序还是一个合法的状态，但是状态不可预期
+</p>
+</li>
+<li>
+<p>
+<em><strong>the strong guarantee</strong></em>: 完全成功或者完全失败，类似于原子操作
+</p>
+</li>
+<li>
+<p>
+<em><strong>the nothrow guarantee</strong></em>: 永不抛异常
+</p>
+</li>
+</ul>
+<p>
+异常安全代码至少要保证以上至少一项，难度依次递增
+</p>
+<p>
+   <em>the strong guarantee</em> 函数通常可以使用 <em>copy-and-swap</em> 的方式来实现
+</p>
+<p>
+   在写异常安全函数中，如果调用了其他函数，一般要求安全等级不低于当前函数，不然很难保证安全。
+</p>
+<p>
+   如果函数调用了很多不同异常安全等级的子函数，该函数的安全等级不会高于最低的子函数
+</p>
+<h3 id="headline-49">
+Item 30: Understand the ins and outs of inlining.
+</h3>
+<p>
+只在真正有需要的地方，对函数进行内联，避免滥用
+</p>
+<p>
+   inline函数一旦发布出去，后期有修改的话，所有调用到该函数的代码都需要重新编译
+</p>
+<h3 id="headline-50">
+Item31: Minimize compilation dependencies between files.
+</h3>
+<p>
+默认c++类对接口和实现的分离做得并不好
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
+             <span style="color:#66d9ef">const</span> Address<span style="color:#f92672">&amp;</span> addr);
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string birthDate() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string address() <span style="color:#66d9ef">const</span>;
+
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string theName; <span style="color:#75715e">// implementation detail
+</span><span style="color:#75715e"></span>      Date theBirthDate; <span style="color:#75715e">// implementation detail
+</span><span style="color:#75715e"></span>      Address theAddress; <span style="color:#75715e">// implementation detail
+</span><span style="color:#75715e"></span>  };
+</code></pre></div>
+</div>
+<p>
+   这几个私有成员往往会要求include自己的头文件，比如 <em>&lt;string&gt;</em>, <em>date.h</em>, <em>address.h</em> 之类的，
+   一旦这些头文件有改动，Person类以及使用Person类的文件都会重编译
+</p>
+<p>
+   当然可以用 <em>forward declaration</em> 的方式来避免include头文件，但是会带来两个问题：
+</p>
+<ol>
+<li>
+<p>
+string是一个typedef，不能预先声明
+</p>
+</li>
+<li>
+<p>
+如果要定义，会涉及分配空间的问题，编译器不能决定该分配多少空间
+</p>
+</li>
+</ol>
+<p>
+解决这个问题的方法就是把Person写成句柄类：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;memory&gt; // for tr1::shared_ptr; see below</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PersonImpl</span>; <span style="color:#75715e">// forward decl of Person impl. class
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span>;       <span style="color:#75715e">// forward decls of classes used in
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Address</span>;    <span style="color:#75715e">// Person interface
+</span><span style="color:#75715e"></span>
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
+             <span style="color:#66d9ef">const</span> Address<span style="color:#f92672">&amp;</span> addr);
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string birthDate() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string address() <span style="color:#66d9ef">const</span>;
+
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>PersonImpl<span style="color:#f92672">&gt;</span> pImpl;
+ 
+  };
+</code></pre></div>
+</div>
+<p>
+   在PersonImpl类里面做真正的实现，接口一一对应。
+</p>
+<p>
+   实现分离的关键在于将对定义的依赖，替换为对声明的依赖。可能的话，尽量让头文件自我依赖；如果做不到，也只依赖于其他文件的声明，而不是定义
+</p>
+<p>
+   遵循以下原则：
+</p>
+<ul>
+<li>
+<p>
+在可以用指针或者引用的情况下，尽量避免直接使用对象
+</p>
+</li>
+<li>
+<p>
+只要可能，依赖类的声明而不是类的定义
+声明一个函数是不需要定义的：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span>;
+
+  Date <span style="color:#a6e22e">today</span>();
+  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">clearAppointmets</span>(Date d);
+</code></pre></div>
+</div>
+<p>
+以上Date未定义，但是依然是合法的，只有在真正需要的地方，再include必要的定义
+</p>
+</li>
+<li>
+<p>
+对定义和声明提供分开的两份头文件，两份文件保持一致
+使用库的客户需要include声明文件，而不是手动 <em>forward declare</em>
+</p>
+</li>
+</ul>
+<p>
+另一种方法，是让Person成为一个抽象基类，也就是接口类。相对于.net或者java，c++的接口类可以支持实现一些非虚函数，以便所有继承类能够使用
+</p>
+<p>
+   客户可以调用静态 <em>factory</em> 函数来构建Person子类，并返回指针。
+</p>
+<p>
+   句柄类和接口类都解决了声明和定义的耦合问题，代价就是多一级访问的开销，这两种方法都不能使用inline(inline会把头文件的代码插入到所有调用的地方)
 </p>
 
       </article>
