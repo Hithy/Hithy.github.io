@@ -1016,6 +1016,174 @@ string是一个typedef，不能预先声明
 <p>
    句柄类和接口类都解决了声明和定义的耦合问题，代价就是多一级访问的开销，这两种方法都不能使用inline(inline会把头文件的代码插入到所有调用的地方)
 </p>
+<h2 id="headline-51">
+Ch-6. Inheritance and Object-Oriented Design
+</h2>
+<h3 id="headline-52">
+Item 32: Make sure public inheritance models &#34;is-a.&#34;
+</h3>
+<p>
+   public继承最关键的一点: <em><strong>is-a</strong></em>
+</p>
+<p>
+   一些生活中的概念并不能直接建模，它们并不满足 <em>is-a</em> 的原则：企鹅不能公有继承鸟(鸟会飞)，正方形不能公有继承长方形(长方形允许调整单边长度)
+</p>
+<p>
+   public继承要求，任何基类的方法，都能够无歧义地应用到派生类
+</p>
+<h3 id="headline-53">
+Item 33: Avoid hiding inherited names
+</h3>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Base</span> {
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">int</span> x;
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> mf1() <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf1</span>(<span style="color:#66d9ef">int</span>);
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf2</span>();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf3</span>();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf3</span>(<span style="color:#66d9ef">double</span>);
+
+  };
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Base {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> mf1();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf3</span>();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf4</span>();
+  };
+</code></pre></div>
+</div>
+<p>
+上面代码中，派生类的mf1和mf3名称会隐藏掉基类的名称，以下代码是编译不过的：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  Derived d;
+
+  d.mf1(<span style="color:#ae81ff">10</span>);
+  d.mf4(<span style="color:#ae81ff">1.0</span>);
+</code></pre></div>
+</div>
+<p>
+   即便不用不合法的调用，如果不继承基类的重载函数，也是违背了public继承的 <em>is-a</em> 原则。解决办法就是在public下面使用using Base::mf1和using Base::mf3将对应的名称暴露出来。
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Base {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf1; <span style="color:#75715e">// make all things in Base named mf1 and mf3
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf3; <span style="color:#75715e">// visible (and public) in Derived&#39;s scope
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf1</span>();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf3</span>();
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf4</span>();
+  };
+</code></pre></div>
+</div>
+<p>
+   但是在私有继承的时候，可能需要暴露一部分基类的名称到public里面，如果用using，会导致所有的基类名称都暴露出去了，这里可以考虑forwarding function
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">private</span> Base {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> mf1() <span style="color:#75715e">// forwarding function; implicitly
+</span><span style="color:#75715e"></span>      { Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf1(); } <span style="color:#75715e">// inline (see Item 30)
+</span><span style="color:#75715e"></span>
+  };
+</code></pre></div>
+</div>
+<p>
+   PS：using是受public和private的限制的
+</p>
+<h3 id="headline-54">
+Item 34: Differentiate between inheritance of interface and inheritance of implementation
+</h3>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Shape</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> draw() <span style="color:#66d9ef">const</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">error</span>(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> msg);
+      <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">objectID</span>() <span style="color:#66d9ef">const</span>;
+  };
+</code></pre></div>
+</div>
+<p>
+   一般来说，继承包含三种，如上面代码：
+</p>
+<ol>
+<li>
+<p>
+继承接口
+</p>
+<p>
+基类的纯虚函数，必须由派生类实现，纯虚函数只用来指定接口。
+</p>
+<p>
+此时基类也可以写一个同名的默认实现(不会被继承，也无法被默认使用)，派生类调用Base::xxx()来使用，这样要求派生类显式调用，可以避免增加一些有变化的派生类时，忘了重写默认函数
+</p>
+</li>
+<li>
+<p>
+继承实现
+</p>
+<p>
+基类的普通虚函数，派生类继承接口和一个默认的实现
+</p>
+</li>
+<li>
+<p>
+非虚函数
+</p>
+<p>
+指定了接口，并且带上一个强制不变的实现
+</p>
+</li>
+</ol>
+<h3 id="headline-55">
+Item 35: Consider alternatives to virtual functions
+</h3>
+<p>
+虚函数有很多替代的方案
+</p>
+<ol>
+<li>
+<p>
+<strong>non-vertual interface idiom</strong> (NVI idiom)    
+</p>
+<p>
+public接口使用非虚函数实现，通过调用真正有功能的虚函数来实现多态，相当于wrapper。
+</p>
+<p>
+可以为private，派生类虽然无法调用这些虚函数(private)，但是可以重载，这里不冲突。重定义一个虚函数决定了 <em>how something is to be done</em> ，而调用一个虚函数，决定了 <em>when it will be done</em> ，分开来看
+</p>
+<p>
+这种方案只是 <em>Template Method</em> 设计模式的一个例子
+</p>
+</li>
+<li>
+<p>
+<strong>function pointer data members</strong>
+</p>
+<p>
+使用函数指针数据成员替代虚函数。在类构造时候，传入函数指针，并用这些函数实现接口功能。缺点在于这些函数只能访问公共接口，而不能直接访问数据成员
+</p>
+</li>
+<li>
+<p>
+<strong>tr1::function data members</strong>
+</p>
+<p>
+相对于函数指针，提供更加灵活的动态实现
+</p>
+</li>
+<li>
+<p>
+<strong>virtual functions in another hierarchy (Strategy Pattern)</strong> 
+</p>
+<p>
+将两个继承体系进行组合
+</p>
+</li>
+</ol>
 
       </article>
 
