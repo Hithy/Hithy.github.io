@@ -34,10 +34,6 @@
       <a href="http://home.ya0db9.com//about/">About</a>
 <a href="http://home.ya0db9.com//tags/">Tags</a>
 <a href="http://home.ya0db9.com//contact/">Contact</a>
-<form class="navbar-search" action="http://home.ya0db9.com//search/index.html"
-    onsubmit="return validateForm(this.elements['q'].value);">
-    <input type="text" class="search-query" placeholder="Search" name="q" id="tipue_search_input">
-
 </form>
 
       </nav>
@@ -1184,6 +1180,64 @@ public接口使用非虚函数实现，通过调用真正有功能的虚函数�
 </p>
 </li>
 </ol>
+<h3 id="headline-56">
+Item 36: Never redefine an inherited non-virtual function
+</h3>
+<p>
+   如题，违反了公有继承的原则
+</p>
+<h3 id="headline-57">
+Item 37: Never redefine a function&#39;s inherited default parameter value
+</h3>
+<p>
+   虚函数是动态绑定，但是默认参数却是静态绑定。在调用虚函数时，会根据当前指针类型决定默认参数。
+</p>
+<p>
+   要保证接口的一致性，所有派生类在重定义的时候，需要指定同样的默认参数，但是这样在改的时候很容易改漏掉部分函数。解决办法是使用NVI，用非虚函数实现接口，指定默认参数，然后在虚函数中实现功能，虚函数不设默认参数
+</p>
+<h3 id="headline-58">
+Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through composition
+</h3>
+<p>
+复合(composition)是类型之间的一种关系，是一种完全不同于公有继承的建模
+</p>
+<p>
+   人、交通工具、视频帧这样的属于应用领域(<em>application domain</em>)，复合意味着&#34;<em><strong>has-a</strong></em>&#34;的关系。
+</p>
+<p>
+   缓冲区、互斥锁、搜索树这样的属于软件的实现领域(<em>implementation domain</em>)，符合意味着 <em>is-implemented-in-terms-of</em> 关系
+</p>
+<p>
+   例如一个Person类，它包含了名字、地址、电话号码等，这既是 <em>has-a</em> 的关系：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      ...
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name; <span style="color:#75715e">// composed object
+</span><span style="color:#75715e"></span>      Address address; <span style="color:#75715e">// ditto
+</span><span style="color:#75715e"></span>      PhoneNumber voiceNumber; <span style="color:#75715e">// ditto
+</span><span style="color:#75715e"></span>      PhoneNumber faxNumber; <span style="color:#75715e">// ditto
+</span><span style="color:#75715e"></span>  };
+</code></pre></div>
+</div>
+<p>
+   又比如用list实现的set模板类，可以说set是根据list实现而出的：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e">// the right way to use list for Set
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Set</span> {
+  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">bool</span> member(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item) <span style="color:#66d9ef">const</span>;
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">insert</span>(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item);
+      <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">remove</span>(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item);
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t size() <span style="color:#66d9ef">const</span>;
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>list<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> rep; <span style="color:#75715e">// representation for Set data
+</span><span style="color:#75715e"></span>  };
+</code></pre></div>
+</div>
 
       </article>
 
