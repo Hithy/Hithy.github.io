@@ -1238,6 +1238,57 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </span><span style="color:#75715e"></span>  };
 </code></pre></div>
 </div>
+<h3 id="headline-59">
+Item 39: Use private inheritance judiciously
+</h3>
+<p>
+   私有继承意味着 <em>is-implemented-in-terms-of</em> ，只有在软件实现中有意义，而在软件设计中并没有。私有继承往往可以使用 <em>item 38</em> 中的composition来取代：
+</p>
+<ul>
+<li>
+<p>
+私有继承允许派生类重写基类的私有函数(即便不能访问)，而composition却是通过私有变量来实现的，派生类无法重载
+</p>
+</li>
+<li>
+<p>
+私有继承可能会include必要的实现头文件，会导致增加编译时间，composition却可以只声明，并在实现中使用
+</p>
+</li>
+</ul>
+<p>
+私有继承唯一值得使用的情况是，继承一个没有数据成员(包括虚函数)的基类，可以省掉一个最小内存空间，而这是composition做不到的：
+</p>
+<div class="src src-c++">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Empty</span> {}; <span style="color:#75715e">// has no data, so objects should
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// use no memory
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HoldsAnInt</span> { <span style="color:#75715e">// should need only space for an int
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">int</span> x;
+      Empty e; <span style="color:#75715e">// should require no memory
+</span><span style="color:#75715e"></span>  };
+
+  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HoldsAnInt</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">private</span> Empty {
+  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+      <span style="color:#66d9ef">int</span> x;
+  };
+</code></pre></div>
+</div>
+<p>
+   第一种方式使用composition，sizeof(HoldsAnInt) &gt; sizeof(int)； 而第二种使用私有继承，借助于 <em>empty base optimization</em> (EBO)优化策略 ，sizeof(HoldsAnInt) = sizeof(int)
+</p>
+<h3 id="headline-60">
+Item 40: Use multiple inheritance judiciously   
+</h3>
+<p>
+   多重继承可能存在命名冲突，这时候需要带上对应类型的名字，例如mp.BorrowableItem::checkOut();
+</p>
+<p>
+   出现菱形继承的时候，通常使用虚基类来避免基类重复，但是会带来开销，所以尽量不要用虚基类，平常使用非虚继承就好了。如果一定要用到虚基类，尽量避免在其中放入数据，这样就不会遇到初始化、赋值时候诡异的问题了
+</p>
+<p>
+   多重继承最常规的用法：公有继承一个接口类的同时，需要私有继承一个类来辅助实现
+</p>
 
       </article>
 
