@@ -57,7 +57,7 @@
   
   <div class="clearfix"></div>
   <h3 class="h2 post-title">无线网络升级 </h3>
-  <p class="post-summary">0x00 现有问题   现有的网络，是从弱电箱的软路由拉了一根网线到卧室，接交换机到极路由(用于ap)和pc。带来两个问题：    老的极路由只有百兆上联接口，跑不满宽带，而且被魔改过，配ap模式麻烦，导致连上的无线设备跟软路由、pc不在一个网段    因为第一个问题的存在，需要一个千兆交换机，保证pc千兆网，这样会占用两个电源接口。只要有一个接在插排上，就无法实现插排断电时候还有wifi    其实要解决问题也很简单，买个千兆无线路由器就好了(120块钱的k2p+AP模式)  但是从实用的角度看，买个无线路由器就有点浪费了，路由功能用不上。我的需求其实是一个千兆无线交换机，但是市面上似乎很少有这种东西，所以把目光放到了独立的ap上面 0x01 初步方案   初步方案，poe交换机+无线ap    poe解决电源口不够问题    独立的ap，将来有大房子后(不知道啥时候)，也可以用来组ac+ap    poe交换机比较简单，水星的8口也不算贵，京东买就好了  ap的话，最初选择是tp一个两百多块钱的1700Mbps新款。但是在跟胡会长一顿分析之后，还是觉得tp的稳定性不太靠谱，放弃了。看来看去，最后发现了uap ac pro  看上这个主要还是有几点：    用了都说稳    官方支持全平台ac    前面的文章也提到过之前折腾ubnt的erx路由器，总体体验良好    ubnt唯一的问题：价格  解决价格的问题的办法也比较简单：咸鱼  于是上咸鱼买了价格最低的一个uap-ac-pro，结果嘛自然是：翻车  退了之后，选了一个比最低价高了30块钱的，这回没问题了，ap和poe交换机到齐 0x02 软件   ubnt的软件体验挺好的，界面做得很漂亮，全平台支持，这里也没什么好说的，跟着官方说明走就好了，没遇到什么问题，手机、笔记本都顺利连上了。手机上初步测试，局域网下载速度60+MB/s 0x03 测试   uap-ac-pro的5g频率支持最大1300mbps的速率，也就是3根5g天线的速度，于是翻出了箱底的 伪-PCE-AC88 (实际上是tp的WDN8280，但是跟pce-ac88的方案一样，驱动都可以互用)，4根天线。  但是上来就遇到了麻烦：    连不上  8280连其他无线网没有问题，就是连不上ap，而手机和笔记本连ap却没有问题。想着这俩要是不兼容就麻烦了，不过几轮Google下来，发现原来是8280支持的信道问题，把ap的信道改了之后就好了    掺水的1300mbps  信道问题解决之后，适配器的状态直接就是显示1.</p>
+  <p class="post-summary">0x00 现有问题 现有的网络，是从弱电箱的软路由拉了一根网线到卧室，接交换机到极路由(用于ap)和pc。带来两个问题： 老的极路由只有百兆上联接口，跑</p>
   </a>
   
   
@@ -70,7 +70,7 @@
   
   <div class="clearfix"></div>
   <h3 class="h2 post-title">Effective C&#43;&#43;笔记 </h3>
-  <p class="post-summary">effecitve c++ 笔记  Ch-1  Item 1: view C++ as a federation of languages   c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库  这四个部分可以看做四种子语言，相对独立 Item 2: Prefer consts, enums, and inlines to #defines     使用const变量替换掉#define，后者只是做简单替换，对编译器透明，可能会导致生成重复对象代码(obj文件?)    相对于双重const的指针的char*字符串，更推荐使用const限定的string对象    类成员常量(部分如int, char, bool等内置类型)如果不被取址，可以只声明，不定义 class GamePlayer { private: static const int NumTurns = 5; // constant declaration  int scores[NumTurns]; // use of constant  };    如果需要取址，需要在实现文件中定义: const int GamePlayer::NumTruns;    除此之外，可以使用枚举变量替换常量，以兼容一些老的编译器，以支持用作数组声明: class GamePlayer { private: enum { NumTurns = 5 }; // &#34;the enum hack&#34; — makes  // NumTurns a symbolic name for 5  int scores[NumTurns]; // fine  };      使用内联模板函数替代#define实现的宏函数，以降低复杂度   Item 3: Use const whenever possible     指针*之前的cosnt限定指向的数据，*之后的const限定指针变量本身    迭代器的const等价于T* const，而const_iterator等价于const* T const std::vector&lt;int&gt;::iterator iter = vec.</p>
+  <p class="post-summary">effecitve c++ 笔记 Ch-1 Item 1: view C++ as a federation of languages c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:</p>
   </a>
   
   
@@ -96,7 +96,7 @@
   
   <div class="clearfix"></div>
   <h3 class="h2 post-title">透明代理(nuc后续) </h3>
-  <p class="post-summary">0x00 前言   nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。  不过最近找到了一个裸延迟20ms的vps，于是打算开始折腾透明代理。  网络：openvpn+kcptun  路由：iptables+iproute2+xtables(geoip)  DNS: dnsmasq 0x01 基础网络   vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还是很不稳定，所以加了一层kcptun( apt install kcptun 安装) 服务端运行： kcptun-server -t &#34;127.0.0.1:1194&#34; -l &#34;:1234&#34; -mode fast3 -nocomp -sockbuf 16777217 -dscp 46   将udp的1234端口映射到1194(openvpn)  客户端(本地路由器)运行： kcptun-client -r &#34;{vps ip}:1234&#34; -l &#34;127.0.0.1:1024&#34; -mode fast3 -nocomp -autoexpire 900 -sockbuf 16777217 -dscp 46   这样就将本地的1024端口映射到vps的1194端口了  然后就是openvpn的配置，相关细节比较复杂，这里就不展开了，只是说结果。在openvpn连接好之后，在两端都会有一个tap设备(虚拟网卡)，设备的地址在同一个网段之内，可以直接Ping通，这时候可以把vps看做一个直接连到本地路由器(nuc)的网关了。如果我们把本地的默认路由设置为vps(tap端的地址)，并在在vps做了nat，就可以实现全部流量走vps了。 0x02 路由   这里我们需要根据数据包的目的地进行路由，国内的走我们正常的网关(光猫)，国外的走vps。可以用netfilter的一个扩展 Xtables-addons 来实现，装好xtables之后，iptable就多了一项geoip的模块，以识别ip地址位置。然后需要下载geoip数据并构建，以便geoip模块查询，这里不展开了。iptables命令： iptables -t mangle -A OUTPUT -m geoip !</p>
+  <p class="post-summary">0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于</p>
   </a>
   
   
@@ -109,7 +109,7 @@
   
   <div class="clearfix"></div>
   <h3 class="h2 post-title">折腾NUC </h3>
-  <p class="post-summary">0x00 前言   从过年回来到现在，一直在寻找路由器的替代品，一台设备集成路由、防火墙和基础的私有云。因为现在还不稳定的原因，不能组一台高性能网关（没地方放），而且这种设备基本上是通宵开机，不能影响休息，所以噪音不能太大，所以带机械硬盘和大风扇的就不用考虑了。  现在用是本科留下来的极路由2，因为固件不多，只能将就官方的系统，不过换成openwrt源之后，也实现了一些扩展，包括ss和v2ray的非透明代理（通过端口访问）。作为路由器来说，功能已经满足需求了，但是受限与性能和百兆网口，无法实现更加高级的功能。  后来在坛子里面收了台NUC，正好赶上鱼竿厂SSD降价，搭了一个简单的私有云（nextcloud方案），勉强满足了现有的需求。但是NUC最大的遗憾是只有一个独立的网口（不要提那个什么骷髅，穷！）。  前段时间也在淘宝买了台ER-X，折腾了两天，算是解决了百兆网络的瓶颈。因为性能还是捉急，也没有物理的扩展性（非标准POE真的坑），做不了独立的网关。不过基于Debian的EdgeOS真的好用，而且最新版系统中用了systemd管理服务，在软件方面有很大的潜力，于是打算稳定用了。但天有不测风云，用了两天，路由器莫名挂了，reset都没用，变砖了？！只好联系卖家寄了回去。后来想想，这东西相对极路由来说，其实并没有本质的提升，作为网关还需要额外的设备（wifi，透明代理受限于内核不能用）。售后也墨迹，两周没给出实质性的回复，索性退货了。  后来又去看了下各种软路由、硬路由的评测，顺便总结了下需求：    不占地方，ITX以上的就不考虑了    噪音小    性能不能太差    有一定硬件扩展能力    回过头来看，才发现NUC真的不错：小巧、core i系列处理器、pcie m.2、7mm sata、自带无线网卡……近乎完美，然而，它只有一个网口。虽然也能配置成单臂路由，但是也需要额外的设备（交换机支持VLAN）。最后，只能折中一下，在usb口上插一张胡会长同款有线网卡。 方案   最初本想在BSD上面搭建，但是折腾一段时间后弃疗了，Linux真香！    基础系统：ubuntu 18.04 x64 desktop    网络设备管理：systemd-networkd    防火墙：iptables    DNS+DHCP：dnsmasq    AP：hostapd    动态域名：ddclient    web：apache2    私有云：nextcloud    媒体中心：emby    远程下载：transmission-daemon    代理：v2ray+shadowsocks-libev    透明代理：iptables tproxy（待续）   0x01 基础系统   这里选择ubuntu桌面版的唯一原因是：省事。  系统安装没什么说的，pcie硬盘装系统，sata装数据。 网络配置   三张网卡：eth0、eth1和wlan0。第一个是板载网卡，第二个是usb网卡，第三个是无线。  使用systemd-networkd配置网络。eth0作为wan口，只需要配置一个能上网的IP就行，这里配置为192.</p>
+  <p class="post-summary">0x00 前言 从过年回来到现在，一直在寻找路由器的替代品，一台设备集成路由、防火墙和基础的私有云。因为现在还不稳定的原因，不能组一台高性能网关（没地</p>
   </a>
   
   
