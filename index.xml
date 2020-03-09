@@ -2,7 +2,7 @@
   <channel>
       <title>ya0db9&#39;s Site on ya0db9&#39;s Site </title>
       <generator uri="https://gohugo.io">Hugo</generator>
-    <link>http://home.ya0db9.com/</link>
+    <link>https://home.ya0db9.com/</link>
     <language>en-us</language>
     
     
@@ -10,46 +10,46 @@
     
     <item>
       <title>无线网络升级</title>
-      <link>http://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</link>
+      <link>https://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</link>
       <pubDate>Sat, 29 Feb 2020 17:20:34 CST</pubDate>
       
-      <guid>http://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</guid>
+      <guid>https://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</guid>
       <description>0x00 现有问题 现有的网络，是从弱电箱的软路由拉了一根网线到卧室，接交换机到极路由(用于ap)和pc。带来两个问题： 老的极路由只有百兆上联接口，跑</description>
     </item>
     
     <item>
       <title>Effective C&#43;&#43;笔记</title>
-      <link>http://home.ya0db9.com/post/effective-cxx/</link>
+      <link>https://home.ya0db9.com/post/effective-cxx/</link>
       <pubDate>Mon, 03 Feb 2020 16:10:46 CST</pubDate>
       
-      <guid>http://home.ya0db9.com/post/effective-cxx/</guid>
+      <guid>https://home.ya0db9.com/post/effective-cxx/</guid>
       <description>effecitve c++ 笔记 Ch-1 Item 1: view C++ as a federation of languages c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:</description>
     </item>
     
     <item>
       <title>Hugo &amp; org mode</title>
-      <link>http://home.ya0db9.com/post/first-hugo-post/</link>
+      <link>https://home.ya0db9.com/post/first-hugo-post/</link>
       <pubDate>Thu, 09 Jan 2020 20:16:41 CST</pubDate>
       
-      <guid>http://home.ya0db9.com/post/first-hugo-post/</guid>
+      <guid>https://home.ya0db9.com/post/first-hugo-post/</guid>
       <description> Happy hacking, Emacs ♥ you! </description>
     </item>
     
     <item>
       <title>透明代理(nuc后续)</title>
-      <link>http://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</link>
+      <link>https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</link>
       <pubDate>Sat, 19 Oct 2019 21:17:32 CST</pubDate>
       
-      <guid>http://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</guid>
+      <guid>https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</guid>
       <description>0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于</description>
     </item>
     
     <item>
       <title>折腾NUC</title>
-      <link>http://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</link>
+      <link>https://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</link>
       <pubDate>Mon, 25 Mar 2019 00:25:17 CST</pubDate>
       
-      <guid>http://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</guid>
+      <guid>https://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</guid>
       <description>0x00 前言 从过年回来到现在，一直在寻找路由器的替代品，一台设备集成路由、防火墙和基础的私有云。因为现在还不稳定的原因，不能组一台高性能网关（没地</description>
     </item>
     
