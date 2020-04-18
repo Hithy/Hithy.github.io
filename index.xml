@@ -6,7 +6,16 @@
     <language>en-us</language>
     
     
-    <updated>Sat, 29 Feb 2020 17:20:34 CST</updated>
+    <updated>Sat, 18 Apr 2020 18:04:34 CST</updated>
+    
+    <item>
+      <title>透明代理(TPROXY)</title>
+      <link>https://home.ya0db9.com/post/tproxy/</link>
+      <pubDate>Sat, 18 Apr 2020 18:04:34 CST</pubDate>
+      
+      <guid>https://home.ya0db9.com/post/tproxy/</guid>
+      <description>现状 之前实现了基于vpn协议的透明代理，其优势在于与传统的网络设备兼容，原生支持iptables，不过有几个问题却没有得到解决： 信道不稳定，</description>
+    </item>
     
     <item>
       <title>无线网络升级</title>

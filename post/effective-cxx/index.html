@@ -99,7 +99,7 @@ Item 2: Prefer consts, enums, and inlines to #defines
 如果需要取址，需要在实现文件中定义:
 </p>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> GamePlayer<span style="color:#f92672">:</span><span style="color:#f92672">:</span>NumTruns;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> GamePlayer<span style="color:#f92672">::</span>NumTruns;
 </code></pre></div>
 </div>
 <p>
@@ -135,13 +135,13 @@ Item 3: Use const whenever possible
 迭代器的const等价于T* const，而const_iterator等价于const* T
 </p>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>iterator iter <span style="color:#f92672">=</span> vec.begin();
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;::</span>iterator iter <span style="color:#f92672">=</span> vec.begin();
   <span style="color:#f92672">*</span>iter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// OK, changes what iter points to
-</span><span style="color:#75715e"></span>  <span style="color:#f92672">+</span><span style="color:#f92672">+</span>iter; <span style="color:#75715e">// error! iter is const
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">++</span>iter; <span style="color:#75715e">// error! iter is const
 </span><span style="color:#75715e"></span>
-  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;</span><span style="color:#f92672">:</span><span style="color:#f92672">:</span>const_iterator cIter <span style="color:#f92672">=</span> vec.begin();
+  std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;::</span>const_iterator cIter <span style="color:#f92672">=</span> vec.begin();
   <span style="color:#f92672">*</span>cIter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// error! *cIter is const
-</span><span style="color:#75715e"></span>  <span style="color:#f92672">+</span><span style="color:#f92672">+</span>cIter; <span style="color:#75715e">// fine, changes cIter
+</span><span style="color:#75715e"></span>  <span style="color:#f92672">++</span>cIter; <span style="color:#75715e">// fine, changes cIter
 </span></code></pre></div>
 </div>
 </li>
@@ -168,7 +168,7 @@ logical constness在不违背逻辑的情况下，可以修改部分数据成员
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CTextBlock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-      <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#66d9ef">const</span> 
+      <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">::</span>size_t position) <span style="color:#66d9ef">const</span> 
       {
           <span style="color:#75715e">// inappropriate (but bitwise const) 
 </span><span style="color:#75715e"></span>          <span style="color:#75715e">// declaration of operator[]
@@ -179,9 +179,9 @@ logical constness在不违背逻辑的情况下，可以修改部分数据成员
       <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pText;
   };
 
-  <span style="color:#66d9ef">const</span> CTextBlock <span style="color:#a6e22e">cctb</span>(<span style="color:#e6db74"></span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">Hello</span><span style="color:#e6db74">&#34;</span>);
+  <span style="color:#66d9ef">const</span> CTextBlock <span style="color:#a6e22e">cctb</span>(<span style="color:#e6db74">&#34;Hello&#34;</span>);
   <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>pc <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>cctb[<span style="color:#ae81ff">0</span>];
-  <span style="color:#f92672">*</span>pc <span style="color:#f92672">=</span> <span style="color:#e6db74"></span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">J</span><span style="color:#e6db74">&#39;</span>;
+  <span style="color:#f92672">*</span>pc <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;J&#39;</span>;
 </code></pre></div>
 </div>
 </li>
@@ -199,17 +199,17 @@ logical constness在不违背逻辑的情况下，可以修改部分数据成员
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextBlock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
 
-  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#66d9ef">const</span> <span style="color:#75715e">// same as before
+  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">::</span>size_t position) <span style="color:#66d9ef">const</span> <span style="color:#75715e">// same as before
 </span><span style="color:#75715e"></span>  {
       <span style="color:#66d9ef">return</span> text[position];
   }
-  <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t position) <span style="color:#75715e">// now just calls const op[]
+  <span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span> <span style="color:#66d9ef">operator</span>[](std<span style="color:#f92672">::</span>size_t position) <span style="color:#75715e">// now just calls const op[]
 </span><span style="color:#75715e"></span>  {
       <span style="color:#66d9ef">return</span> 
-          <span style="color:#66d9ef">const_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;</span><span style="color:#f92672">&gt;</span>( 
+          <span style="color:#66d9ef">const_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">char</span><span style="color:#f92672">&amp;&gt;</span>( 
                             <span style="color:#75715e">// cast away const on
 </span><span style="color:#75715e"></span>                            <span style="color:#75715e">// op[]&#39;s return type;
-</span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> TextBlock<span style="color:#f92672">&amp;</span><span style="color:#f92672">&gt;</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>)[position]
+</span><span style="color:#75715e"></span>                            <span style="color:#66d9ef">static_cast</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">const</span> TextBlock<span style="color:#f92672">&amp;&gt;</span>(<span style="color:#f92672">*</span><span style="color:#66d9ef">this</span>)[position]
                             <span style="color:#75715e">// add const to *this&#39;s type;
 </span><span style="color:#75715e"></span>                            <span style="color:#75715e">// call const version of op[]
 </span><span style="color:#75715e"></span>                             );
@@ -364,7 +364,7 @@ Item 13: Use objects to manage resources.
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>()
   {
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv(createInvestment()); <span style="color:#75715e">// call factory
+      std<span style="color:#f92672">::</span>auto_ptr<span style="color:#f92672">&lt;</span>Investment<span style="color:#f92672">&gt;</span> pInv(createInvestment()); <span style="color:#75715e">// call factory
 </span><span style="color:#75715e"></span>      <span style="color:#75715e">// function
 </span><span style="color:#75715e"></span>      ... <span style="color:#75715e">// use pInv as
 </span><span style="color:#75715e"></span>      <span style="color:#75715e">// before
@@ -422,7 +422,7 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 </span><span style="color:#75715e"></span>          lock(mutexPtr.get()); <span style="color:#75715e">// see Item 15 for info on &#34;get&#34;
 </span><span style="color:#75715e"></span>      }
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Mutex<span style="color:#f92672">&gt;</span> mutexPtr; <span style="color:#75715e">// use shared_ptr
+      std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Mutex<span style="color:#f92672">&gt;</span> mutexPtr; <span style="color:#75715e">// use shared_ptr
 </span><span style="color:#75715e"></span>  }; <span style="color:#75715e">// instead of raw pointer
 </span></code></pre></div>
 </div>
@@ -475,7 +475,7 @@ new/delete和new []/delete []成对使用
 Item 17: Store newed objects in smart pointers in standalone statements.
 </h3>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  processWidget(std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Widget), priority());
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  processWidget(std<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Widget), priority());
 </code></pre></div>
 </div>
 <p>
@@ -502,7 +502,7 @@ Item 17: Store newed objects in smart pointers in standalone statements.
 如果在第二步出现异常，会导致第一步申请的资源得不到释放。其原因还是在于c++没有定义代码执行的顺序，保险的方案是把资源申请独立出来：
 </p>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw(<span style="color:#66d9ef">new</span> Widget); <span style="color:#75715e">// store newed object
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  std<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw(<span style="color:#66d9ef">new</span> Widget); <span style="color:#75715e">// store newed object
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// in a smart pointer in a
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// standalone statement
 </span><span style="color:#75715e"></span>  processWidget(pw, priority()); <span style="color:#75715e">// this call won&#39;t leak
@@ -804,7 +804,7 @@ Item 27: Minimize casting
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SpecialWindow</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Window {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
       <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> onResize() {
-          Window<span style="color:#f92672">:</span><span style="color:#f92672">:</span>onResize(); <span style="color:#75715e">// call Window::onResize
+          Window<span style="color:#f92672">::</span>onResize(); <span style="color:#75715e">// call Window::onResize
 </span><span style="color:#75715e"></span>          ... <span style="color:#75715e">// on *this
 </span><span style="color:#75715e"></span>      }
       ...
@@ -818,17 +818,17 @@ Item 27: Minimize casting
    dynamic_cast可以通过容器或者虚函数来避免，一定不要写出级联的dynamic_cast代码:
 </p>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>Window<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> VPW;
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Window<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> VPW;
   VPW winPtrs;
 
-  <span style="color:#66d9ef">for</span> (VPW<span style="color:#f92672">:</span><span style="color:#f92672">:</span>iterator iter <span style="color:#f92672">=</span> winPtrs.begin(); iter <span style="color:#f92672">!</span><span style="color:#f92672">=</span> winPtrs.end(); <span style="color:#f92672">+</span><span style="color:#f92672">+</span>iter)
+  <span style="color:#66d9ef">for</span> (VPW<span style="color:#f92672">::</span>iterator iter <span style="color:#f92672">=</span> winPtrs.begin(); iter <span style="color:#f92672">!=</span> winPtrs.end(); <span style="color:#f92672">++</span>iter)
   {
       <span style="color:#66d9ef">if</span> (SpecialWindow1 <span style="color:#f92672">*</span>psw1 <span style="color:#f92672">=</span> 
-          <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow1<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+          <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow1<span style="color:#f92672">*&gt;</span>(iter<span style="color:#f92672">-&gt;</span>get())) { ... }
       <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (SpecialWindow2 <span style="color:#f92672">*</span>psw2 <span style="color:#f92672">=</span>
-               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow2<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow2<span style="color:#f92672">*&gt;</span>(iter<span style="color:#f92672">-&gt;</span>get())) { ... }
       <span style="color:#66d9ef">else</span> <span style="color:#a6e22e">if</span> (SpecialWindow3 <span style="color:#f92672">*</span>psw3 <span style="color:#f92672">=</span>
-               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow3<span style="color:#f92672">*</span><span style="color:#f92672">&gt;</span>(iter<span style="color:#f92672">-</span><span style="color:#f92672">&gt;</span>get())) { ... }
+               <span style="color:#66d9ef">dynamic_cast</span><span style="color:#f92672">&lt;</span>SpecialWindow3<span style="color:#f92672">*&gt;</span>(iter<span style="color:#f92672">-&gt;</span>get())) { ... }
    }
 </code></pre></div>
 </div>
@@ -908,14 +908,14 @@ Item31: Minimize compilation dependencies between files.
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
+      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
              <span style="color:#66d9ef">const</span> Address<span style="color:#f92672">&amp;</span> addr);
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name() <span style="color:#66d9ef">const</span>;
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string birthDate() <span style="color:#66d9ef">const</span>;
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string address() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string name() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string birthDate() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string address() <span style="color:#66d9ef">const</span>;
 
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string theName; <span style="color:#75715e">// implementation detail
+      std<span style="color:#f92672">::</span>string theName; <span style="color:#75715e">// implementation detail
 </span><span style="color:#75715e"></span>      Date theBirthDate; <span style="color:#75715e">// implementation detail
 </span><span style="color:#75715e"></span>      Address theAddress; <span style="color:#75715e">// implementation detail
 </span><span style="color:#75715e"></span>  };
@@ -944,8 +944,8 @@ string是一个typedef，不能预先声明
 解决这个问题的方法就是把Person写成句柄类：
 </p>
 <div class="src src-c++">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">#</span><span style="color:#75715e">include</span> <span style="color:#75715e">&lt;memory&gt; // for tr1::shared_ptr; see below</span><span style="color:#75715e">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;memory&gt; // for tr1::shared_ptr; see below</span><span style="color:#75715e">
 </span><span style="color:#75715e"></span>
   <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PersonImpl</span>; <span style="color:#75715e">// forward decl of Person impl. class
 </span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span>;       <span style="color:#75715e">// forward decls of classes used in
@@ -953,14 +953,14 @@ string是一个typedef，不能预先声明
 </span><span style="color:#75715e"></span>
   <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
+      Person(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> name, <span style="color:#66d9ef">const</span> Date<span style="color:#f92672">&amp;</span> birthday,
              <span style="color:#66d9ef">const</span> Address<span style="color:#f92672">&amp;</span> addr);
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name() <span style="color:#66d9ef">const</span>;
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string birthDate() <span style="color:#66d9ef">const</span>;
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string address() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string name() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string birthDate() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>string address() <span style="color:#66d9ef">const</span>;
 
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>tr1<span style="color:#f92672">:</span><span style="color:#f92672">:</span>shared_ptr<span style="color:#f92672">&lt;</span>PersonImpl<span style="color:#f92672">&gt;</span> pImpl;
+      std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>PersonImpl<span style="color:#f92672">&gt;</span> pImpl;
  
   };
 </code></pre></div>
@@ -1067,8 +1067,8 @@ Item 33: Avoid hiding inherited names
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Base {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
-      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf1; <span style="color:#75715e">// make all things in Base named mf1 and mf3
-</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf3; <span style="color:#75715e">// visible (and public) in Derived&#39;s scope
+      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">::</span>mf1; <span style="color:#75715e">// make all things in Base named mf1 and mf3
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">using</span> Base<span style="color:#f92672">::</span>mf3; <span style="color:#75715e">// visible (and public) in Derived&#39;s scope
 </span><span style="color:#75715e"></span>      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf1</span>();
       <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf3</span>();
       <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">mf4</span>();
@@ -1082,7 +1082,7 @@ Item 33: Avoid hiding inherited names
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">private</span> Base {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
       <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> mf1() <span style="color:#75715e">// forwarding function; implicitly
-</span><span style="color:#75715e"></span>      { Base<span style="color:#f92672">:</span><span style="color:#f92672">:</span>mf1(); } <span style="color:#75715e">// inline (see Item 30)
+</span><span style="color:#75715e"></span>      { Base<span style="color:#f92672">::</span>mf1(); } <span style="color:#75715e">// inline (see Item 30)
 </span><span style="color:#75715e"></span>
   };
 </code></pre></div>
@@ -1097,7 +1097,7 @@ Item 34: Differentiate between inheritance of interface and inheritance of imple
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Shape</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
       <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> draw() <span style="color:#66d9ef">const</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">error</span>(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string<span style="color:#f92672">&amp;</span> msg);
+      <span style="color:#66d9ef">virtual</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">error</span>(<span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>string<span style="color:#f92672">&amp;</span> msg);
       <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">objectID</span>() <span style="color:#66d9ef">const</span>;
   };
 </code></pre></div>
@@ -1215,7 +1215,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
       ...
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>string name; <span style="color:#75715e">// composed object
+      std<span style="color:#f92672">::</span>string name; <span style="color:#75715e">// composed object
 </span><span style="color:#75715e"></span>      Address address; <span style="color:#75715e">// ditto
 </span><span style="color:#75715e"></span>      PhoneNumber voiceNumber; <span style="color:#75715e">// ditto
 </span><span style="color:#75715e"></span>      PhoneNumber faxNumber; <span style="color:#75715e">// ditto
@@ -1232,9 +1232,9 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
       <span style="color:#66d9ef">bool</span> member(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item) <span style="color:#66d9ef">const</span>;
       <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">insert</span>(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item);
       <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">remove</span>(<span style="color:#66d9ef">const</span> T<span style="color:#f92672">&amp;</span> item);
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>size_t size() <span style="color:#66d9ef">const</span>;
+      std<span style="color:#f92672">::</span>size_t size() <span style="color:#66d9ef">const</span>;
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      std<span style="color:#f92672">:</span><span style="color:#f92672">:</span>list<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> rep; <span style="color:#75715e">// representation for Set data
+      std<span style="color:#f92672">::</span>list<span style="color:#f92672">&lt;</span>T<span style="color:#f92672">&gt;</span> rep; <span style="color:#75715e">// representation for Set data
 </span><span style="color:#75715e"></span>  };
 </code></pre></div>
 </div>
