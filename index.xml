@@ -6,7 +6,16 @@
     <language>en-us</language>
     
     
-    <updated>Sat, 18 Apr 2020 18:04:34 CST</updated>
+    <updated>Tue, 21 Jul 2020 21:47:16 CST</updated>
+    
+    <item>
+      <title>DDIA Note</title>
+      <link>https://home.ya0db9.com/post/ddia/</link>
+      <pubDate>Tue, 21 Jul 2020 21:47:16 CST</pubDate>
+      
+      <guid>https://home.ya0db9.com/post/ddia/</guid>
+      <description>Ch-7 Transactions Weak Isolation Levels(弱隔离级别) Read Committed 原理 读-提交是最基础的事务隔离级别，只保证两件事情： 从数据库中读取到的数据，一定是已经提交过的（没有脏</description>
+    </item>
     
     <item>
       <title>透明代理(TPROXY)</title>
@@ -41,7 +50,7 @@
       <pubDate>Thu, 09 Jan 2020 20:16:41 CST</pubDate>
       
       <guid>https://home.ya0db9.com/post/first-hugo-post/</guid>
-      <description> Happy hacking, Emacs ♥ you! </description>
+      <description>Happy hacking, Emacs ♥ you!</description>
     </item>
     
     <item>

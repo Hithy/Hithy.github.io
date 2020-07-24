@@ -53,40 +53,37 @@
       <article class="post-content">
       
 <blockquote>
-<p>
-effecitve c++ 笔记
-</p>
+<p>effecitve c++ 笔记</p>
 </blockquote>
+<div id="outline-container-headline-1" class="outline-2">
 <h2 id="headline-1">
 Ch-1
 </h2>
+<div id="outline-text-headline-1" class="outline-text-2">
+<div id="outline-container-headline-2" class="outline-3">
 <h3 id="headline-2">
 Item 1: view C++ as a federation of languages
 </h3>
+<div id="outline-text-headline-2" class="outline-text-3">
+<p>c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库</p>
 <p>
-c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库
-</p>
-<p>
-   这四个部分可以看做四种子语言，相对独立
-</p>
+   这四个部分可以看做四种子语言，相对独立</p>
+</div>
+</div>
+<div id="outline-container-headline-3" class="outline-3">
 <h3 id="headline-3">
 Item 2: Prefer consts, enums, and inlines to #defines
 </h3>
+<div id="outline-text-headline-3" class="outline-text-3">
 <ul>
 <li>
-<p>
-使用const变量替换掉#define，后者只是做简单替换，对编译器透明，可能会导致生成重复对象代码(obj文件?)
-</p>
+<p>使用const变量替换掉#define，后者只是做简单替换，对编译器透明，可能会导致生成重复对象代码(obj文件?)</p>
 </li>
 <li>
-<p>
-相对于双重const的指针的char*字符串，更推荐使用const限定的string对象
-</p>
+<p>相对于双重const的指针的char*字符串，更推荐使用const限定的string对象</p>
 </li>
 <li>
-<p>
-类成员常量(部分如int, char, bool等内置类型)如果不被取址，可以只声明，不定义
-</p>
+<p>类成员常量(部分如int, char, bool等内置类型)如果不被取址，可以只声明，不定义</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GamePlayer</span> {
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
@@ -96,15 +93,13 @@ Item 2: Prefer consts, enums, and inlines to #defines
 </code></pre></div>
 </div>
 <p>
-如果需要取址，需要在实现文件中定义:
-</p>
+如果需要取址，需要在实现文件中定义:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">int</span> GamePlayer<span style="color:#f92672">::</span>NumTruns;
 </code></pre></div>
 </div>
 <p>
-除此之外，可以使用枚举变量替换常量，以兼容一些老的编译器，以支持用作数组声明:
-</p>
+除此之外，可以使用枚举变量替换常量，以兼容一些老的编译器，以支持用作数组声明:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">GamePlayer</span> {
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
@@ -116,24 +111,22 @@ Item 2: Prefer consts, enums, and inlines to #defines
 </div>
 </li>
 <li>
-<p>
-使用内联模板函数替代#define实现的宏函数，以降低复杂度
-</p>
+<p>使用内联模板函数替代#define实现的宏函数，以降低复杂度</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-3">
 <h3 id="headline-4">
 Item 3: Use const whenever possible
 </h3>
+<div id="outline-text-headline-4" class="outline-text-3">
 <ul>
 <li>
-<p>
-指针*之前的cosnt限定指向的数据，*之后的const限定指针变量本身
-</p>
+<p>指针*之前的cosnt限定指向的数据，*之后的const限定指针变量本身</p>
 </li>
 <li>
-<p>
-迭代器的const等价于T* const，而const_iterator等价于const* T
-</p>
+<p>迭代器的const等价于T* const，而const_iterator等价于const* T</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span><span style="color:#f92672">&gt;::</span>iterator iter <span style="color:#f92672">=</span> vec.begin();
   <span style="color:#f92672">*</span>iter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>; <span style="color:#75715e">// OK, changes what iter points to
@@ -146,25 +139,21 @@ Item 3: Use const whenever possible
 </div>
 </li>
 </ul>
+<div id="outline-container-headline-5" class="outline-4">
 <h4 id="headline-5">
 const 成员函数
 </h4>
+<div id="outline-text-headline-5" class="outline-text-4">
 <ul>
 <li>
-<p>
-bitwise constness(physical constness)含义是成员函数不应该修改对象的数据成员
-</p>
+<p>bitwise constness(physical constness)含义是成员函数不应该修改对象的数据成员</p>
 </li>
 <li>
+<p>logical constness在不违背逻辑的情况下，可以修改部分数据成员(使用mutable修饰)</p>
 <p>
-logical constness在不违背逻辑的情况下，可以修改部分数据成员(使用mutable修饰)
-</p>
+这两种constness是我们理解层面的概念，c++的const修饰符保证了大部分情况bitwise；如果要实现logical constness，需要使用mutable修饰符，让对应变量可以在const函数中被修改</p>
 <p>
-这两种constness是我们理解层面的概念，c++的const修饰符保证了大部分情况bitwise；如果要实现logical constness，需要使用mutable修饰符，让对应变量可以在const函数中被修改
-</p>
-<p>
-在一些不好的实现中，使用const修饰符还是不能保证bitwise:
-</p>
+在一些不好的实现中，使用const修饰符还是不能保证bitwise:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">CTextBlock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -186,15 +175,16 @@ logical constness在不违背逻辑的情况下，可以修改部分数据成员
 </div>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-4">
 <h4 id="headline-6">
 避免在const和非const成员函数中的代码重复
 </h4>
+<div id="outline-text-headline-6" class="outline-text-4">
+<p>很多时候我们需要分别实现const和non-const版本的成员函数，这里面可能包含很多重复代码(比如debug相关代码、日志代码、数据完整性验证)</p>
 <p>
-很多时候我们需要分别实现const和non-const版本的成员函数，这里面可能包含很多重复代码(比如debug相关代码、日志代码、数据完整性验证)
-</p>
-<p>
-    通常情况下我们可以在non-const函数中调用const函数，反过来不行:
-</p>
+    通常情况下我们可以在non-const函数中调用const函数，反过来不行:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">TextBlock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -216,56 +206,60 @@ logical constness在不违背逻辑的情况下，可以修改部分数据成员
   }
 </code></pre></div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-7" class="outline-3">
 <h3 id="headline-7">
 Item 4: Make sure that objects are initialized before they&#39;re used
 </h3>
+<div id="outline-text-headline-7" class="outline-text-3">
 <ul>
 <li>
-<p>
-为简单处理，所有的变量都需要初始化，优先使用构造函数列表来初始化成员函数(老的编译器需要程序员保证顺序)
-</p>
+<p>为简单处理，所有的变量都需要初始化，优先使用构造函数列表来初始化成员函数(老的编译器需要程序员保证顺序)</p>
 </li>
 <li>
-<p>
-函数内的static变量可以当做单例使用
-</p>
+<p>函数内的static变量可以当做单例使用</p>
 </li>
 </ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-8" class="outline-2">
 <h2 id="headline-8">
 Ch-2
 </h2>
+<div id="outline-text-headline-8" class="outline-text-2">
+<div id="outline-container-headline-9" class="outline-3">
 <h3 id="headline-9">
 Item 5: Know what functions C++ silentlywrites and calls
 </h3>
-<p>
-如果没有声明，编译器会隐式生成构造、拷贝构造和析构函数。但如果遇到一些意外情况，编译器会报错：
-</p>
+<div id="outline-text-headline-9" class="outline-text-3">
+<p>如果没有声明，编译器会隐式生成构造、拷贝构造和析构函数。但如果遇到一些意外情况，编译器会报错：</p>
 <ul>
 <li>
-<p>
-成员变量是引用或者带有const修饰，不会生成拷贝构造函数
-</p>
+<p>成员变量是引用或者带有const修饰，不会生成拷贝构造函数</p>
 </li>
 <li>
-<p>
-基类拷贝构造函数被声明为private
-</p>
+<p>基类拷贝构造函数被声明为private</p>
 </li>
 <li>
-<p>
-等等
-</p>
+<p>等等</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-10" class="outline-3">
 <h3 id="headline-10">
 Item 6: Explicitly disallow the use of compiler-generated functions you do not want
 </h3>
+<div id="outline-text-headline-10" class="outline-text-3">
 <p>
-   如果不希望编译器自动生成部分函数，可以在private下面声明他们，然后不实现
-</p>
+   如果不希望编译器自动生成部分函数，可以在private下面声明他们，然后不实现</p>
 <p>
-   特别的，如果一个类不希望被拷贝，可以考虑私有继承 <em>Uncopyable</em> 类:
-</p>
+   特别的，如果一个类不希望被拷贝，可以考虑私有继承 <em>Uncopyable</em> 类:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Uncopyable</span> {
   <span style="color:#66d9ef">protected</span><span style="color:#f92672">:</span> <span style="color:#75715e">// allow construction
@@ -277,78 +271,89 @@ Item 6: Explicitly disallow the use of compiler-generated functions you do not w
   };
 </code></pre></div>
 </div>
+</div>
+</div>
+<div id="outline-container-headline-11" class="outline-3">
 <h3 id="headline-11">
 Item 7: Declare destructors virtual in polymorphic base classes
 </h3>
+<div id="outline-text-headline-11" class="outline-text-3">
 <ul>
 <li>
-<p>
-需要用作多态的类型的类需要虚析构函数
-</p>
+<p>需要用作多态的类型的类需要虚析构函数</p>
 </li>
 <li>
-<p>
-不用于派生的类不建议使用虚析构函数，一方面增加了一个虚表的开销，另一方面数据结构和c等外部语言不兼容
-</p>
+<p>不用于派生的类不建议使用虚析构函数，一方面增加了一个虚表的开销，另一方面数据结构和c等外部语言不兼容</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-12" class="outline-3">
 <h3 id="headline-12">
 Item 8: Prevent exceptions from leaving destructors
 </h3>
+<div id="outline-text-headline-12" class="outline-text-3">
 <ul>
 <li>
-<p>
-析构函数不应该异常，如果发生了，要么终止程序，要么吞掉所以异常
-</p>
+<p>析构函数不应该异常，如果发生了，要么终止程序，要么吞掉所以异常</p>
 </li>
 <li>
-<p>
-某些可能抛异常的清理操作尽量放在独立的函数(类似于close或者destroy这样的)，由外部调用并处理异常
-</p>
+<p>某些可能抛异常的清理操作尽量放在独立的函数(类似于close或者destroy这样的)，由外部调用并处理异常</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-13" class="outline-3">
 <h3 id="headline-13">
 Item 9: Never call virtual functions during construction or destruction
 </h3>
-<p>
-对象构造和析构的时候调用虚函数会存在无定义行为，通常这种需求可以转换为在构造时传递参数或者使用对应类的静态构建函数
-</p>
+<div id="outline-text-headline-13" class="outline-text-3">
+<p>对象构造和析构的时候调用虚函数会存在无定义行为，通常这种需求可以转换为在构造时传递参数或者使用对应类的静态构建函数</p>
+</div>
+</div>
+<div id="outline-container-headline-14" class="outline-3">
 <h3 id="headline-14">
 Item 10: Have assignment operators return a reference to *this
 </h3>
-<p>
-赋值操作符最好返回*this(所有内置类型都遵守这个惯例)，连等的操作就是通过这样实现的
-</p>
+<div id="outline-text-headline-14" class="outline-text-3">
+<p>赋值操作符最好返回*this(所有内置类型都遵守这个惯例)，连等的操作就是通过这样实现的</p>
+</div>
+</div>
+<div id="outline-container-headline-15" class="outline-3">
 <h3 id="headline-15">
 Item 11: Handle assignment to self in operator=
 </h3>
+<div id="outline-text-headline-15" class="outline-text-3">
+<p>赋值操作符需要考虑到自我赋值的情况，一般来说构建一个临时变量，然后swap</p>
 <p>
-赋值操作符需要考虑到自我赋值的情况，一般来说构建一个临时变量，然后swap
-</p>
-<p>
-   也可以做分支判断，如果是自己就直接返回。但一般这种操作是低频的，而且会带来取址、缓存命中和管线的开销。
-</p>
+   也可以做分支判断，如果是自己就直接返回。但一般这种操作是低频的，而且会带来取址、缓存命中和管线的开销。</p>
+</div>
+</div>
+<div id="outline-container-headline-16" class="outline-3">
 <h3 id="headline-16">
 Item 12: Copy all parts of an object
 </h3>
+<div id="outline-text-headline-16" class="outline-text-3">
+<p>拷贝函数包括构造拷贝函数和赋值操作符，如果要自己实现拷贝函数，需要覆盖掉所有可能的情况(特别是在后面增加成员的时候)，编译器是不会报错的</p>
 <p>
-拷贝函数包括构造拷贝函数和赋值操作符，如果要自己实现拷贝函数，需要覆盖掉所有可能的情况(特别是在后面增加成员的时候)，编译器是不会报错的
-</p>
-<p>
-   两个拷贝函数无法相互调用，要实现代码复用，只能在增加一个private的公共代码函数
-</p>
+   两个拷贝函数无法相互调用，要实现代码复用，只能在增加一个private的公共代码函数</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-17" class="outline-2">
 <h2 id="headline-17">
 Ch-3 Resource Management
 </h2>
-<p>
-资源就是一种一旦你使用了，就需要返回(给系统)的东西。如果不还，就会出问题
-</p>
+<div id="outline-text-headline-17" class="outline-text-2">
+<p>资源就是一种一旦你使用了，就需要返回(给系统)的东西。如果不还，就会出问题</p>
+<div id="outline-container-headline-18" class="outline-3">
 <h3 id="headline-18">
 Item 13: Use objects to manage resources.
 </h3>
+<div id="outline-text-headline-18" class="outline-text-3">
 <p>
-   通常从API申请到资源之后，返回的是指针(或者句柄)，例如：
-</p>
+   通常从API申请到资源之后，返回的是指针(或者句柄)，例如：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>()
   {
@@ -359,8 +364,7 @@ Item 13: Use objects to manage resources.
 </code></pre></div>
 </div>
 <p>
-   函数f中第一行申请了pInv，最后一行释放了pInv。在中间的使用过程中，如果出现了异常，最后一行可能执行不到，一个比较好的办法就是把pInv放到局部对象来管理，在栈清理时候自动调用对象析构释放资源，auto_ptr就是这个作用：
-</p>
+   函数f中第一行申请了pInv，最后一行释放了pInv。在中间的使用过程中，如果出现了异常，最后一行可能执行不到，一个比较好的办法就是把pInv放到局部对象来管理，在栈清理时候自动调用对象析构释放资源，auto_ptr就是这个作用：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>()
   {
@@ -372,29 +376,25 @@ Item 13: Use objects to manage resources.
 </code></pre></div>
 </div>
 <p>
-   由于auto_ptr在拷贝时候的语义很奇怪，后面被废弃了，而是使用unique_ptr替代，unique_ptr不允许拷贝，只允许使用std::move显式转移，并且支持deleter和数组
-</p>
+   由于auto_ptr在拷贝时候的语义很奇怪，后面被废弃了，而是使用unique_ptr替代，unique_ptr不允许拷贝，只允许使用std::move显式转移，并且支持deleter和数组</p>
 <p>
-   这种资源管理方式经常叫做RAII(<em>Resource Acquisition Is Initialization</em>)
-</p>
+   这种资源管理方式经常叫做RAII(<em>Resource Acquisition Is Initialization</em>)</p>
 <p>
-   unique_ptr独占一个资源，如果要共享，可以使用shared_ptr。shared_ptr使用引用计数来维护声明周期，在引用计数降为0时，调用deleter
-</p>
+   unique_ptr独占一个资源，如果要共享，可以使用shared_ptr。shared_ptr使用引用计数来维护声明周期，在引用计数降为0时，调用deleter</p>
 <p>
-   引用计数会带来循环引用的问题，所以可以考虑使用弱引用(weak_ptr)来解决，weak_ptr在使用时必须先转为shared_ptr
-</p>
+   引用计数会带来循环引用的问题，所以可以考虑使用弱引用(weak_ptr)来解决，weak_ptr在使用时必须先转为shared_ptr</p>
+</div>
+</div>
+<div id="outline-container-headline-19" class="outline-3">
 <h3 id="headline-19">
 Item 14: Think carefully about copying behavior in resource-managing classes.
 </h3>
-<p>
-一般来说涉及资源管理拷贝的情况分为四种：
-</p>
+<div id="outline-text-headline-19" class="outline-text-3">
+<p>一般来说涉及资源管理拷贝的情况分为四种：</p>
 <ul>
 <li>
-<p>
-禁止拷贝
-比如说锁，拿到一把锁之后，极少可能性会把锁的资源管理类进行复制：
-</p>
+<p>禁止拷贝
+比如说锁，拿到一把锁之后，极少可能性会把锁的资源管理类进行复制：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -409,10 +409,8 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 </div>
 </li>
 <li>
-<p>
-对下层资源计算引用计数
-当拷贝资源管理类时，增加一个引用计数，类似于shared_ptr。当引用计数降为0时，调用deleter做清理操作
-</p>
+<p>对下层资源计算引用计数
+当拷贝资源管理类时，增加一个引用计数，类似于shared_ptr。当引用计数降为0时，调用deleter做清理操作</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Lock</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -428,31 +426,30 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 </div>
 </li>
 <li>
-<p>
-拷贝下层资源
-如果希望复制多份资源时候，就需要拷贝下层资源，各个资源管理类需要自行清理掉自己管理的资源副本，简称“深拷贝”，std::string就是这样做的
-</p>
+<p>拷贝下层资源
+如果希望复制多份资源时候，就需要拷贝下层资源，各个资源管理类需要自行清理掉自己管理的资源副本，简称“深拷贝”，std::string就是这样做的</p>
 </li>
 <li>
-<p>
-转移下层资源的拥有权
-类似于auto_ptr或者unique_ptr这样的独占管理类
-</p>
+<p>转移下层资源的拥有权
+类似于auto_ptr或者unique_ptr这样的独占管理类</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-20" class="outline-3">
 <h3 id="headline-20">
 Item 15: Provide access to raw resources in resource-managing classes.
 </h3>
-<p>
-资源管理类都会提供API访问下层资源，c++支持显式或者隐式，前者安全，后者方便：
-</p>
+<div id="outline-text-headline-20" class="outline-text-3">
+<p>资源管理类都会提供API访问下层资源，c++支持显式或者隐式，前者安全，后者方便：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Font</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
       <span style="color:#66d9ef">operator</span> FontHandle() <span style="color:#66d9ef">const</span> { <span style="color:#66d9ef">return</span> f; } <span style="color:#75715e">// implicit conversion function
 </span><span style="color:#75715e"></span>  <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
-      FontHandle f; <span style="color:#75715e">// the raw font resource 
-</span><span style="color:#75715e"></span>  };
+      FontHandle f; <span style="color:#75715e">// the raw font resource
+</span><span style="color:#75715e"></span><span style="color:#960050;background-color:#1e0010"> </span>
+  };
 
   Font <span style="color:#a6e22e">f1</span>(getFont());
 
@@ -463,44 +460,40 @@ Item 15: Provide access to raw resources in resource-managing classes.
 </span></code></pre></div>
 </div>
 <p>
-   f1被清理的时候，会释放掉底层资源，也就是f2会变成野指针
-</p>
+   f1被清理的时候，会释放掉底层资源，也就是f2会变成野指针</p>
+</div>
+</div>
+<div id="outline-container-headline-21" class="outline-3">
 <h3 id="headline-21">
 Item 16: Use the same form in corresponding uses of new and delete.
 </h3>
-<p>
-new/delete和new []/delete []成对使用
-</p>
+<div id="outline-text-headline-21" class="outline-text-3">
+<p>new/delete和new []/delete []成对使用</p>
+</div>
+</div>
+<div id="outline-container-headline-22" class="outline-3">
 <h3 id="headline-22">
 Item 17: Store newed objects in smart pointers in standalone statements.
 </h3>
+<div id="outline-text-headline-22" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  processWidget(std<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span>(<span style="color:#66d9ef">new</span> Widget), priority());
 </code></pre></div>
 </div>
 <p>
-   以上代码可能会出现内存泄露的风险：
-</p>
+   以上代码可能会出现内存泄露的风险：</p>
 <ol>
 <li>
-<p>
-执行new Widget
-</p>
+<p>执行new Widget</p>
 </li>
 <li>
-<p>
-调用priority()
-</p>
+<p>调用priority()</p>
 </li>
 <li>
-<p>
-调用std::shared_ptr
-</p>
+<p>调用std::shared_ptr</p>
 </li>
 </ol>
-<p>
-如果在第二步出现异常，会导致第一步申请的资源得不到释放。其原因还是在于c++没有定义代码执行的顺序，保险的方案是把资源申请独立出来：
-</p>
+<p>如果在第二步出现异常，会导致第一步申请的资源得不到释放。其原因还是在于c++没有定义代码执行的顺序，保险的方案是把资源申请独立出来：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  std<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Widget<span style="color:#f92672">&gt;</span> pw(<span style="color:#66d9ef">new</span> Widget); <span style="color:#75715e">// store newed object
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// in a smart pointer in a
@@ -508,20 +501,25 @@ Item 17: Store newed objects in smart pointers in standalone statements.
 </span><span style="color:#75715e"></span>  processWidget(pw, priority()); <span style="color:#75715e">// this call won&#39;t leak
 </span></code></pre></div>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-23" class="outline-2">
 <h2 id="headline-23">
 Ch-4 Designs and Declarations
 </h2>
+<div id="outline-text-headline-23" class="outline-text-2">
 <p>
-  本章主要讲述c++类型设计和声明
-</p>
+  本章主要讲述c++类型设计和声明</p>
+<div id="outline-container-headline-24" class="outline-3">
 <h3 id="headline-24">
 Item 18: Make interfaces easy to use correctly and hard to use incorrectly
 </h3>
+<div id="outline-text-headline-24" class="outline-text-3">
 <ul>
 <li>
-<p>
-接口使用专用类型，而不是简单的int等内置类型
-</p>
+<p>接口使用专用类型，而不是简单的int等内置类型</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -543,158 +541,182 @@ Item 18: Make interfaces easy to use correctly and hard to use incorrectly
 </div>
 </li>
 <li>
-<p>
-shared_ptr之类的deleter可以避免跨dll时new/delete不一致导致的问题
-</p>
+<p>shared_ptr之类的deleter可以避免跨dll时new/delete不一致导致的问题</p>
 </li>
 <li>
-<p>
-factory创建对象时候，直接返回智能指针而不是裸指针可以减少用户手动RAII的工作量
-</p>
+<p>factory创建对象时候，直接返回智能指针而不是裸指针可以减少用户手动RAII的工作量</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-25" class="outline-3">
 <h3 id="headline-25">
 Item 19: Treat class design as type design
 </h3>
-<p>
-类的设计相当于类型设计，需要考虑到一下一些因素：
-</p>
+<div id="outline-text-headline-25" class="outline-text-3">
+<p>类的设计相当于类型设计，需要考虑到一下一些因素：</p>
+<div id="outline-container-headline-26" class="outline-4">
 <h4 id="headline-26">
 对象是如何创建和删除
 </h4>
-<p>
-这将影响到构造和析构函数的设计，也影响到内存分配的选择
-</p>
+<div id="outline-text-headline-26" class="outline-text-4">
+<p>这将影响到构造和析构函数的设计，也影响到内存分配的选择</p>
+</div>
+</div>
+<div id="outline-container-headline-27" class="outline-4">
 <h4 id="headline-27">
 如何区分对象的初始化和赋值
 </h4>
-<p>
-这个区别实际上就是构造函数和拷贝函数的区别
-</p>
+<div id="outline-text-headline-27" class="outline-text-4">
+<p>这个区别实际上就是构造函数和拷贝函数的区别</p>
+</div>
+</div>
+<div id="outline-container-headline-28" class="outline-4">
 <h4 id="headline-28">
 设计的对象按值传递时有什么含义
 </h4>
-<p>
-拷贝构造函数决定了按值传递的实现
-</p>
+<div id="outline-text-headline-28" class="outline-text-4">
+<p>拷贝构造函数决定了按值传递的实现</p>
+</div>
+</div>
+<div id="outline-container-headline-29" class="outline-4">
 <h4 id="headline-29">
 类型对值的合法性作何限定
 </h4>
-<p>
-数据成员的值组合，只有一部分是合法的，这些组合决定了类型需要维护的不变量，而这些不变量决定了怎样做错误检查，并影响异常的实现
-</p>
+<div id="outline-text-headline-29" class="outline-text-4">
+<p>数据成员的值组合，只有一部分是合法的，这些组合决定了类型需要维护的不变量，而这些不变量决定了怎样做错误检查，并影响异常的实现</p>
+</div>
+</div>
+<div id="outline-container-headline-30" class="outline-4">
 <h4 id="headline-30">
 类型是否适合继承图
 </h4>
-<p>
-如果继承于已有的类，这些类会有一些束缚，例如它们的函数是否虚化？如果允许别的类继承自己的类，自身的函数是否要虚化，尤其是析构函数？
-</p>
+<div id="outline-text-headline-30" class="outline-text-4">
+<p>如果继承于已有的类，这些类会有一些束缚，例如它们的函数是否虚化？如果允许别的类继承自己的类，自身的函数是否要虚化，尤其是析构函数？</p>
+</div>
+</div>
+<div id="outline-container-headline-31" class="outline-4">
 <h4 id="headline-31">
 类型能够做哪些类型转换
 </h4>
-<p>
-能否转换？隐式的？显式的？
-</p>
+<div id="outline-text-headline-31" class="outline-text-4">
+<p>能否转换？隐式的？显式的？</p>
+</div>
+</div>
+<div id="outline-container-headline-32" class="outline-4">
 <h4 id="headline-32">
 类型支持哪些操作符
 </h4>
-<p>
-+,-,*,/……
-</p>
+<div id="outline-text-headline-32" class="outline-text-4">
+<p>+,-,*,/……</p>
+</div>
+</div>
+<div id="outline-container-headline-33" class="outline-4">
 <h4 id="headline-33">
 哪些标准函数需要禁用
 </h4>
-<p>
-声明为private并只做声明不实现
-</p>
+<div id="outline-text-headline-33" class="outline-text-4">
+<p>声明为private并只做声明不实现</p>
+</div>
+</div>
+<div id="outline-container-headline-34" class="outline-4">
 <h4 id="headline-34">
 谁能够访问类型的成员
 </h4>
-<p>
-这将决定public、protected和private的使用
-</p>
+<div id="outline-text-headline-34" class="outline-text-4">
+<p>这将决定public、protected和private的使用</p>
+</div>
+</div>
+<div id="outline-container-headline-35" class="outline-4">
 <h4 id="headline-35">
 类型有哪些隐性接口
 </h4>
-<p>
-例如提供了哪些保证(guarantees)，包括对性能、异常安全以及资源使用(锁、动态内存分配)，这些保证将是在实现时候的约束
-</p>
+<div id="outline-text-headline-35" class="outline-text-4">
+<p>例如提供了哪些保证(guarantees)，包括对性能、异常安全以及资源使用(锁、动态内存分配)，这些保证将是在实现时候的约束</p>
+</div>
+</div>
+<div id="outline-container-headline-36" class="outline-4">
 <h4 id="headline-36">
 通用性怎么样
 </h4>
-<p>
-是否考虑用模板
-</p>
+<div id="outline-text-headline-36" class="outline-text-4">
+<p>是否考虑用模板</p>
+</div>
+</div>
+<div id="outline-container-headline-37" class="outline-4">
 <h4 id="headline-37">
 真的需要一个新的类型
 </h4>
-<p>
-也许只需要定义成非成员函数或者模板就能实现？
-</p>
+<div id="outline-text-headline-37" class="outline-text-4">
+<p>也许只需要定义成非成员函数或者模板就能实现？</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-38" class="outline-3">
 <h3 id="headline-38">
 Item 20: Prefer pass-by-reference-to-const to pass-by-value
 </h3>
+<div id="outline-text-headline-38" class="outline-text-3">
 <ul>
 <li>
-<p>
-自定义类型即便很小，也建议传const引用，因为自定义变量很可能随着时间有变化
-</p>
+<p>自定义类型即便很小，也建议传const引用，因为自定义变量很可能随着时间有变化</p>
 </li>
 <li>
-<p>
-传引用(指针)一定能够放到寄存器的，而其他类型不一定了(看编译器)
-</p>
+<p>传引用(指针)一定能够放到寄存器的，而其他类型不一定了(看编译器)</p>
 </li>
 <li>
-<p>
-对于内置类型、STL迭代器和函数对象类型，传值更合适
-</p>
+<p>对于内置类型、STL迭代器和函数对象类型，传值更合适</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-39" class="outline-3">
 <h3 id="headline-39">
 Item 21: Don&#39;t try to return a reference when you must return an object
 </h3>
-<p>
-避免返回栈上对象的引用、函数静态成员以及new出来的对象
-</p>
+<div id="outline-text-headline-39" class="outline-text-3">
+<p>避免返回栈上对象的引用、函数静态成员以及new出来的对象</p>
+</div>
+</div>
+<div id="outline-container-headline-40" class="outline-3">
 <h3 id="headline-40">
 Item 22: Declare data members private
 </h3>
+<div id="outline-text-headline-40" class="outline-text-3">
 <ul>
 <li>
-<p>
-unencapsulated means unchangeable
-</p>
+<p>unencapsulated means unchangeable</p>
 </li>
 <li>
-<p>
-protected成员也是违背封装的，跟public一样
-</p>
+<p>protected成员也是违背封装的，跟public一样</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-41" class="outline-3">
 <h3 id="headline-41">
 Item 23: Prefer non-member non-friend functions to member functions
 </h3>
+<div id="outline-text-headline-41" class="outline-text-3">
 <ul>
 <li>
-<p>
-非友元并且非成员函数不会增加访问私有变量的接口，提高了封装性，注意一定是非友元并且非成员
-</p>
+<p>非友元并且非成员函数不会增加访问私有变量的接口，提高了封装性，注意一定是非友元并且非成员</p>
 </li>
 <li>
-<p>
-这种函数一般都属于 <em>convenience functions</em> ，即便没有这些函数，用户可以组合成员函数来实现功能
-</p>
+<p>这种函数一般都属于 <em>convenience functions</em> ，即便没有这些函数，用户可以组合成员函数来实现功能</p>
 </li>
 <li>
-<p>
-对c++来说，这样的函数往往可以写到命名空间里面，然后按功能放在不同的头文件里面，提供了强大的可扩展性。很多标准库就是这样组织的，使用成员函数无法实现这种组织方式
-</p>
+<p>对c++来说，这样的函数往往可以写到命名空间里面，然后按功能放在不同的头文件里面，提供了强大的可扩展性。很多标准库就是这样组织的，使用成员函数无法实现这种组织方式</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-42" class="outline-3">
 <h3 id="headline-42">
 Item 24: Declare non-member functions when type conversions should apply to all parameters      
 </h3>
+<div id="outline-text-headline-42" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">const</span> Rational <span style="color:#66d9ef">operator</span><span style="color:#f92672">*</span>(<span style="color:#66d9ef">const</span> Rational<span style="color:#f92672">&amp;</span> lhs, <span style="color:#75715e">// now a non-member
 </span><span style="color:#75715e"></span>                           <span style="color:#66d9ef">const</span> Rational<span style="color:#f92672">&amp;</span> rhs) <span style="color:#75715e">// function
@@ -705,80 +727,69 @@ Item 24: Declare non-member functions when type conversions should apply to all 
 </code></pre></div>
 </div>
 <p>
-   如果*操作符作为Raitonal的成员函数，第一个参数就定死为this了，无法处理int * Ratinal的情况，除此之外，不必是友元函数。
-</p>
+   如果*操作符作为Raitonal的成员函数，第一个参数就定死为this了，无法处理int * Ratinal的情况，除此之外，不必是友元函数。</p>
+</div>
+</div>
+<div id="outline-container-headline-43" class="outline-3">
 <h3 id="headline-43">
 Item 25: Consider support for a non-throwing swap
 </h3>
-<p>
-要实现一个自定义swap，三步：
-</p>
+<div id="outline-text-headline-43" class="outline-text-3">
+<p>要实现一个自定义swap，三步：</p>
 <ol>
 <li>
-<p>
-写一个交换数据用的成员函数
-</p>
+<p>写一个交换数据用的成员函数</p>
 </li>
 <li>
-<p>
-在当前同一个命名空间里面提供一个非成员版的swap函数
-</p>
+<p>在当前同一个命名空间里面提供一个非成员版的swap函数</p>
 </li>
 <li>
-<p>
-如果swap一个类(非类模板)，特化std::swap，让它调用已实现的swap成员函数
-</p>
+<p>如果swap一个类(非类模板)，特化std::swap，让它调用已实现的swap成员函数</p>
 </li>
 </ol>
-<p>
-需要注意swap不能抛异常
-</p>
+<p>需要注意swap不能抛异常</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-44" class="outline-2">
 <h2 id="headline-44">
 ch-5 Implementations
 </h2>
+<div id="outline-text-headline-44" class="outline-text-2">
+<div id="outline-container-headline-45" class="outline-3">
 <h3 id="headline-45">
 Item 26: Postpone variable definitions as long as possible  
 </h3>
+<div id="outline-text-headline-45" class="outline-text-3">
+<p>一些局部变量放到需要的时候才初始化，避免不必要的构造开销</p>
 <p>
-一些局部变量放到需要的时候才初始化，避免不必要的构造开销
-</p>
-<p>
-   循环变量的定义位置跟构造函数和赋值操作的性能相关，如果构造的开销小于赋值，则放在里面
-</p>
+   循环变量的定义位置跟构造函数和赋值操作的性能相关，如果构造的开销小于赋值，则放在里面</p>
+</div>
+</div>
+<div id="outline-container-headline-46" class="outline-3">
 <h3 id="headline-46">
 Item 27: Minimize casting
 </h3>
-<p>
-几种cast:
-</p>
+<div id="outline-text-headline-46" class="outline-text-3">
+<p>几种cast:</p>
 <ol>
 <li>
-<p>
-<em>const_cast</em> 用来去掉const属性，其他cast都不行
-</p>
+<p><em>const_cast</em> 用来去掉const属性，其他cast都不行</p>
 </li>
 <li>
-<p>
-<em>dynamic_cast</em> 一般用来将基类安全地转换为派生类，有较大的运行时开销
-</p>
+<p><em>dynamic_cast</em> 一般用来将基类安全地转换为派生类，有较大的运行时开销</p>
 </li>
 <li>
-<p>
-<em>reinterpret_cast</em> 下层转换，常用来把指针转为int，高级代码尽量不要用
-</p>
+<p><em>reinterpret_cast</em> 下层转换，常用来把指针转为int，高级代码尽量不要用</p>
 </li>
 <li>
-<p>
-<em>static_cast</em> 用于强制隐式转换
-</p>
+<p><em>static_cast</em> 用于强制隐式转换</p>
 </li>
 </ol>
+<p>旧的转换方案也是可以用的，一般用于函数传参。新的cast一方面方便grep查找，另一方面便于编译器优化</p>
 <p>
-旧的转换方案也是可以用的，一般用于函数传参。新的cast一方面方便grep查找，另一方面便于编译器优化
-</p>
-<p>
-   cast方案可能会被误用：
-</p>
+   cast方案可能会被误用：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Window</span> { <span style="color:#75715e">// base class
 </span><span style="color:#75715e"></span>  <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -798,8 +809,7 @@ Item 27: Minimize casting
 </code></pre></div>
 </div>
 <p>
-   这里使用static_cast实际上创建了一个临时对象，复制了一份*this，正确方法应该是：
-</p>
+   这里使用static_cast实际上创建了一个临时对象，复制了一份*this，正确方法应该是：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SpecialWindow</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Window {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -812,11 +822,9 @@ Item 27: Minimize casting
 </code></pre></div>
 </div>
 <p>
-   如果这里用指针，会有无限递归的问题
-</p>
+   如果这里用指针，会有无限递归的问题</p>
 <p>
-   dynamic_cast可以通过容器或者虚函数来避免，一定不要写出级联的dynamic_cast代码:
-</p>
+   dynamic_cast可以通过容器或者虚函数来避免，一定不要写出级联的dynamic_cast代码:</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">typedef</span> std<span style="color:#f92672">::</span>vector<span style="color:#f92672">&lt;</span>std<span style="color:#f92672">::</span>tr1<span style="color:#f92672">::</span>shared_ptr<span style="color:#f92672">&lt;</span>Window<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> VPW;
   VPW winPtrs;
@@ -834,77 +842,67 @@ Item 27: Minimize casting
 </div>
 <ul>
 <li>
-<p>
-尽量避免转换，特别是 <em>dynamic_cast</em>
-</p>
+<p>尽量避免转换，特别是 <em>dynamic_cast</em></p>
 </li>
 <li>
-<p>
-如果一定要做转换，尽量隐藏到函数中，而不是让客户代码自己做转换
-</p>
+<p>如果一定要做转换，尽量隐藏到函数中，而不是让客户代码自己做转换</p>
 </li>
 <li>
-<p>
-优先使用c++风格的转换，更加明确
-</p>
+<p>优先使用c++风格的转换，更加明确</p>
 </li>
 </ul>
+</div>
+</div>
+<div id="outline-container-headline-47" class="outline-3">
 <h3 id="headline-47">
 Item 28: Avoid returning &#34;handles&#34; to object internals   
 </h3>
-<p>
-不要返回任何对象内部的句柄(引用、指针或者迭代器)，一方面破坏封装，另一方面生命周期不可预期。
-</p>
+<div id="outline-text-headline-47" class="outline-text-3">
+<p>不要返回任何对象内部的句柄(引用、指针或者迭代器)，一方面破坏封装，另一方面生命周期不可预期。</p>
+</div>
+</div>
+<div id="outline-container-headline-48" class="outline-3">
 <h3 id="headline-48">
 Item29: Strive for exception-safe code.
 </h3>
-<p>
-尽量写异常安全代码，异常安全有三个级别：
-</p>
+<div id="outline-text-headline-48" class="outline-text-3">
+<p>尽量写异常安全代码，异常安全有三个级别：</p>
 <ul>
 <li>
-<p>
-<em><strong>the basic guarantee</strong></em>: 如果发生异常，程序还是一个合法的状态，但是状态不可预期
-</p>
+<p><em><strong>the basic guarantee</strong></em>: 如果发生异常，程序还是一个合法的状态，但是状态不可预期</p>
 </li>
 <li>
-<p>
-<em><strong>the strong guarantee</strong></em>: 完全成功或者完全失败，类似于原子操作
-</p>
+<p><em><strong>the strong guarantee</strong></em>: 完全成功或者完全失败，类似于原子操作</p>
 </li>
 <li>
-<p>
-<em><strong>the nothrow guarantee</strong></em>: 永不抛异常
-</p>
+<p><em><strong>the nothrow guarantee</strong></em>: 永不抛异常</p>
 </li>
 </ul>
+<p>异常安全代码至少要保证以上至少一项，难度依次递增</p>
 <p>
-异常安全代码至少要保证以上至少一项，难度依次递增
-</p>
+   <em>the strong guarantee</em> 函数通常可以使用 <em>copy-and-swap</em> 的方式来实现</p>
 <p>
-   <em>the strong guarantee</em> 函数通常可以使用 <em>copy-and-swap</em> 的方式来实现
-</p>
+   在写异常安全函数中，如果调用了其他函数，一般要求安全等级不低于当前函数，不然很难保证安全。</p>
 <p>
-   在写异常安全函数中，如果调用了其他函数，一般要求安全等级不低于当前函数，不然很难保证安全。
-</p>
-<p>
-   如果函数调用了很多不同异常安全等级的子函数，该函数的安全等级不会高于最低的子函数
-</p>
+   如果函数调用了很多不同异常安全等级的子函数，该函数的安全等级不会高于最低的子函数</p>
+</div>
+</div>
+<div id="outline-container-headline-49" class="outline-3">
 <h3 id="headline-49">
 Item 30: Understand the ins and outs of inlining.
 </h3>
+<div id="outline-text-headline-49" class="outline-text-3">
+<p>只在真正有需要的地方，对函数进行内联，避免滥用</p>
 <p>
-只在真正有需要的地方，对函数进行内联，避免滥用
-</p>
-<p>
-   inline函数一旦发布出去，后期有修改的话，所有调用到该函数的代码都需要重新编译
-</p>
+   inline函数一旦发布出去，后期有修改的话，所有调用到该函数的代码都需要重新编译</p>
+</div>
+</div>
+<div id="outline-container-headline-50" class="outline-3">
 <h3 id="headline-50">
 Item31: Minimize compilation dependencies between files.
 </h3>
-<p>
-默认c++类对接口和实现的分离做得并不好
-</p>
+<div id="outline-text-headline-50" class="outline-text-3">
+<p>默认c++类对接口和实现的分离做得并不好</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -923,26 +921,18 @@ Item31: Minimize compilation dependencies between files.
 </div>
 <p>
    这几个私有成员往往会要求include自己的头文件，比如 <em>&lt;string&gt;</em>, <em>date.h</em>, <em>address.h</em> 之类的，
-   一旦这些头文件有改动，Person类以及使用Person类的文件都会重编译
-</p>
+   一旦这些头文件有改动，Person类以及使用Person类的文件都会重编译</p>
 <p>
-   当然可以用 <em>forward declaration</em> 的方式来避免include头文件，但是会带来两个问题：
-</p>
+   当然可以用 <em>forward declaration</em> 的方式来避免include头文件，但是会带来两个问题：</p>
 <ol>
 <li>
-<p>
-string是一个typedef，不能预先声明
-</p>
+<p>string是一个typedef，不能预先声明</p>
 </li>
 <li>
-<p>
-如果要定义，会涉及分配空间的问题，编译器不能决定该分配多少空间
-</p>
+<p>如果要定义，会涉及分配空间的问题，编译器不能决定该分配多少空间</p>
 </li>
 </ol>
-<p>
-解决这个问题的方法就是把Person写成句柄类：
-</p>
+<p>解决这个问题的方法就是把Person写成句柄类：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span style="color:#75715e">
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;memory&gt; // for tr1::shared_ptr; see below</span><span style="color:#75715e">
@@ -966,25 +956,18 @@ string是一个typedef，不能预先声明
 </code></pre></div>
 </div>
 <p>
-   在PersonImpl类里面做真正的实现，接口一一对应。
-</p>
+   在PersonImpl类里面做真正的实现，接口一一对应。</p>
 <p>
-   实现分离的关键在于将对定义的依赖，替换为对声明的依赖。可能的话，尽量让头文件自我依赖；如果做不到，也只依赖于其他文件的声明，而不是定义
-</p>
+   实现分离的关键在于将对定义的依赖，替换为对声明的依赖。可能的话，尽量让头文件自我依赖；如果做不到，也只依赖于其他文件的声明，而不是定义</p>
 <p>
-   遵循以下原则：
-</p>
+   遵循以下原则：</p>
 <ul>
 <li>
-<p>
-在可以用指针或者引用的情况下，尽量避免直接使用对象
-</p>
+<p>在可以用指针或者引用的情况下，尽量避免直接使用对象</p>
 </li>
 <li>
-<p>
-只要可能，依赖类的声明而不是类的定义
-声明一个函数是不需要定义的：
-</p>
+<p>只要可能，依赖类的声明而不是类的定义
+声明一个函数是不需要定义的：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Date</span>;
 
@@ -993,43 +976,45 @@ string是一个typedef，不能预先声明
 </code></pre></div>
 </div>
 <p>
-以上Date未定义，但是依然是合法的，只有在真正需要的地方，再include必要的定义
-</p>
+以上Date未定义，但是依然是合法的，只有在真正需要的地方，再include必要的定义</p>
 </li>
 <li>
-<p>
-对定义和声明提供分开的两份头文件，两份文件保持一致
-使用库的客户需要include声明文件，而不是手动 <em>forward declare</em>
-</p>
+<p>对定义和声明提供分开的两份头文件，两份文件保持一致
+使用库的客户需要include声明文件，而不是手动 <em>forward declare</em></p>
 </li>
 </ul>
+<p>另一种方法，是让Person成为一个抽象基类，也就是接口类。相对于.net或者java，c++的接口类可以支持实现一些非虚函数，以便所有继承类能够使用</p>
 <p>
-另一种方法，是让Person成为一个抽象基类，也就是接口类。相对于.net或者java，c++的接口类可以支持实现一些非虚函数，以便所有继承类能够使用
-</p>
+   客户可以调用静态 <em>factory</em> 函数来构建Person子类，并返回指针。</p>
 <p>
-   客户可以调用静态 <em>factory</em> 函数来构建Person子类，并返回指针。
-</p>
-<p>
-   句柄类和接口类都解决了声明和定义的耦合问题，代价就是多一级访问的开销，这两种方法都不能使用inline(inline会把头文件的代码插入到所有调用的地方)
-</p>
+   句柄类和接口类都解决了声明和定义的耦合问题，代价就是多一级访问的开销，这两种方法都不能使用inline(inline会把头文件的代码插入到所有调用的地方)</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-51" class="outline-2">
 <h2 id="headline-51">
 Ch-6. Inheritance and Object-Oriented Design
 </h2>
+<div id="outline-text-headline-51" class="outline-text-2">
+<div id="outline-container-headline-52" class="outline-3">
 <h3 id="headline-52">
 Item 32: Make sure public inheritance models &#34;is-a.&#34;
 </h3>
+<div id="outline-text-headline-52" class="outline-text-3">
 <p>
-   public继承最关键的一点: <em><strong>is-a</strong></em>
-</p>
+   public继承最关键的一点: <em><strong>is-a</strong></em></p>
 <p>
-   一些生活中的概念并不能直接建模，它们并不满足 <em>is-a</em> 的原则：企鹅不能公有继承鸟(鸟会飞)，正方形不能公有继承长方形(长方形允许调整单边长度)
-</p>
+   一些生活中的概念并不能直接建模，它们并不满足 <em>is-a</em> 的原则：企鹅不能公有继承鸟(鸟会飞)，正方形不能公有继承长方形(长方形允许调整单边长度)</p>
 <p>
-   public继承要求，任何基类的方法，都能够无歧义地应用到派生类
-</p>
+   public继承要求，任何基类的方法，都能够无歧义地应用到派生类</p>
+</div>
+</div>
+<div id="outline-container-headline-53" class="outline-3">
 <h3 id="headline-53">
 Item 33: Avoid hiding inherited names
 </h3>
+<div id="outline-text-headline-53" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Base</span> {
   <span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
@@ -1051,9 +1036,7 @@ Item 33: Avoid hiding inherited names
   };
 </code></pre></div>
 </div>
-<p>
-上面代码中，派生类的mf1和mf3名称会隐藏掉基类的名称，以下代码是编译不过的：
-</p>
+<p>上面代码中，派生类的mf1和mf3名称会隐藏掉基类的名称，以下代码是编译不过的：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  Derived d;
 
@@ -1062,8 +1045,7 @@ Item 33: Avoid hiding inherited names
 </code></pre></div>
 </div>
 <p>
-   即便不用不合法的调用，如果不继承基类的重载函数，也是违背了public继承的 <em>is-a</em> 原则。解决办法就是在public下面使用using Base::mf1和using Base::mf3将对应的名称暴露出来。
-</p>
+   即便不用不合法的调用，如果不继承基类的重载函数，也是违背了public继承的 <em>is-a</em> 原则。解决办法就是在public下面使用using Base::mf1和using Base::mf3将对应的名称暴露出来。</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">public</span> Base {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -1076,8 +1058,7 @@ Item 33: Avoid hiding inherited names
 </code></pre></div>
 </div>
 <p>
-   但是在私有继承的时候，可能需要暴露一部分基类的名称到public里面，如果用using，会导致所有的基类名称都暴露出去了，这里可以考虑forwarding function
-</p>
+   但是在私有继承的时候，可能需要暴露一部分基类的名称到public里面，如果用using，会导致所有的基类名称都暴露出去了，这里可以考虑forwarding function</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Derived</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">private</span> Base {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -1088,11 +1069,14 @@ Item 33: Avoid hiding inherited names
 </code></pre></div>
 </div>
 <p>
-   PS：using是受public和private的限制的
-</p>
+   PS：using是受public和private的限制的</p>
+</div>
+</div>
+<div id="outline-container-headline-54" class="outline-3">
 <h3 id="headline-54">
 Item 34: Differentiate between inheritance of interface and inheritance of implementation
 </h3>
+<div id="outline-text-headline-54" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Shape</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -1103,113 +1087,94 @@ Item 34: Differentiate between inheritance of interface and inheritance of imple
 </code></pre></div>
 </div>
 <p>
-   一般来说，继承包含三种，如上面代码：
-</p>
+   一般来说，继承包含三种，如上面代码：</p>
 <ol>
 <li>
+<p>继承接口</p>
 <p>
-继承接口
-</p>
+基类的纯虚函数，必须由派生类实现，纯虚函数只用来指定接口。</p>
 <p>
-基类的纯虚函数，必须由派生类实现，纯虚函数只用来指定接口。
-</p>
-<p>
-此时基类也可以写一个同名的默认实现(不会被继承，也无法被默认使用)，派生类调用Base::xxx()来使用，这样要求派生类显式调用，可以避免增加一些有变化的派生类时，忘了重写默认函数
-</p>
+此时基类也可以写一个同名的默认实现(不会被继承，也无法被默认使用)，派生类调用Base::xxx()来使用，这样要求派生类显式调用，可以避免增加一些有变化的派生类时，忘了重写默认函数</p>
 </li>
 <li>
+<p>继承实现</p>
 <p>
-继承实现
-</p>
-<p>
-基类的普通虚函数，派生类继承接口和一个默认的实现
-</p>
+基类的普通虚函数，派生类继承接口和一个默认的实现</p>
 </li>
 <li>
+<p>非虚函数</p>
 <p>
-非虚函数
-</p>
-<p>
-指定了接口，并且带上一个强制不变的实现
-</p>
+指定了接口，并且带上一个强制不变的实现</p>
 </li>
 </ol>
+</div>
+</div>
+<div id="outline-container-headline-55" class="outline-3">
 <h3 id="headline-55">
 Item 35: Consider alternatives to virtual functions
 </h3>
-<p>
-虚函数有很多替代的方案
-</p>
+<div id="outline-text-headline-55" class="outline-text-3">
+<p>虚函数有很多替代的方案</p>
 <ol>
 <li>
+<p><strong>non-vertual interface idiom</strong> (NVI idiom)    </p>
 <p>
-<strong>non-vertual interface idiom</strong> (NVI idiom)    
-</p>
+public接口使用非虚函数实现，通过调用真正有功能的虚函数来实现多态，相当于wrapper。</p>
 <p>
-public接口使用非虚函数实现，通过调用真正有功能的虚函数来实现多态，相当于wrapper。
-</p>
+可以为private，派生类虽然无法调用这些虚函数(private)，但是可以重载，这里不冲突。重定义一个虚函数决定了 <em>how something is to be done</em> ，而调用一个虚函数，决定了 <em>when it will be done</em> ，分开来看</p>
 <p>
-可以为private，派生类虽然无法调用这些虚函数(private)，但是可以重载，这里不冲突。重定义一个虚函数决定了 <em>how something is to be done</em> ，而调用一个虚函数，决定了 <em>when it will be done</em> ，分开来看
-</p>
-<p>
-这种方案只是 <em>Template Method</em> 设计模式的一个例子
-</p>
+这种方案只是 <em>Template Method</em> 设计模式的一个例子</p>
 </li>
 <li>
+<p><strong>function pointer data members</strong></p>
 <p>
-<strong>function pointer data members</strong>
-</p>
-<p>
-使用函数指针数据成员替代虚函数。在类构造时候，传入函数指针，并用这些函数实现接口功能。缺点在于这些函数只能访问公共接口，而不能直接访问数据成员
-</p>
+使用函数指针数据成员替代虚函数。在类构造时候，传入函数指针，并用这些函数实现接口功能。缺点在于这些函数只能访问公共接口，而不能直接访问数据成员</p>
 </li>
 <li>
+<p><strong>tr1::function data members</strong></p>
 <p>
-<strong>tr1::function data members</strong>
-</p>
-<p>
-相对于函数指针，提供更加灵活的动态实现
-</p>
+相对于函数指针，提供更加灵活的动态实现</p>
 </li>
 <li>
+<p><strong>virtual functions in another hierarchy (Strategy Pattern)</strong> </p>
 <p>
-<strong>virtual functions in another hierarchy (Strategy Pattern)</strong> 
-</p>
-<p>
-将两个继承体系进行组合
-</p>
+将两个继承体系进行组合</p>
 </li>
 </ol>
+</div>
+</div>
+<div id="outline-container-headline-56" class="outline-3">
 <h3 id="headline-56">
 Item 36: Never redefine an inherited non-virtual function
 </h3>
+<div id="outline-text-headline-56" class="outline-text-3">
 <p>
-   如题，违反了公有继承的原则
-</p>
+   如题，违反了公有继承的原则</p>
+</div>
+</div>
+<div id="outline-container-headline-57" class="outline-3">
 <h3 id="headline-57">
 Item 37: Never redefine a function&#39;s inherited default parameter value
 </h3>
+<div id="outline-text-headline-57" class="outline-text-3">
 <p>
-   虚函数是动态绑定，但是默认参数却是静态绑定。在调用虚函数时，会根据当前指针类型决定默认参数。
-</p>
+   虚函数是动态绑定，但是默认参数却是静态绑定。在调用虚函数时，会根据当前指针类型决定默认参数。</p>
 <p>
-   要保证接口的一致性，所有派生类在重定义的时候，需要指定同样的默认参数，但是这样在改的时候很容易改漏掉部分函数。解决办法是使用NVI，用非虚函数实现接口，指定默认参数，然后在虚函数中实现功能，虚函数不设默认参数
-</p>
+   要保证接口的一致性，所有派生类在重定义的时候，需要指定同样的默认参数，但是这样在改的时候很容易改漏掉部分函数。解决办法是使用NVI，用非虚函数实现接口，指定默认参数，然后在虚函数中实现功能，虚函数不设默认参数</p>
+</div>
+</div>
+<div id="outline-container-headline-58" class="outline-3">
 <h3 id="headline-58">
 Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through composition
 </h3>
+<div id="outline-text-headline-58" class="outline-text-3">
+<p>复合(composition)是类型之间的一种关系，是一种完全不同于公有继承的建模</p>
 <p>
-复合(composition)是类型之间的一种关系，是一种完全不同于公有继承的建模
-</p>
+   人、交通工具、视频帧这样的属于应用领域(<em>application domain</em>)，复合意味着&#34;<em><strong>has-a</strong></em>&#34;的关系。</p>
 <p>
-   人、交通工具、视频帧这样的属于应用领域(<em>application domain</em>)，复合意味着&#34;<em><strong>has-a</strong></em>&#34;的关系。
-</p>
+   缓冲区、互斥锁、搜索树这样的属于软件的实现领域(<em>implementation domain</em>)，符合意味着 <em>is-implemented-in-terms-of</em> 关系</p>
 <p>
-   缓冲区、互斥锁、搜索树这样的属于软件的实现领域(<em>implementation domain</em>)，符合意味着 <em>is-implemented-in-terms-of</em> 关系
-</p>
-<p>
-   例如一个Person类，它包含了名字、地址、电话号码等，这既是 <em>has-a</em> 的关系：
-</p>
+   例如一个Person类，它包含了名字、地址、电话号码等，这既是 <em>has-a</em> 的关系：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Person</span> {
   <span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
@@ -1223,8 +1188,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </code></pre></div>
 </div>
 <p>
-   又比如用list实现的set模板类，可以说set是根据list实现而出的：
-</p>
+   又比如用list实现的set模板类，可以说set是根据list实现而出的：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">template</span><span style="color:#f92672">&lt;</span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">T</span><span style="color:#f92672">&gt;</span> <span style="color:#75715e">// the right way to use list for Set
 </span><span style="color:#75715e"></span>  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Set</span> {
@@ -1238,27 +1202,24 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </span><span style="color:#75715e"></span>  };
 </code></pre></div>
 </div>
+</div>
+</div>
+<div id="outline-container-headline-59" class="outline-3">
 <h3 id="headline-59">
 Item 39: Use private inheritance judiciously
 </h3>
+<div id="outline-text-headline-59" class="outline-text-3">
 <p>
-   私有继承意味着 <em>is-implemented-in-terms-of</em> ，只有在软件实现中有意义，而在软件设计中并没有。私有继承往往可以使用 <em>item 38</em> 中的composition来取代：
-</p>
+   私有继承意味着 <em>is-implemented-in-terms-of</em> ，只有在软件实现中有意义，而在软件设计中并没有。私有继承往往可以使用 <em>item 38</em> 中的composition来取代：</p>
 <ul>
 <li>
-<p>
-私有继承允许派生类重写基类的私有函数(即便不能访问)，而composition却是通过私有变量来实现的，派生类无法重载
-</p>
+<p>私有继承允许派生类重写基类的私有函数(即便不能访问)，而composition却是通过私有变量来实现的，派生类无法重载</p>
 </li>
 <li>
-<p>
-私有继承可能会include必要的实现头文件，会导致增加编译时间，composition却可以只声明，并在实现中使用
-</p>
+<p>私有继承可能会include必要的实现头文件，会导致增加编译时间，composition却可以只声明，并在实现中使用</p>
 </li>
 </ul>
-<p>
-私有继承唯一值得使用的情况是，继承一个没有数据成员(包括虚函数)的基类，可以省掉一个最小内存空间，而这是composition做不到的：
-</p>
+<p>私有继承唯一值得使用的情况是，继承一个没有数据成员(包括虚函数)的基类，可以省掉一个最小内存空间，而这是composition做不到的：</p>
 <div class="src src-c++">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">  <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Empty</span> {}; <span style="color:#75715e">// has no data, so objects should
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// use no memory
@@ -1275,20 +1236,24 @@ Item 39: Use private inheritance judiciously
 </code></pre></div>
 </div>
 <p>
-   第一种方式使用composition，sizeof(HoldsAnInt) &gt; sizeof(int)； 而第二种使用私有继承，借助于 <em>empty base optimization</em> (EBO)优化策略 ，sizeof(HoldsAnInt) = sizeof(int)
-</p>
+   第一种方式使用composition，sizeof(HoldsAnInt) &gt; sizeof(int)； 而第二种使用私有继承，借助于 <em>empty base optimization</em> (EBO)优化策略 ，sizeof(HoldsAnInt) = sizeof(int)</p>
+</div>
+</div>
+<div id="outline-container-headline-60" class="outline-3">
 <h3 id="headline-60">
 Item 40: Use multiple inheritance judiciously   
 </h3>
+<div id="outline-text-headline-60" class="outline-text-3">
 <p>
-   多重继承可能存在命名冲突，这时候需要带上对应类型的名字，例如mp.BorrowableItem::checkOut();
-</p>
+   多重继承可能存在命名冲突，这时候需要带上对应类型的名字，例如mp.BorrowableItem::checkOut();</p>
 <p>
-   出现菱形继承的时候，通常使用虚基类来避免基类重复，但是会带来开销，所以尽量不要用虚基类，平常使用非虚继承就好了。如果一定要用到虚基类，尽量避免在其中放入数据，这样就不会遇到初始化、赋值时候诡异的问题了
-</p>
+   出现菱形继承的时候，通常使用虚基类来避免基类重复，但是会带来开销，所以尽量不要用虚基类，平常使用非虚继承就好了。如果一定要用到虚基类，尽量避免在其中放入数据，这样就不会遇到初始化、赋值时候诡异的问题了</p>
 <p>
-   多重继承最常规的用法：公有继承一个接口类的同时，需要私有继承一个类来辅助实现
-</p>
+   多重继承最常规的用法：公有继承一个接口类的同时，需要私有继承一个类来辅助实现</p>
+</div>
+</div>
+</div>
+</div>
 
       </article>
 

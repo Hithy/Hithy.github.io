@@ -52,56 +52,53 @@
 
       <article class="post-content">
       
+<div id="outline-container-headline-1" class="outline-2">
 <h2 id="headline-1">
 现状
 </h2>
+<div id="outline-text-headline-1" class="outline-text-2">
 <p>
-之前实现了基于vpn协议的透明代理，其优势在于与传统的网络设备兼容，原生支持iptables，不过有几个问题却没有得到解决：
-</p>
+之前实现了基于vpn协议的透明代理，其优势在于与传统的网络设备兼容，原生支持iptables，不过有几个问题却没有得到解决：</p>
 <ol>
 <li>
-<p>
-信道不稳定，特别是晚上，导致openvpn间歇性卡顿
-</p>
+<p>信道不稳定，特别是晚上，导致openvpn间歇性卡顿</p>
 </li>
 <li>
-<p>
-用iptables做高级策略路由，实现复杂，dns也需要额外处理
-</p>
+<p>用iptables做高级策略路由，实现复杂，dns也需要额外处理</p>
 </li>
 <li>
-<p>
-难以吸收科学界先进经验
-</p>
+<p>难以吸收科学界先进经验</p>
 </li>
 </ol>
-<p>
-第一点，可以想很多办法解决，不要自己折腾，自己整的往往不太稳定，我们需要的只是一个服务口子，花钱省心。第二点，v2ray提供了很大的自由配置空间，并且有着丰富的社区资源，所以用这个就好了
-</p>
+<p>第一点，可以想很多办法解决，不要自己折腾，自己整的往往不太稳定，我们需要的只是一个服务口子，花钱省心。第二点，v2ray提供了很大的自由配置空间，并且有着丰富的社区资源，所以用这个就好了</p>
+</div>
+</div>
+<div id="outline-container-headline-2" class="outline-2">
 <h2 id="headline-2">
 tproxy
 </h2>
+<div id="outline-text-headline-2" class="outline-text-2">
 <p>
-用v2ray的常规操作是在本地开个socks代理端口，然后浏览器配置代理使用。显然这不符合我们的需求，我们还是需要透明代理的，这里就需要用到tproxy了
-</p>
+用v2ray的常规操作是在本地开个socks代理端口，然后浏览器配置代理使用。显然这不符合我们的需求，我们还是需要透明代理的，这里就需要用到tproxy了</p>
 <p>
-tproxy是netfilter的一个模块，可以将流量转发到特定的端口(类似于redirect)，同时维护连接状态(redirect只能维护tcp的状态，udp只能用tproxy)，v2ray提供了的一个入站规则可以用来接收tproxy的流量
-</p>
+tproxy是netfilter的一个模块，可以将流量转发到特定的端口(类似于redirect)，同时维护连接状态(redirect只能维护tcp的状态，udp只能用tproxy)，v2ray提供了的一个入站规则可以用来接收tproxy的流量</p>
 <p>
-通过几个iptables命令把需要都流量重定向到v2ray监听端口就好了，然后利用v2ray强大的可配置性，实现更高级的需求，这里不展开了
-</p>
+通过几个iptables命令把需要都流量重定向到v2ray监听端口就好了，然后利用v2ray强大的可配置性，实现更高级的需求，这里不展开了</p>
+</div>
+</div>
+<div id="outline-container-headline-3" class="outline-2">
 <h2 id="headline-3">
 v2ray配置
 </h2>
+<div id="outline-text-headline-3" class="outline-text-2">
 <p>
-v2ray的配置目标比较明确：只有国外或者特定的流量走代理。这里可能需要注意的是DNS的配置，整个流程如下图：
-</p>
+v2ray的配置目标比较明确：只有国外或者特定的流量走代理。这里可能需要注意的是DNS的配置，整个流程如下图：</p>
 <p>
-<img src="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" alt="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" title="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" />
-</p>
+<img src="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" alt="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" title="https://i.loli.net/2020/04/18/fhxY6ErIDBJvG4F.png" /></p>
 <p>
-其中也支持一般的代理协议，以备不时之需
-</p>
+其中也支持一般的代理协议，以备不时之需</p>
+</div>
+</div>
 
       </article>
 

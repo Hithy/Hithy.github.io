@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>DDIA Note - ya0db9&#39;s Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <link rel="canonical" href="https://home.ya0db9.com/post/ddia/">
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//css/combined-min.css">
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//tipuesearch/tipuesearch.css">
+
+</head>
+<body class="">
+
+<div class="site-wrap">
+  <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="https://home.ya0db9.com/" class="site-title">ya0db9&#39;s Site</a>
+      <nav class="site-nav right">
+      <a href="https://home.ya0db9.com//about/">About</a>
+<a href="https://home.ya0db9.com//tags/">Tags</a>
+<a href="https://home.ya0db9.com//contact/">Contact</a>
+</form>
+
+      </nav>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</header>
+
+  <div class="post p2 p-responsive wrap" role="main">
+    <div class="measure">
+      <div class="post-header mb2">
+        <h1 class="py2">DDIA Note</h1>
+        <span class="post-meta">Jul 21, 2020 </span><br>
+        
+      </div>
+
+      <article class="post-content">
+      
+<div id="outline-container-headline-1" class="outline-2">
+<h2 id="headline-1">
+Ch-7 Transactions
+</h2>
+<div id="outline-text-headline-1" class="outline-text-2">
+<div id="outline-container-headline-2" class="outline-3">
+<h3 id="headline-2">
+Weak Isolation Levels(弱隔离级别)
+</h3>
+<div id="outline-text-headline-2" class="outline-text-3">
+<div id="outline-container-headline-3" class="outline-4">
+<h4 id="headline-3">
+Read Committed
+</h4>
+<div id="outline-text-headline-3" class="outline-text-4">
+<ul>
+<li>
+<p>原理</p>
+<p>
+读-提交是最基础的事务隔离级别，只保证两件事情：</p>
+<ol>
+<li>
+<p>从数据库中读取到的数据，一定是已经提交过的（没有脏读）</p>
+</li>
+<li>
+<p>向数据库中写入数据，只会覆盖掉已经提交过的（没有脏写）</p>
+</li>
+</ol>
+<p>但是无法解决计数器增量竞争的问题</p>
+</li>
+<li>
+<p>实现</p>
+<p>
+通过加锁来防止脏写，通过维护新旧两个版本来防止脏读</p>
+</li>
+<li>
+<p>存在的问题</p>
+<ol>
+<li>
+<p>无法解决读倾斜(read skew)问题</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-4">
+<h4 id="headline-4">
+SnapShot Isolation and Repeatable Read 
+</h4>
+<div id="outline-text-headline-4" class="outline-text-4">
+<p>
+    使用来版本控制，相对读-提交来说的区别在于：读-提交的快照是以查询位粒度的，而快照级别隔离是以事务为粒度的</p>
+<p>
+    每条记录快照会带上版本号(事务id)，在读取数据库的时候，几种情况会被忽略：</p>
+<ol>
+<li>
+<p>任何晚于当前事务id的版本</p>
+</li>
+<li>
+<p>任何已经终止的事务对应的版本</p>
+</li>
+<li>
+<p>未完成的事务对应的版本</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>索引问题</p>
+<p>
+PostgreSQL等引擎把一个对象的多个版本放到同一个内存页来避免更新索引，而CouchDB等数据库用B树作为主体结构，每一次写入快照，都会创建一个新的root节点</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-5" class="outline-4">
+<h4 id="headline-5">
+Preventing Lost Updates
+</h4>
+<div id="outline-text-headline-5" class="outline-text-4">
+<p>
+    读-提交和快照级隔离都主要是为了解决只读事务在遇到并发写的时候，可以看到什么的问题。之前讨论的脏写，只是写事务冲突的一种特殊情况</p>
+<p>
+    更新丢失通常发生的场景是read-modify-write过程，解决这个问题通常有几种方式</p>
+<ul>
+<li>
+<p>原子写操作</p>
+<p>
+如果数据库支持原子写(通常是对对象加独占锁或者原子操作强制单线程来实现)，可以把这个过程交给数据库解决。
+但是很多时候，我们会在应用层写出read-modify-write的代码，导致无法使用到数据库的原子操作</p>
+</li>
+<li>
+<p>显式加锁</p>
+<p>
+应用层主动加锁，但是很容易漏掉</p>
+</li>
+<li>
+<p>自动检测更新丢失</p>
+<p>
+通过快照级别隔离，很多数据库支持自动检测事务更新丢失</p>
+</li>
+<li>
+<p>原子比较和设置</p>
+<p>
+在写入的时候带入旧内容，只有旧内容匹配的时候，才进行写入：</p>
+<div class="src src-sql">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">  <span style="color:#66d9ef">update</span> wiki_pages <span style="color:#66d9ef">set</span> content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;new content&#39;</span>
+         <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">1234</span> <span style="color:#66d9ef">and</span> content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;old content&#39;</span></code></pre></div>
+</div>
+<p>
+需要注意的是，如果数据库允许where语句从一个旧的快照上读取内容，还是会导致条件为true</p>
+</li>
+<li>
+<p>冲突解决与复制</p>
+<p>
+在多副本数据库中，前面说的原子比较操作和加锁都会失效。一般是保留多个冲突版本，并在应用层去处理冲突。
+如果操作可交换(在不同副本上以不同的顺序应用这个操作，能够得到相同的结果)，例如计数器递增、向集合中加入元素，是可以合并更新的</p>
+<p>
+而更为常见的LWW(last write wins)方式却是很容易丢失更新的</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-4">
+<h4 id="headline-6">
+Write Skew and Phantoms
+</h4>
+<div id="outline-text-headline-6" class="outline-text-4">
+<p>
+    写数据的时候，依赖于之前读取的结果，在读和写之间的过程中，读取的结果变了，写入的时候没有发现，会违背规则。这时候如果写入的是同一个对象，则发生 <em>脏写/更新丢失</em> ；如果是不同对象，则是 <em>写倾斜</em></p>
+<p>
+    幻读：一个事务的写入，改变了另外一个事务查询的结果</p>
+<ul>
+<li>
+<p>通过实体化冲突来解决问题</p>
+<p>
+例如订书的例子，可以新建一个表，每一行表示一个预定，包含了时间段和房间号。在事务预定的时候，加锁对应的行，即可避免冲突</p>
+<p>
+但是问题在于，如何实体化冲突，是一个比较困难并且容易出错的问题，而且把并发控制机制泄漏到数据模型中也不够优雅。所以在有备选方案的情况下，不要用这个方案</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-7" class="outline-3">
+<h3 id="headline-7">
+Serializability(串行化)
+</h3>
+<div id="outline-text-headline-7" class="outline-text-3">
+<p>
+   在使用之前的隔离级别通常会有以下挑战：</p>
+<ol>
+<li>
+<p>隔离级别难以理解，而且不同数据库实现不一样</p>
+</li>
+<li>
+<p>很难去确定应用层代码在某种隔离级别上运行是否安全，特别是规模较大的应用</p>
+</li>
+<li>
+<p>没有好的工具去检测竞态，而且问题往往发生在特定的时间</p>
+</li>
+</ol>
+<p>所以通常的解决方法是：串行化隔离</p>
+<p>
+   常用三种技术：</p>
+<ol>
+<li>
+<p>严格按照串行顺序执行</p>
+</li>
+<li>
+<p>两阶段锁(2PL, Two-phase locking)</p>
+</li>
+<li>
+<p>乐观并发控制技术，例如可串行化的快照隔离(SSI, serializable snapshot isolation)</p>
+</li>
+</ol>
+<div id="outline-container-headline-8" class="outline-4">
+<h4 id="headline-8">
+Actual Serial Execution
+</h4>
+<div id="outline-text-headline-8" class="outline-text-4">
+<p>
+    考虑到内存越来越便宜，OLTP事务通常很短而且读写很少，所以可以考虑：完全移除掉并发，同一时间，只能以串行的方式，执行一个事务</p>
+<ul>
+<li>
+<p>Encapsulating transactions in stored procedures</p>
+<p>
+一次性把事务代码直接提交给数据库的操作，叫做存储过程(stored procedure)。如果所有数据都在内存中，完全避免网络和磁盘I/O的开销，这种串行事务的效率也会很高</p>
+<p>
+存在的问题在于：</p>
+<ol>
+<li>
+<p>语言不通用</p>
+</li>
+<li>
+<p>代码难以维护和调试</p>
+</li>
+<li>
+<p>这一层的代码常常是共享代码，其性能非常敏感</p>
+</li>
+</ol>
+</li>
+</ul>
+<ul>
+<li>
+<p>分区</p>
+<p>
+通常把数据库独立到各个分区，每个分区跑一个实例，可以利用到多核的优势</p>
+<p>
+但如果存在跨分区或者二级索引，会增加大量的协调代码，极大影响性能</p>
+</li>
+<li>
+<p>可实现串行化隔离的约束条件</p>
+<ol>
+<li>
+<p>事务必须简短高效</p>
+</li>
+<li>
+<p>绝大部分数据需要内存处理，磁盘I/O尽量少</p>
+</li>
+<li>
+<p>写入吞吐量必须很低才能在单核使用，否则需要分区</p>
+</li>
+<li>
+<p>跨分区事务尽量少</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-9" class="outline-4">
+<h4 id="headline-9">
+Two-Phase Locking(2PL)
+</h4>
+<div id="outline-text-headline-9" class="outline-text-4">
+<p>
+    近三十年来唯一广泛使用的串行化算法</p>
+<p>
+    快照隔离允许读的时候写，或者写的时候读，但是两阶段锁不允许这个操作，这是它们最大的区别</p>
+<ul>
+<li>
+<p>实现</p>
+<ol>
+<li>
+<p>读取一个对象，需要获取共享锁</p>
+</li>
+<li>
+<p>写入一个对象，需要获取独占锁</p>
+</li>
+</ol>
+<p>共享锁之间不冲突，独占锁和任意锁都冲突</p>
+</li>
+</ul>
+<p>这样就容易发生死锁，比如两个事务都要对一个对象有一个读取阶段和写入阶段，如果两个事务同时到达写入阶段，就会相互等待对方放弃读锁</p>
+<p>
+    数据库一般都可以通过中止其中一个事务来断掉死锁，并交给应用层处理</p>
+<ul>
+<li>
+<p>开销</p>
+<ol>
+<li>
+<p>锁的获取和释放</p>
+</li>
+<li>
+<p>中断了并发</p>
+</li>
+<li>
+<p>死锁导致的重试</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Predicate locks(谓词锁)</p>
+<p>
+到目前为止，2PL能够解决除了幻读以外的所有问题，但是幻读问题依旧，所以这里引入谓词锁</p>
+<p>
+谓词锁对应一个查询条件，只要满足这个条件的对象，都属于谓词锁的保护</p>
+<p>
+实现：</p>
+<ol>
+<li>
+<p>A事务要获取满足查询条件的对象，必须以共享锁模式获取这个查询条件的谓词锁，如果存在事务拿到了满足谓词的任意对象的独占锁，A事务必须等待独占锁释放</p>
+</li>
+<li>
+<p>A事务要修改任何对象，首先要检查这个对象的旧值和新值是否满足任意存在的谓词锁，如果有事务持有这个谓词锁，A必须等到其他事务提交或者放弃</p>
+</li>
+</ol>
+<p>谓词锁可以保护数据库中还不存在但马上会被写入的数据(幻读)</p>
+</li>
+<li>
+<p>谓词锁优化——索引区间锁(Index-range locks)</p>
+<p>
+谓词锁往往性能不够好，所以一般会把谓词扩大到索引。比如查询一个房间在某个时间段是否预定，房间号和时间区间都可能存在索引，这样就可以把谓词限定在：某个房间的全部时间；某个时间段的全部房间。</p>
+<p>
+如果没有合适的索引，甚至可以锁整张表</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-10" class="outline-4">
+<h4 id="headline-10">
+Serializable Snapshot Isolation(SSI)
+</h4>
+<div id="outline-text-headline-10" class="outline-text-4">
+<p>
+    相对于2PL，SSI是一种乐观的控制方式，SSI使用一些算法来检测写入冲突并决定中止哪些事务，一般是基于过期的条件做决定，分两种情况：</p>
+<ol>
+<li>
+<p>检测是否读取了一个过期的MVCC对象版本</p>
+<p>
+如果一个事务已经写入了，但是未提交，这时候读取这个值，是可以知道发生冲突了的，但是可以不阻止。</p>
+<p>
+一方面是因为后面的事务读取之后，可能并不写入，也就是不会有写倾斜问题；另一方面，如果第一个事务异常中止了，后面的事务可以安全提交</p>
+</li>
+</ol>
+<ol>
+<li>
+<p>检测写入是否影响到之前的读取</p>
+<p>
+多个事务同时读了一个值的时候，其中一个事务要进行写入，也是可以知道冲突的(例如前面提到的谓词锁)，这里也不阻止写入</p>
+<p>
+一方面是因为前面读了这个值的事务，不一定会写入，也可能异常终止；另一方面，写入的时候也能发现被改了，这时候终止也来得及</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+      </article>
+
+      
+
+      
+
+    </div>
+  </div>
+</div>
+    <footer class="footer">
+      <div class="p2 wrap">
+        <div class="measure mt1 center">
+      <nav class="social-icons icons">
+<a class="fa fa-rss rss" href="/index.xml"></a>
+
+</nav>
+
+          <small>
+            Copyright &#169; 2017<br>
+            Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> &amp; <a href="https://github.com/azmelanar/hugo-theme-pixyll" target="_blank">Pixyll</a>
+          </small>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-156425913-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
+
