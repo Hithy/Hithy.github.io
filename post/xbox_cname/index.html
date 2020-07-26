@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>xbox加速方案 - ya0db9&#39;s Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <link rel="canonical" href="https://home.ya0db9.com/post/xbox_cname/">
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//css/combined-min.css">
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//tipuesearch/tipuesearch.css">
+
+</head>
+<body class="">
+
+<div class="site-wrap">
+  <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="https://home.ya0db9.com/" class="site-title">ya0db9&#39;s Site</a>
+      <nav class="site-nav right">
+      <a href="https://home.ya0db9.com//about/">About</a>
+<a href="https://home.ya0db9.com//tags/">Tags</a>
+<a href="https://home.ya0db9.com//contact/">Contact</a>
+</form>
+
+      </nav>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</header>
+
+  <div class="post p2 p-responsive wrap" role="main">
+    <div class="measure">
+      <div class="post-header mb2">
+        <h1 class="py2">xbox加速方案</h1>
+        <span class="post-meta">Jul 26, 2020 </span><br>
+        
+      </div>
+
+      <article class="post-content">
+      
+<div id="outline-container-headline-1" class="outline-2">
+<h2 id="headline-1">
+0x00 需求
+</h2>
+<div id="outline-text-headline-1" class="outline-text-2">
+<p>
+  周末基佬打开了吃灰N久的xbox，发现有几十个G的更新，而更新速度只有两三兆，应该是默认走了科学线路，因为路由器的性能限制，最多也就这个速度了</p>
+<p>
+  这么更新不行啊，一方面慢；另一方面，流量也撑不住。所以直接加白名单，绕过科学线路，走直连试了下，结果不出所料，根本下不动了</p>
+<p>
+  但是按照以往的经验，在中国移动网络下，是可以达到很高的速度的，但是现在换成电信就不行了。到网上查了一圈，试了一堆方法，最后觉得还是域名的问题</p>
+<p>
+  xbox连下载服务器默认用的.com域名，理想情况，会走cdn，连到附近的服务器，然而从tcpdump的数据看，都是连到国外服务器去了，换了几个dns都不行</p>
+</div>
+</div>
+<div id="outline-container-headline-2" class="outline-2">
+<h2 id="headline-2">
+0x01 解决办法
+</h2>
+<div id="outline-text-headline-2" class="outline-text-2">
+<p>
+  这种问题我肯定不是第一个遇到的，很多人都有同样的麻烦，也提供了各种各样的解决办法，最终看到一个比较靠谱的方案：把.com换成.cn</p>
+<p>
+  xbox下载相关的域名如下：</p>
+<blockquote>
+<p>assets1.xboxlive.com</p>
+<p>
+  assets2.xboxlive.com</p>
+<p>
+  dlassets.xboxlive.com</p>
+</blockquote>
+<p>
+  只需要把这几个域名的.com改成.cn就行了，这里我们用nginx 302代理的方式来做，不用伪造dns的原因是路由器上的dnsmasq好像不支持直接返回一个cname</p>
+<p>
+  这个方案的原理是：</p>
+<ol>
+<li>
+<p>xbox请求域名解析(例如assets1.xboxlive.com)</p>
+</li>
+<li>
+<p>路由器拦截请求，把域名解析到一台我们自己的nginx服务器上</p>
+</li>
+<li>
+<p>xbox向nginx发送http请求下载数据</p>
+</li>
+<li>
+<p>nginx返回302报错，并把assets1.xboxlive.cn返回给xbox</p>
+</li>
+<li>
+<p>xbox走常规流程，解析assets1.xboxlive.cn，下载数据</p>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-3" class="outline-2">
+<h2 id="headline-3">
+0x02 nginx配置
+</h2>
+<div id="outline-text-headline-3" class="outline-text-2">
+<div class="src src-conf">
+<pre><code class="language-conf" data-lang="conf">  if ($host = &#39;assets1.xboxlive.com&#39; ) {
+     rewrite ^/(.*)$ http://assets1.xboxlive.cn/$1 redirect;
+  }
+
+  if ($host = &#39;assets2.xboxlive.com&#39; ) {
+     rewrite ^/(.*)$ http://assets2.xboxlive.cn/$1 redirect;
+  }
+
+  if ($host = &#39;dlassets.xboxlive.com&#39; ) {
+     rewrite ^/(.*)$ http://dlassets.xboxlive.cn/$1 redirect;
+  }</code></pre>
+</div>
+</div>
+</div>
+
+      </article>
+
+      
+
+      
+
+    </div>
+  </div>
+</div>
+    <footer class="footer">
+      <div class="p2 wrap">
+        <div class="measure mt1 center">
+      <nav class="social-icons icons">
+<a class="fa fa-rss rss" href="/index.xml"></a>
+
+</nav>
+
+          <small>
+            Copyright &#169; 2017<br>
+            Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> &amp; <a href="https://github.com/azmelanar/hugo-theme-pixyll" target="_blank">Pixyll</a>
+          </small>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-156425913-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
+
