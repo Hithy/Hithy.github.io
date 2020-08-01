@@ -54,19 +54,582 @@
       
 <div id="outline-container-headline-1" class="outline-2">
 <h2 id="headline-1">
-Ch-7 Transactions
+Ch-5 Replication
 </h2>
 <div id="outline-text-headline-1" class="outline-text-2">
 <div id="outline-container-headline-2" class="outline-3">
 <h3 id="headline-2">
-Weak Isolation Levels(弱隔离级别)
+Leaders and Followers(主从模式)
 </h3>
 <div id="outline-text-headline-2" class="outline-text-3">
 <div id="outline-container-headline-3" class="outline-4">
 <h4 id="headline-3">
-Read Committed
+同步复制
 </h4>
 <div id="outline-text-headline-3" class="outline-text-4">
+<ul>
+<li>
+<p>pros</p>
+<ol>
+<li>
+<p>用户读到的数据永远是最新的</p>
+</li>
+<li>
+<p>主节点挂了之后，从节点还是有最新的数据的</p>
+</li>
+</ol>
+</li>
+<li>
+<p>cons</p>
+<ol>
+<li>
+<p>慢</p>
+</li>
+<li>
+<p>只要一个从节点有问题，拖累整个系统</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-4">
+<h4 id="headline-4">
+异步复制
+</h4>
+<div id="outline-text-headline-4" class="outline-text-4">
+<ul>
+<li>
+<p>pros</p>
+<ol>
+<li>
+<p>无阻塞，主节点可以继续处理写请求</p>
+</li>
+<li>
+<p>在多数据中心中更适用</p>
+</li>
+</ol>
+</li>
+<li>
+<p>cons</p>
+<ol>
+<li>
+<p>如果主节点挂了，可能所有数据都丢了</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-5" class="outline-4">
+<h4 id="headline-5">
+启用一个新的从节点流程
+</h4>
+<div id="outline-text-headline-5" class="outline-text-4">
+<ol>
+<li>
+<p>拍一个主节点的快照</p>
+</li>
+<li>
+<p>把快照复制到从节点</p>
+</li>
+<li>
+<p>从节点连接到主节点，并请求从快照开始的新的数据</p>
+</li>
+<li>
+<p>处理完所有的数据变更，可认为从节点赶上了(catch up)，接着就可以正常工作</p>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-4">
+<h4 id="headline-6">
+处理节点失效
+</h4>
+<div id="outline-text-headline-6" class="outline-text-4">
+<ul>
+<li>
+<p>从节点失效：追赶式恢复</p>
+<p>
+从节点重新上线后，从主节点请求从掉线开始的日志，并进行恢复</p>
+</li>
+<li>
+<p>主节点失效：故障转移</p>
+<ol>
+<li>
+<p>确认主节点确实失效了</p>
+<p>
+节点失效的原因有很多，比如crash，停电，断网等，需要用超时之类的机制确认主节点确实失效了</p>
+</li>
+<li>
+<p>选举新的主节点</p>
+<p>
+原主节点确定失效后，需要选举出一个新的主节点，这里就需要解决让所有从节点达成共识的问题(consensus problem)</p>
+</li>
+<li>
+<p>重新配置系统让新的主节点生效</p>
+<p>
+客户端需要把写请求发送到新的主节点。初次之外，原主节点可能随时恢复，在它恢复的时候，它自己可能认为它还是主节点，这时候系统需要强制让它下台，可能的话，变成从节点</p>
+</li>
+</ol>
+</li>
+<li>
+<p>主节点失效恢复过程中产生的问题</p>
+<ol>
+<li>
+<p>如果是异步复制，新的主节点可能还没有完全更新到旧的主节点的数据。这时候旧的主节点重新加入集群，如何处理这些已经写入进去的数据？常用解决办法是忽略掉旧主节点上未复制出去的数据，但这违背了对客户端持久化的承诺</p>
+</li>
+<li>
+<p>忽略已写入的数据是极其危险的，特别是别的系统对数据库的数据有依赖。比如github之前的一个事故，原主节点已经把计数器主键分配给了某些用户，当它出问题的时候，一个未完全同步到数据的从节点被选举成新的主节点，它将这些主键分配给了其他的用户。而原有的主键已经在redis里面被引用，这样导致原有主键用户的私有数据泄露给新持有该主键的用户</p>
+</li>
+<li>
+<p>有些情况下，可能同时存在两个节点都认为自己是主节点(俗称脑裂,split brain)，这时候两边都可能在写入数据，导致数据出现问题</p>
+</li>
+<li>
+<p>确认主节点失效的超时到底设置多少比较合适？太短会导致开销过大，太长导致总体恢复时间过长</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-7" class="outline-4">
+<h4 id="headline-7">
+实现复制日志
+</h4>
+<div id="outline-text-headline-7" class="outline-text-4">
+<ol>
+<li>
+<p>基于语句的复制</p>
+<p>
+按照sql的语法来，但是会有一些场景不适用</p>
+<ul>
+<li>
+<p>通过now()或者rand()等获取非确定性变量的函数结果是不一致的</p>
+</li>
+<li>
+<p>有些用了自增或者条件语句，需要串行执行，在并发环境下会有很大限制</p>
+</li>
+<li>
+<p>只要不是绝对确定性的语句，有些有副作用的语句(如触发器、存储过程或者用户自定义函数)在不同的副本上会产生不同的副作用</p>
+</li>
+</ul>
+</li>
+<li>
+<p>基于预写日志(Write-ahead log, WAL)传输</p>
+<p>
+对于LSM存储引擎，日志是主要存储方式，会在后台压缩并进行垃圾回收；如果是用覆盖写入磁盘的B树，会预先写入日志，以方便在出错的时候恢复</p>
+<p>
+这是一种比较底层的方式，兼容性和可移植性都不是很好</p>
+</li>
+<li>
+<p>逻辑(基于行)日志复制</p>
+<p>
+对存储引擎的增、删、改进行一层抽象，忽略掉实现细节，易解析，对外部系统的支持也更好</p>
+</li>
+<li>
+<p>基于触发器的复制</p>
+<p>
+很多时候只想复制数据的一部分，或者按照更灵活的需求来做复制，往往会考虑到在感兴趣的数据上加入触发器，然后交给应用层代码来处理</p>
+<p>
+这种方式开销大，容易出错，但是非常灵活</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-8" class="outline-3">
+<h3 id="headline-8">
+Problems with Replication Lag
+</h3>
+<div id="outline-text-headline-8" class="outline-text-3">
+<p>
+   除了用于容错，增加副本节点也用于扩大规模和降低延迟(cdn)，在需要大规模读节点的场景中，基本上只能使用异步复制，异步复制会带来明显的一致性问题</p>
+<p>
+   最终一致性(eventual consistency)：从节点会在一段时间落后，但是最终会赶上主节点</p>
+<div id="outline-container-headline-9" class="outline-4">
+<h4 id="headline-9">
+Reading Your Own Writes
+</h4>
+<div id="outline-text-headline-9" class="outline-text-4">
+<p>
+    read-after-write consistency: 读自己的写保证用户重新刷新页面的时候，总是能读取到自己刚刚提交的内容</p>
+<p>
+    一般有如下实现方案：</p>
+<ul>
+<li>
+<p>从主节点读刚刚写入的内容</p>
+<p>
+如果用户可编辑的内容太多，这种方式会严重影响效率(所有的读都从主节点去了)</p>
+</li>
+<li>
+<p>一段时间内从主节点读刚刚写入的内容</p>
+<p>
+一段时间内从主节点读可以缓解全部从主节点读带来的负载压力</p>
+</li>
+<li>
+<p>按照时间戳读取</p>
+<p>
+客户端可以记住写入时候的时间戳(可以是逻辑时间戳、版本号啥的)，如果副本中的版本比时间戳旧，一方面可以去读其他副本，另一方面可以等待直到副本同步到更新的数据</p>
+</li>
+<li>
+<p>主节点路由</p>
+<p>
+如果节点跨越了几个数据中心，可能需要在读取的时候，路由到包含主节点的数据中心</p>
+</li>
+</ul>
+<p>以上方式可以解决单客户端的问题，但是如果用户是多个设备读写同一账户的数据，就要涉及跨设备(cross-device)一致性问题了</p>
+<ul>
+<li>
+<p>记住时间戳会变得困难，一个客户端写，其他客户端是不知道写入的时间戳的</p>
+</li>
+<li>
+<p>如果副本跨数据中心，多个设备可能连接上了不同的数据中心，如果是这样，需要路由到相同的数据中心</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-10" class="outline-4">
+<h4 id="headline-10">
+Monotonic Reads
+</h4>
+<div id="outline-text-headline-10" class="outline-text-4">
+<p>
+    单调读：确保每次读取数据，都不会比之前读取到的数据旧</p>
+</div>
+</div>
+<div id="outline-container-headline-11" class="outline-4">
+<h4 id="headline-11">
+Consistent Prefix Reads
+</h4>
+<div id="outline-text-headline-11" class="outline-text-4">
+<p>
+    前缀一致读：对于一系列按照某种因果顺序发生的写请求，读取这些内容的时候，一定会按照当时的写入顺序读取</p>
+</div>
+</div>
+<div id="outline-container-headline-12" class="outline-4">
+<h4 id="headline-12">
+复制滞后解决方案
+</h4>
+<div id="outline-text-headline-12" class="outline-text-4">
+<p>
+    通过事务在数据库层面保证一致性，降低应用层的复杂度</p>
+<p>
+    单节点事务已经很成熟，但是分布式事务会麻烦很多，具体参考第7章和第9章</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-13" class="outline-3">
+<h3 id="headline-13">
+Multi-Leader Replication
+</h3>
+<div id="outline-text-headline-13" class="outline-text-3">
+<div id="outline-container-headline-14" class="outline-4">
+<h4 id="headline-14">
+应用场景   
+</h4>
+<div id="outline-text-headline-14" class="outline-text-4">
+<p>在单数据中心用多主节点复制模式没有意义，一般用于如下场景：</p>
+<ul>
+<li>
+<p>多数据中心</p>
+<p>
+在数据中心应用中，单节点和多节点主要优势如下：</p>
+<ul>
+<li>
+<p>性能</p>
+<p>
+单主节点配置中，每次写入都必须经过互联网才能写入到主节点所在的数据中心；而多主节点只需要写入到当前数据中心的主节点，上层应用不用关心数据中心之间的网络同步细节</p>
+</li>
+<li>
+<p>容忍数据中心失效</p>
+<p>
+单主节点中如果主节点所在的数据中心挂掉了，需要把其他数据中心的一个节点提升为主节点；而多主节点配置中，其他数据中心可以正常服务，失效数据中心在恢复后可以追赶上来</p>
+</li>
+<li>
+<p>容忍网络问题</p>
+<p>
+广域网的可靠性远不如数据中心内网，而写入操作往往是同步操作，对数据中心之间的网络更为敏感；多主节点之间的复制往往是异步，容错性更好一些</p>
+</li>
+</ul>
+<p>但是多主节点会有一个严重的问题：如果同一个数据同时被多个数据中心的主节点写入，会造成冲突，这个冲突必须要得到解决</p>
+<p>
+除此之外，多主节点复制往往是数据库的一个高级功能，一些数据库的功能(自增键、触发器和完整性约束等)在多主节点环境会产生一些副作用</p>
+</li>
+<li>
+<p>客户端的离线操作</p>
+<p>
+当一些客户端需要在离线的情况下继续工作，例如在不同设备上的日历程序，每个设备上程序的数据库可以看做一个数据中心，数据中心之间的同步延迟可能达到数小时甚至数天</p>
+</li>
+<li>
+<p>协同编辑</p>
+<p>
+例如Google Docs这样的，每个浏览器有一个本地的副本，用户修改数据时候，会从本地副本复制到服务器和其他客户端</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-15" class="outline-4">
+<h4 id="headline-15">
+处理冲突
+</h4>
+<div id="outline-text-headline-15" class="outline-text-4">
+<p>
+    当两个主节点同时写入同一个数据的时候，就会发生写入冲突</p>
+<ul>
+<li>
+<p>Synchronous versus asynchronous conflict detection</p>
+<p>
+单主节点是同步写入的，所以不会有这个问题，而多主节点发现冲突的时候，已经太迟了</p>
+<p>
+原则上可以让多主节点复制的写入编程同步模式，但是这样就失去了多主节点复制的最大优势，还不如考虑使用单主节点</p>
+</li>
+<li>
+<p>Confict avoidance</p>
+<p>
+解决冲突最直接的办法是避免冲突，如果把对统一用户的写入都放到同一个主节点，就可以避免多主节点写入冲突</p>
+<p>
+这里就需要给每个用户分配一个合适的主节点，用户的所有写入，都交给其主节点来做</p>
+<p>
+不过这里也会有个问题，如果被分配的主节点失效或者用户的物理位置移动，可能就需要给用户重新分配一个主节点，这种情况下，还是会面临写入冲突的问题</p>
+</li>
+<li>
+<p>Converging toward a consistent state</p>
+<p>
+通过算法或者规则让冲突收敛到一致，一般的方式有：</p>
+<ul>
+<li>
+<p>每次写入带上一个唯一的ID，ID最大的写入成功，其他的丢弃；或者带上时间戳，最后写入的成功(last write wins, LWW)。这种方式存在丢失数据的风险</p>
+</li>
+<li>
+<p>给每一个副本分配一个唯一的ID，来自ID最大的副本的数据，覆盖掉其他的数据，这种方式也可能丢失数据</p>
+</li>
+<li>
+<p>把冲突的数据按照规则拼接到一起(比如按照字母顺序，写入&#34;B&#34;和写入&#34;C&#34;冲突，可以考虑合并为&#34;B/C&#34;)</p>
+</li>
+<li>
+<p>记录冲突信息，让应用层处理冲突(例如通知用户)</p>
+</li>
+</ul>
+</li>
+<li>
+<p>Custom conflict resolution logic</p>
+<p>
+处理冲突最好的方式还是依赖用户层，一般有两个时机</p>
+<ul>
+<li>
+<p>在写入的时候处理</p>
+<p>
+只要数据库写入的时候检测到冲突，就通知应用层处理</p>
+</li>
+<li>
+<p>在读取的时候处理</p>
+<p>
+在写入时候产生冲突，冲突信息被保存下来，用户下次读取的时候，会通知应用层处理</p>
+</li>
+</ul>
+<p>这里的冲突处理粒度是数据库独立的一行或者一个文档，不是以事务的粒度。所以当一个事务原子地执行几次不同的写入，每次写入都会分别考虑这里的冲突解决</p>
+</li>
+<li>
+<p>什么是冲突</p>
+<p>
+除了这里提到的冲突，第七章和第十二章会讲更多，比如写倾斜问题</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-16" class="outline-4">
+<h4 id="headline-16">
+Multi-Leader Replication Topologies
+</h4>
+<div id="outline-text-headline-16" class="outline-text-4">
+<p>
+    一般分为环装、星状(树形)和完全图</p>
+<p>
+    前两者容易出现单点问题，后者容易出现特定写入顺序不一致的问题(不同的主节点先后写入同一个内容，其他节点收到的写入顺序可能不一致)</p>
+<p>
+    通常可以用一个叫做版本向量(version vectors)的技术来解决这个问题，后面再讲</p>
+<p>
+    总的来说多主节点复制的冲突检测技术并不是一个简单的事情，在使用的时候一定要考虑清楚</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-17" class="outline-3">
+<h3 id="headline-17">
+Leaderless Replication
+</h3>
+<div id="outline-text-headline-17" class="outline-text-3">
+<p>
+   无主节点模式需要客户端把写入数据发给其他的副本，写入顺序不做保证</p>
+<div id="outline-container-headline-18" class="outline-4">
+<h4 id="headline-18">
+Writing to the Database When a Node Is Down   
+</h4>
+<div id="outline-text-headline-18" class="outline-text-4">
+<p>
+   一般来说，客户端会并行向多个副本发送读请求，根据版本号，可以知道某些节点因为挂掉之类的问题，存储的内容并不是最新的</p>
+<p>
+   一般通过两种方式来让数据过期的节点重新获取到最新的数据</p>
+<ul>
+<li>
+<p>Read repair</p>
+<p>
+客户端一次性会读取多份副本的数据，当发现某些副本落后的时候，由客户端写回过期的副本</p>
+</li>
+<li>
+<p>Anti-entropy process</p>
+<p>
+启动一些后台进程，持续监视各个副本之间的异同，并把某些副本确实的数据，从其他副本拷贝过去</p>
+<p>
+这个过程不保证顺序，并且可能会有很大延迟</p>
+</li>
+<li>
+<p>Quorums for reading and writing</p>
+<p>
+指定三个变量：n(副本数量)、w(至少成功写入w个节点才算成功写入)、r(每次读取副本的数量)</p>
+<p>
+正常情况下，读写请求会发送给全部n个副本，只有w/r个节点返回成功之后，才认为本次请求成功</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-19" class="outline-4">
+<h4 id="headline-19">
+Limitations of Quorum Consistency
+</h4>
+<div id="outline-text-headline-19" class="outline-text-4">
+<p>
+    选择一个w和r，只要w+r&gt;n，就可以保证写入和读取一定重叠，这样就能保证读取到的数据中，至少一个是最新的</p>
+<p>
+    如果选择的w和r更小，可能会遇到读取不到最新值的情况，但是能降低延迟和提高可用性</p>
+<p>
+    但是即便w+r&gt;n，也有可能出现读取不到最新值的情况</p>
+<ol>
+<li>
+<p>使用sloppy quorum的情况</p>
+</li>
+<li>
+<p>如果两个写入同时发生，无法明确发生顺序，这时候唯一安全的方式是合并写入</p>
+</li>
+<li>
+<p>如果写入的时候发生了读取，无法保证读取到的是新值还是旧值</p>
+</li>
+<li>
+<p>如果因为某些原因，整体上少于w个节点写入成功，这时候无法回滚已经成功写入的节点</p>
+</li>
+<li>
+<p>如果一个已经被写入新值的节点挂掉了，在恢复的时候，得到了旧值</p>
+</li>
+<li>
+<p>即便一切工作正常，第九章还会有Linearizability and quorums问题</p>
+</li>
+</ol>
+<p>所以quorum并不是一个绝对准确的，而是一个灵活可调整最新值的概率</p>
+<ul>
+<li>
+<p>Monitoring staleness</p>
+<p>
+对于主从复制结构的数据库，主节点到从节点的写入顺序一般是一致的，每个节点都维护了当前所在复制日志的位置，通过对比主节点和从节点的日志位置偏移，可以确定落后程度</p>
+<p>
+而无主节点结构就没有固定的顺序了，这会让监控更加困难。而对于那些只支持read repair(没有 anti-entropy)的数据库，一个节点落后多少是没有限度的</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-20" class="outline-4">
+<h4 id="headline-20">
+Sloppy Quorums and Hinted Handoff
+</h4>
+<div id="outline-text-headline-20" class="outline-text-4">
+<p>
+    如果因为网络问题之类的原因，不能满足数据仲裁的最低要求这时候就出现了选择：</p>
+<ul>
+<li>
+<p>如果成功的节点小于w/r，返回错误比较好？</p>
+</li>
+<li>
+<p>还是说我们允许写入小于w的请求成功，并把把剩下的部分暂存到n个节点之外的其他节点？</p>
+</li>
+</ul>
+<p>后者就是sloppy quorum</p>
+<p>
+    一旦网络恢复，这些暂存节点会把原有的数据写回去，这就叫做hinted handoff。这个过程提高了写可用性</p>
+<ul>
+<li>
+<p>Multi-datacenter operation</p>
+<p>
+无主节点结构可以直接用于多数据中心的环境
+配置的时候，写请求会发送到所有数据中心的副本上，但是只会等待本数据中心的回复，这样就不会受到延迟和跨数据中心网络问题的影响</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-21" class="outline-4">
+<h4 id="headline-21">
+Detecting Concurrent Writes
+</h4>
+<div id="outline-text-headline-21" class="outline-text-4">
+<ul>
+<li>
+<p>LWW</p>
+<p>
+我们在说写入时并发的时候，其实是指写入的顺序是未定义的，这时候就需要强制对其排序(例如按照时间戳)</p>
+<p>
+LWW是牺牲了数据的持久性的，有些写入请求虽然返回成功，但是依旧会被覆盖掉</p>
+<p>
+LWW唯一安全的用法是，所有的key只允许写入一次</p>
+</li>
+<li>
+<p>The “happens-before” relationship and concurrency</p>
+<p>
+定义并发：如果两个操作之间并不知道对方的存在，就认为是并发</p>
+<p>
+如果一个操作确切知道自己发生在另一个操作之后，当前操作就可以安全地覆盖掉之前的操作，否则需要处理并发冲突</p>
+</li>
+<li>
+<p>Capturing the happens-before relationship</p>
+<p>
+每个客户端有一个写入链</p>
+<p>
+在写入之前，会从服务端获取最新的数据和版本号，在写入的时候，保证上次获得的版本号之前的冲突数据都是处理了的</p>
+<p>
+写入成功之后，服务端会把最新的版本号，和上次读取到这次写入成功中间的冲突数据一并发回客户端，客户端需要处理掉这些冲突</p>
+</li>
+<li>
+<p>Merging concurrently written values</p>
+<p>
+根据需求来，增加的话，可以直接在list后面append；删除的话，需要设置墓碑标志，其他的客户端根据设置墓碑的版本号，选择删除还是保留</p>
+</li>
+<li>
+<p>Version vectors</p>
+<p>
+以上讨论的是单副本中的数据，在无主节点结构中，各个副本也可以设置版本矢量，当读取数据的时候，数据库副本会返回版本矢量给客户端</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-22" class="outline-2">
+<h2 id="headline-22">
+Ch-7 Transactions
+</h2>
+<div id="outline-text-headline-22" class="outline-text-2">
+<div id="outline-container-headline-23" class="outline-3">
+<h3 id="headline-23">
+Weak Isolation Levels(弱隔离级别)
+</h3>
+<div id="outline-text-headline-23" class="outline-text-3">
+<div id="outline-container-headline-24" class="outline-4">
+<h4 id="headline-24">
+Read Committed
+</h4>
+<div id="outline-text-headline-24" class="outline-text-4">
 <ul>
 <li>
 <p>原理</p>
@@ -98,11 +661,11 @@ Read Committed
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-4" class="outline-4">
-<h4 id="headline-4">
+<div id="outline-container-headline-25" class="outline-4">
+<h4 id="headline-25">
 SnapShot Isolation and Repeatable Read 
 </h4>
-<div id="outline-text-headline-4" class="outline-text-4">
+<div id="outline-text-headline-25" class="outline-text-4">
 <p>
     使用来版本控制，相对读-提交来说的区别在于：读-提交的快照是以查询位粒度的，而快照级别隔离是以事务为粒度的</p>
 <p>
@@ -127,11 +690,11 @@ PostgreSQL等引擎把一个对象的多个版本放到同一个内存页来避�
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-5" class="outline-4">
-<h4 id="headline-5">
+<div id="outline-container-headline-26" class="outline-4">
+<h4 id="headline-26">
 Preventing Lost Updates
 </h4>
-<div id="outline-text-headline-5" class="outline-text-4">
+<div id="outline-text-headline-26" class="outline-text-4">
 <p>
     读-提交和快照级隔离都主要是为了解决只读事务在遇到并发写的时候，可以看到什么的问题。之前讨论的脏写，只是写事务冲突的一种特殊情况</p>
 <p>
@@ -175,11 +738,11 @@ Preventing Lost Updates
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-6" class="outline-4">
-<h4 id="headline-6">
+<div id="outline-container-headline-27" class="outline-4">
+<h4 id="headline-27">
 Write Skew and Phantoms
 </h4>
-<div id="outline-text-headline-6" class="outline-text-4">
+<div id="outline-text-headline-27" class="outline-text-4">
 <p>
     写数据的时候，依赖于之前读取的结果，在读和写之间的过程中，读取的结果变了，写入的时候没有发现，会违背规则。这时候如果写入的是同一个对象，则发生 <em>脏写/更新丢失</em> ；如果是不同对象，则是 <em>写倾斜</em></p>
 <p>
@@ -197,11 +760,11 @@ Write Skew and Phantoms
 </div>
 </div>
 </div>
-<div id="outline-container-headline-7" class="outline-3">
-<h3 id="headline-7">
+<div id="outline-container-headline-28" class="outline-3">
+<h3 id="headline-28">
 Serializability(串行化)
 </h3>
-<div id="outline-text-headline-7" class="outline-text-3">
+<div id="outline-text-headline-28" class="outline-text-3">
 <p>
    在使用之前的隔离级别通常会有以下挑战：</p>
 <ol>
@@ -229,11 +792,11 @@ Serializability(串行化)
 <p>乐观并发控制技术，例如可串行化的快照隔离(SSI, serializable snapshot isolation)</p>
 </li>
 </ol>
-<div id="outline-container-headline-8" class="outline-4">
-<h4 id="headline-8">
+<div id="outline-container-headline-29" class="outline-4">
+<h4 id="headline-29">
 Actual Serial Execution
 </h4>
-<div id="outline-text-headline-8" class="outline-text-4">
+<div id="outline-text-headline-29" class="outline-text-4">
 <p>
     考虑到内存越来越便宜，OLTP事务通常很短而且读写很少，所以可以考虑：完全移除掉并发，同一时间，只能以串行的方式，执行一个事务</p>
 <ul>
@@ -284,11 +847,11 @@ Actual Serial Execution
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-9" class="outline-4">
-<h4 id="headline-9">
+<div id="outline-container-headline-30" class="outline-4">
+<h4 id="headline-30">
 Two-Phase Locking(2PL)
 </h4>
-<div id="outline-text-headline-9" class="outline-text-4">
+<div id="outline-text-headline-30" class="outline-text-4">
 <p>
     近三十年来唯一广泛使用的串行化算法</p>
 <p>
@@ -353,11 +916,11 @@ Two-Phase Locking(2PL)
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-10" class="outline-4">
-<h4 id="headline-10">
+<div id="outline-container-headline-31" class="outline-4">
+<h4 id="headline-31">
 Serializable Snapshot Isolation(SSI)
 </h4>
-<div id="outline-text-headline-10" class="outline-text-4">
+<div id="outline-text-headline-31" class="outline-text-4">
 <p>
     相对于2PL，SSI是一种乐观的控制方式，SSI使用一些算法来检测写入冲突并决定中止哪些事务，一般是基于过期的条件做决定，分两种情况：</p>
 <ol>

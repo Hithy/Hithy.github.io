@@ -26,7 +26,7 @@
       <pubDate>Tue, 21 Jul 2020 21:47:16 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/ddia/</guid>
-      <description>Ch-7 Transactions Weak Isolation Levels(弱隔离级别) Read Committed 原理 读-提交是最基础的事务隔离级别，只保证两件事情： 从数据库中读取到的数据，一定是已经提交过的（没有脏</description>
+      <description>Ch-5 Replication Leaders and Followers(主从模式) 同步复制 pros 用户读到的数据永远是最新的 主节点挂了之后，从节点还是有最新的数据的 cons 慢 只要一个从节点有问题，</description>
     </item>
     
     <item>
