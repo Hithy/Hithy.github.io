@@ -947,6 +947,116 @@ Serializable Snapshot Isolation(SSI)
 </div>
 </div>
 </div>
+<div id="outline-container-headline-32" class="outline-2">
+<h2 id="headline-32">
+Ch-9 Consistency and Consensus
+</h2>
+<div id="outline-text-headline-32" class="outline-text-2">
+<div id="outline-container-headline-33" class="outline-3">
+<h3 id="headline-33">
+Consistency Guarantees
+</h3>
+<div id="outline-text-headline-33" class="outline-text-3">
+<p>
+   最终一致性的保证不够强，很多bug只有在边界条件或者高强度并发的时候才能发现，所以需要一个更强的保证，以降低应用层的复杂度</p>
+<p>
+   事务和分布式一致性的区别：</p>
+<ul>
+<li>
+<p>事务主要用于避免由与并发执行事务产生的竟态</p>
+</li>
+<li>
+<p>分布式一致性主要用于协调副本在面临延迟和faults时候的状态</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-34" class="outline-3">
+<h3 id="headline-34">
+Linearizability(可线性化)
+</h3>
+<div id="outline-text-headline-34" class="outline-text-3">
+<p>
+   基本思想是：让系统看上去只有一份数据，并且所有操作都是原子的</p>
+<p>
+   对于不重叠的读写操作，按原子顺序来就好了；如果读写操作重叠，需要保证：所有的操作在时序上必须向前，不能回退</p>
+<p>
+   也就是说，一旦一个新的值被写入/读取，后面所有的连续读操作都看到新值，直到它再次被写入</p>
+<div id="outline-container-headline-35" class="outline-4">
+<h4 id="headline-35">
+Relying on Linearizability
+</h4>
+<div id="outline-text-headline-35" class="outline-text-4">
+<p>
+    一些依赖于可线性化的用例</p>
+<ul>
+<li>
+<p>加锁和Leader节点的选举</p>
+<p>
+一旦新的主节点被选出来，后续节点读取到的主节点，一定要是新的主节点</p>
+</li>
+<li>
+<p>约束和唯一性保证</p>
+<p>
+用户名、邮件名等唯一性保证，有点像加锁；又比如银行交易账单、订票系统</p>
+</li>
+<li>
+<p>跨通道时序依赖</p>
+<p>
+比如两个人用不同设备看比赛结果，他们之间相互交流的结果，需要和各自从设备上看到的结果一致</p>
+<p>
+又比如，系统A往数据库写了东西，然后以其他信道(例如消息队列)通知系统B去处理，系统B在处理的时候，需要保证从数据库能读取到A刚刚写入的内容</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-36" class="outline-4">
+<h4 id="headline-36">
+实现线性化系统
+</h4>
+<div id="outline-text-headline-36" class="outline-text-4">
+<ul>
+<li>
+<p>单主节点系统：部分支持</p>
+<p>
+如果都是从主节点读取或者同步写入到各个副本，原生就是可线性化的</p>
+<p>
+也有些情况不是，比如bugs，或者说设计上就是不可线性化的(使用快照隔离)</p>
+</li>
+<li>
+<p>选举算法：支持</p>
+<p>
+例如ZooKeeper或者etcd，都有实现线性化选举算法</p>
+</li>
+<li>
+<p>多主节点：不支持</p>
+<p>
+设计上就不是可线性化的</p>
+</li>
+<li>
+<p>无主节点：可能不支持</p>
+<p>
+只有合理配置，在一定需求范围内的quorum可能支持</p>
+<p>
+像什么基于时间戳的lww算法完全不可以</p>
+</li>
+</ul>
+<p>对于只有读写操作的quorum，可以支持线性化：</p>
+<ol>
+<li>
+<p>在读操作返回之前，同步执行read repair</p>
+</li>
+<li>
+<p>在写操作发送写入数据之前，必须读取最新的节点quorum状态</p>
+</li>
+</ol>
+<p>但是这种方式无法支持compare-and-set操作，所以最安全的方式，还是假定无主节点不支持线性化</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 
       </article>
 
