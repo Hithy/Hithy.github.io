@@ -1053,6 +1053,371 @@ Relying on Linearizability
 <p>但是这种方式无法支持compare-and-set操作，所以最安全的方式，还是假定无主节点不支持线性化</p>
 </div>
 </div>
+<div id="outline-container-headline-37" class="outline-4">
+<h4 id="headline-37">
+The Cost of Linearizability
+</h4>
+<div id="outline-text-headline-37" class="outline-text-4">
+<p>
+    如果两个数据中心之间的网络中断，用户的线性读写都会受到影响</p>
+<ul>
+<li>
+<p>CAP理论</p>
+<p>
+CAP理论一方面过于抽象，在实际应用的时候会有很多问题；另一方面，CAP中的P实际上是网络问题导致的，并不存在P与CA之间选择这个问题</p>
+<p>
+如果网络没有问题，C和A是可以共存的；如果网络有问题(P)，才需要再C和A之间做权衡</p>
+<p>
+CAP只讨论了一种一致性模型(线性化)和一种类型的错误(网络问题/活跃节点之间无法通信)，并没有讨论网络延迟、节点不可用等其他情况</p>
+</li>
+<li>
+<p>线性化和网络延迟</p>
+<p>
+对于现在多核cpu，每个核心的缓存的让内存访问可能存在不一致的问题，但这里不能用CAP理论来解释：cpu放弃线性化是因为性能，而不是因为容错</p>
+<p>
+理论上，高效的线性化存储是不存在的，但是弱一点的一致性模型会容易一些</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-38" class="outline-4">
+<h4 id="headline-38">
+Ordering Guarantees
+</h4>
+<div id="outline-text-headline-38" class="outline-text-4">
+<p>
+    线性化是一种最强的顺序保证，相当于所有的操作都是原子的；但是因果关系(causality)可能存在两个操作之间没有任何联系，也就出现竞态</p>
+<p>
+    total ordered(全序)排列的任何两个元素，一定可以对比先后；但是partially order(偏序)并没有这样的保证，两个元素可能无法对比</p>
+<p>
+    total order和partially order可以分别映射到Linearizability和Causality</p>
+<ul>
+<li>
+<p>Linearizability</p>
+<p>
+所有操作有先后顺序</p>
+</li>
+<li>
+<p>Causality</p>
+<p>
+没有确定关系的操作就是并发</p>
+</li>
+</ul>
+<p>线性化是因果关系的充分条件，比因果关系有着更强的保证，实际上，要实现因果关系，线性化并不是唯一途径，不过这些途径还在研究中</p>
+</div>
+</div>
+<div id="outline-container-headline-39" class="outline-4">
+<h4 id="headline-39">
+Sequence Number Ordering
+</h4>
+<div id="outline-text-headline-39" class="outline-text-4">
+<p>
+    如果系统有一个唯一的节点，可以对每一个操作进行编号(比如时间戳或者逻辑时钟)，可以自然的生成total order，如果是一个单主节点数据中心，复制日志本身就是全序的</p>
+<p>
+    但是如果系统中没有一个中心节点，生成这样的序列号会很麻烦，各个节点之间生成的序号都会有碰撞和交叉的风险</p>
+<ul>
+<li>
+<p>Lamport timestamps</p>
+<p>
+这种时间戳就是为了解决多个节点序列号生成不一致的问题，结构为:(counter, node ID)</p>
+<p>
+对比的时候，先比较counter大小，再比较node ID大小</p>
+<ol>
+<li>
+<p>每个事件对应一个Lamport时间戳，初始值为0</p>
+</li>
+<li>
+<p>如果事件在节点内发生，本地进程中的时间戳加1</p>
+</li>
+<li>
+<p>如果事件属于发送事件，本地进程中的时间戳加1并在消息中带上该时间戳</p>
+</li>
+<li>
+<p>如果事件属于接收事件，本地进程中的时间戳 = Max(本地时间戳，消息中的时间戳) + 1</p>
+</li>
+</ol>
+<p>节点内部由2和3保证顺序，节点间由4来保证，如果遇到counter相同，由node ID决定顺序</p>
+<p>
+lamport逻辑时间戳给系统提供了一个total order的方法</p>
+<p>
+和版本向量相比，版本向量可以确定两个操作是并发还是因果关系；而lamport timestamps是全序的，没有并发这一说</p>
+</li>
+</ul>
+<p>虽然lamport timestamps提供了一种全序的方案，但是并不能解决问题，例如：</p>
+<p>
+    一个操作要创建一个全局唯一的用户名，会出现了几个操作同时创建同一个用户名的情况，这里可以考虑直接利用全序时间戳，时序靠前的成功</p>
+<p>
+    但是，要确定谁创建成功，需要搜集所有节点当前跟创建有关的操作，这时候就需要去同步遍历每一个节点。如果在这个过程中，有节点出问题，请求就会被阻塞，导致系统挂住</p>
+<p>
+    问题的关键在于，在执行一个操作的时候，你无法知道其他节点有没有执行什么其他操作，也不知道这些操作会被插入到全序序列中的什么位置</p>
+<p>
+    总而言之，要解决用户名唯一的问题，光全序操作是不够的，还需要知道这个全序何时结束(当前操作之前的序列不在发生变化？)</p>
+<p>
+    这时候就需要全序广播了</p>
+</div>
+</div>
+<div id="outline-container-headline-40" class="outline-4">
+<h4 id="headline-40">
+Total Order Broadcast
+</h4>
+<div id="outline-text-headline-40" class="outline-text-4">
+<p>
+    全序广播通常被描述为一种节点间消息交换的协议，一般要求两点：</p>
+<ul>
+<li>
+<p>Reliable delivery</p>
+<p>
+消息不会丢失，如果消息成功发送到了一个节点，那么也一定成功发送到所有节点</p>
+</li>
+<li>
+<p>Totally ordered delivery</p>
+<p>
+所有节点上的消息顺序一致</p>
+</li>
+</ul>
+<p>全序广播和lamport之类的时间戳的不同点在于：如果收到了一条消息编号为4，另一条消息编号为6，全序广播可以预估中间有一条消息5；而逻辑时间戳无法知道中间有多少条消息。</p>
+<p>
+    全序广播可以类比于只能追加存储的日志</p>
+<ul>
+<li>
+<p>基于全序广播实现线性化存储</p>
+<p>
+我们要给用户起一个独一无二的用户名的时候，首先全序广播一条消息，说我要起名了，然后读取消息到我广播的这一条，看这些消息中我是不是第一个</p>
+</li>
+<li>
+<p>基于线性化存储实现全序广播</p>
+<p>
+需要一个线性化存储的整数，并且支持increment-and-get操作，每次发送消息的时候，通过这个操作取得编号，作为全序广播的顺序</p>
+<p>
+实现increment-and-get操作可以是一个单点来做，但是单点可能会失效，这样就面临共识问题了</p>
+</li>
+</ul>
+<p>
+    实现全序广播和实现一个increment-and-get操作的本质，都是共识问题，只要解决其中一个问题，另一个就能得到解决</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-41" class="outline-3">
+<h3 id="headline-41">
+Distributed Transactions and Consensus
+</h3>
+<div id="outline-text-headline-41" class="outline-text-3">
+<div id="outline-container-headline-42" class="outline-4">
+<h4 id="headline-42">
+原子提交和2PC(Two-Phase Commit)
+</h4>
+<div id="outline-text-headline-42" class="outline-text-4">
+<p>
+    原子提交：一次事务，要么成功，要么失败，不存在一部分节点成功，一部分失败的情况</p>
+<p>
+    2PC是一个多节点事务原子提交的算法(和2PL没啥关系)</p>
+<p>
+    2PC包含一个协调节点(coordinator)和一组数据库节点(participants)</p>
+<ol>
+<li>
+<p>协调节点向数据库节点发送数据</p>
+</li>
+<li>
+<p>协调节点向各节点发送prepare请求</p>
+</li>
+<li>
+<p>各节点回复prepare请求，作出 <strong>promises</strong> ，保证无论任何情况发生，都可以完成提交</p>
+</li>
+<li>
+<p>如果有节点有回复no，coordinator向所有节点发送 <strong>放弃</strong> 消息</p>
+</li>
+<li>
+<p>如果所有节点回复yes，coordinator向所有节点发送 <strong>提交</strong> 消息</p>
+</li>
+<li>
+<p>第5步无法撤销，coordinator会无限重试直到成功</p>
+</li>
+</ol>
+<p>2PC非常依赖于coordinator，如果coordinator挂了，必须等待其重启</p>
+<p>
+    当然participants也可以自己决定该怎么做，但这不是2PC算法的部分了</p>
+</div>
+</div>
+<div id="outline-container-headline-43" class="outline-4">
+<h4 id="headline-43">
+Distributed Transactions in Practice
+</h4>
+<div id="outline-text-headline-43" class="outline-text-4">
+<p>
+    分布式事务在实践中通常会非常耗，特别是异构分布式系统</p>
+<ul>
+<li>
+<p>Exactly-once message processing</p>
+<p>
+异构分布式事务允许不同系统集成在一起，例如一个消息队列，其中的消息，有且只有在处理这条消息的数据库事务提交的时候，才算被处理了。</p>
+<p>
+要实现这个过程，就是需要把提交数据库和消息确认放到一个事务中，原子提交，只有两个操作都成功了，才算成功，否者两者都回退</p>
+<p>
+这个过程只有在所有系统中使用相同的原子提交协议，才可能实现。反例就是邮件系统，不支持两阶段提交</p>
+</li>
+</ul>
+<p>
+    X/Open XA(eXtended Architecture)就是一个异构的两阶段提交协议实现标准</p>
+<ul>
+<li>
+<p>Recovering from coordinator failure</p>
+<p>
+有这样的情况，coordinator在挂掉之后，无法恢复原来的状态，此时部分paricipants还处于in-doubt阶段等着</p>
+<p>
+这时候可能需要系统管理员手动来处理，当然很多XA实现也提供了一些紧急措施(heuristic decisions)，允许参与者自行决定是否放弃本次提交，以跳出in-doubt状态</p>
+</li>
+<li>
+<p>Limitations of distributed transactions</p>
+<p>
+总结起来两点</p>
+<ol>
+<li>
+<p>coordinator容易成为单点问题</p>
+</li>
+<li>
+<p>XA的兼容性与提供的功能之间需要做权衡</p>
+</li>
+</ol>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-44" class="outline-4">
+<h4 id="headline-44">
+Fault-Tolerant Consensus
+</h4>
+<div id="outline-text-headline-44" class="outline-text-4">
+<p>
+    共识算法需要满足如下属性：</p>
+<ol>
+<li>
+<p>uniform agreement</p>
+<p>
+所有节点统一意见</p>
+</li>
+<li>
+<p>integrity</p>
+<p>
+不允许反悔或者对同一意见多次决定</p>
+</li>
+<li>
+<p>validity</p>
+<p>
+只能做出合法的决定，不能回复与提议无关的东西</p>
+</li>
+<li>
+<p>termination</p>
+<p>
+所有没挂掉的节点最终要达成共识</p>
+</li>
+</ol>
+<p>第四点要求了出故障的节点是不能超过半数的，否则算法是不工作的。大多数共识算法都保证了前三点，所以即便出现了大规模的停机，以至于不能处理任何需求，但是仍然可以保证数据是对的</p>
+<p>
+    大多数共识算法都默认没有拜占庭式错误，即有节点在故意搞事情</p>
+<p>
+    全序广播可以说是一种连续的共识，对应起来：</p>
+<ol>
+<li>
+<p>所有节点按照相同顺序传递相同的消息</p>
+</li>
+<li>
+<p>消息不会重复</p>
+</li>
+<li>
+<p>消息不会被破坏或者凭空捏造</p>
+</li>
+<li>
+<p>消息不会丢失</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>Single-leader replication and consensus</p>
+<p>
+对单主节点复制机制来说，本质上就是一个全序广播系统(所有的请求由主节点同步给从节点)</p>
+<p>
+只要主节点不挂或者挂掉的时候始终由管理员手动指定，那么就是一个原则上的共识的系统</p>
+<p>
+这种系统往往在实际中工作的很好，但是不满足共识的第四条属性，因为需要人为干预</p>
+<p>
+要满足第四条属性，需要在主节点挂掉的时候选举一个出来</p>
+<p>
+选举要求所有节点达成共识，往往可以通过全序广播系统实现</p>
+<p>
+然后全序广播就是这个系统本身，回到了先有鸡还是先有蛋的问题</p>
+</li>
+</ul>
+<ul>
+<li>
+<p>Epoch numbering and quorums</p>
+<p>
+共识算法定义了一个叫任期(epoch number)的时序编号，每一个任期内，只有一个主节点</p>
+<p>
+如果同时出现了两个主节点，任期较小的服从任期较大的</p>
+<p>
+每当主节点被认为是挂掉的时候，各个节点之间可以票选新的主节点，这时候会把任期加一，得到大多数节点投票的节点可以认为是新任期的主节点</p>
+<p>
+在主节点做决定的时候，需要发起提议，得到大部分节点支持(确定没有其他主节点)的时候，才被允许做接下来的事情</p>
+<p>
+这里面的关键点是，参与票选主节点和参与提议的两部分节点中，一定要有重合的部分，这样主节点才能确信自己就是主节点</p>
+<p>
+和2PC不一样的地方在于，2PC需要等待所有节点说yes，而票选只需要大部分节点回复就好了</p>
+</li>
+<li>
+<p>共识的一些问题</p>
+<p>
+票选阶段通常要求同步进行，但是为了性能，很多时候是配置成异步的</p>
+<p>
+共识算法往往需要大部分节点工作就可以继续进行，但是如果这两部分节点的网络出现了中断，剩下一部分节点就会阻塞住</p>
+<p>
+网络不稳定会严重影响共识算法的性能</p>
+</li>
+</ul>
+</div>
+</div>
+<div id="outline-container-headline-45" class="outline-4">
+<h4 id="headline-45">
+总结
+</h4>
+<div id="outline-text-headline-45" class="outline-text-4">
+<p>
+    可以归约为共识问题的几个相同问题：</p>
+<ol>
+<li>
+<p>Linearizable compare-and-set registers</p>
+</li>
+<li>
+<p>Atomic transaction commit</p>
+</li>
+<li>
+<p>Total order broadcast</p>
+</li>
+<li>
+<p>Locks and leases</p>
+</li>
+<li>
+<p>Membership/coordination service</p>
+</li>
+<li>
+<p>Uniqueness constraint</p>
+</li>
+</ol>
+<p>单主节点复制通常默认就能够很好的处理这几个问题，但是需要在主节点挂了的时候做出如下几种方式的处理：</p>
+<ol>
+<li>
+<p>等待主节点恢复；但是如果主节点不恢复或者恢复时候出问题，系统就会阻塞住</p>
+</li>
+<li>
+<p>人为处理主节点挂了的情况</p>
+</li>
+<li>
+<p>使用共识算法</p>
+</li>
+</ol>
+<p>一般来说，多主节点和无主节点模式可能不需要共识</p>
+</div>
+</div>
 </div>
 </div>
 </div>
