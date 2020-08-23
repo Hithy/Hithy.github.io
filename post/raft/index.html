@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>raft paper note - ya0db9&#39;s Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <meta name="keywords" content="">
+  <link rel="canonical" href="https://home.ya0db9.com/post/raft/">
+
+  
+  
+
+  
+  
+
+  
+  
+
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//css/combined-min.css">
+  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//tipuesearch/tipuesearch.css">
+
+</head>
+<body class="">
+
+<div class="site-wrap">
+  <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="https://home.ya0db9.com/" class="site-title">ya0db9&#39;s Site</a>
+      <nav class="site-nav right">
+      <a href="https://home.ya0db9.com//about/">About</a>
+<a href="https://home.ya0db9.com//tags/">Tags</a>
+<a href="https://home.ya0db9.com//contact/">Contact</a>
+</form>
+
+      </nav>
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</header>
+
+  <div class="post p2 p-responsive wrap" role="main">
+    <div class="measure">
+      <div class="post-header mb2">
+        <h1 class="py2">raft paper note</h1>
+        <span class="post-meta">Aug 23, 2020 </span><br>
+        
+      </div>
+
+      <article class="post-content">
+      
+<div id="outline-container-headline-1" class="outline-2">
+<h2 id="headline-1">
+Replicated state machines
+</h2>
+<div id="outline-text-headline-1" class="outline-text-2">
+<p>
+  状态机是为了保证确定性，通常用复制日志来实现，</p>
+<p>
+  每个服务器都有一个记录着指令序列的日志，这些指令序列作为状态机的输入，不同机器上面的日志按照同样顺序记录着相同的日志</p>
+<p>
+  共识算法用来保证不同副本日志的一致性</p>
+</div>
+</div>
+<div id="outline-container-headline-2" class="outline-2">
+<h2 id="headline-2">
+The Raft consensus algorithm
+</h2>
+<div id="outline-text-headline-2" class="outline-text-2">
+<p>
+  Paxos算法主要的问题在于难以理解和实现，raft算法把共识问题分解为一下几个部分</p>
+<ol>
+<li>
+<p>Leader election
+如果已有leader挂了，需要选举新的leader</p>
+</li>
+<li>
+<p>Log replication
+leader需要接收客户端的请求，并且复制给其他副本，强制要求其他副本跟自己保持一致</p>
+</li>
+<li>
+<p>Safety
+如果一个日志被加入到某个服务器的状态机指令序列中，其他任何服务器上对应位置的日志都应该是同样的</p>
+</li>
+</ol>
+<p>
+  不变属性：</p>
+<ol>
+<li>
+<p>Election Safty</p>
+<p>
+一个任期里面最多只有一个leader</p>
+</li>
+<li>
+<p>Leader Append-Only</p>
+<p>
+leader只会append日志，不会覆盖或者删除</p>
+</li>
+<li>
+<p>Log Matching</p>
+<p>
+如果两份日志中，有着日志编号和任期相同的一个记录，那这个记录以前的所有日志都相等</p>
+</li>
+<li>
+<p>Leader Completeness</p>
+<p>
+如果一条日志记录在一个任期内被成功提交了，那么所有更高任期的主节点将包含这条的日志</p>
+</li>
+<li>
+<p>State Machine Safety</p>
+<p>
+如果一个日志被提交到状态机，那么其他任何服务器状态机对应编号执行的日志应该相同</p>
+</li>
+</ol>
+<div id="outline-container-headline-3" class="outline-3">
+<h3 id="headline-3">
+Raft basics  
+</h3>
+<div id="outline-text-headline-3" class="outline-text-3">
+<p>
+   只有leader会处理客户端请求(如果一个follower节点收到了请求，会转发给leader节点)</p>
+<p>
+   每个leader都有一个任期，任期单调递增，每个节点都存储了当前的任期号</p>
+<p>
+   <strong>节点之间发生任何通信都会交换任期号，任期小的会被强制更新到大的</strong></p>
+<p>
+   leader周期性发送心跳包给其他节点，当某个节点一定时间收不到leader的心跳的时候，就可以发起leader选举</p>
+<p>
+   节点间主要通过两种RPC通信：</p>
+<ol>
+<li>
+<p>RequestVote RPCs</p>
+<p>
+由候选节点在选举的时候发起</p>
+</li>
+<li>
+<p>AppendEntries RPCs</p>
+<p>
+由主节点在复制日志和心跳的时候发起</p>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-3">
+<h3 id="headline-4">
+Leader election
+</h3>
+<div id="outline-text-headline-4" class="outline-text-3">
+<p>
+   Raft使用心跳来触发选举</p>
+<p>
+   一个follower节点只要能够收到leader节点或者candidate节点的RPCs，就一直保持为follower身份</p>
+<p>
+   leader周期性发送心跳包(不带任何日志的AppendEntries PRCs)给所有的followers节点以维持统治</p>
+<p>
+   当一个follower长时间(election timeout)收不到心跳，就会发起选举：</p>
+<ol>
+<li>
+<p>增加自己的任期号，把自己变成candidate状态</p>
+</li>
+<li>
+<p>给自己投票，给其他所有服务并行发送RequestVote RPCs</p>
+</li>
+<li>
+<p>保持candidate状态直到以下事件发生：</p>
+<ul>
+<li>
+<p>赢得选举(得到大部分节点的投票，先到先得) -&gt; leader节点</p>
+</li>
+<li>
+<p>收到leader的AE RPC, 任期号不小于自己，接受 -&gt; follower节点</p>
+</li>
+<li>
+<p>收到leader的AE RPC, 任期号小于自己，拒绝 -&gt; 保持candidate状态</p>
+</li>
+<li>
+<p>选举超时(每个节点的超时时间都是随机的，避免每次都超时)，没人赢得选举 -&gt; 重试</p>
+</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-headline-5" class="outline-3">
+<h3 id="headline-5">
+Log replication
+</h3>
+<div id="outline-text-headline-5" class="outline-text-3">
+<p>
+   同步流程：</p>
+<ol>
+<li>
+<p>leader把指令加入到日志中</p>
+</li>
+<li>
+<p>并行给各个服务器发送AppendEntries RPCs</p>
+</li>
+<li>
+<p>确认安全后(commited，大部分节点完成复制)，把指令放到状态机中执行，并把执行结果返回给客户端</p>
+</li>
+<li>
+<p>如果因为各种原因followers没有成功复制到日志，leader会无限期重试RPCs，直到所有节点成功写入日志</p>
+</li>
+</ol>
+<p>follower需要检查AE(AppendEntries)的合法性(AE包含了前一个日志的编号和任期)，是一个逐步的过程，初始状态位空，是一致的，每次收到新的AE，都要进行检查，不然就拒绝</p>
+<p>
+   leader会维护一个最大commited日志编号，并包含在AppendEntries RPCs(包括心跳)中，followers在收到这个编号之后，会把自己的日志提交到状态机</p>
+<p>
+   如果leader出现问题，新的leader上台，会出现日志冲突的情况，这时候需要处理冲突，raft要求follower强制跟leader保持一致(raft保证新上台的leader一定有前任所有的提交)</p>
+<p>
+   leader对每一个follower维护一个nextIndex，表示下一个应该给follower同步日志的编号，刚上台的leader的这个编号是自己最后一条日志的编号加一</p>
+<p>
+   follower处理AppendEntries消息的时候，会最一致性检查，不通过会返回失败，这时候leader需要把能nextIndex减1，直到AppendEntries成功</p>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-3">
+<h3 id="headline-6">
+Safty
+</h3>
+<div id="outline-text-headline-6" class="outline-text-3">
+<div id="outline-container-headline-7" class="outline-4">
+<h4 id="headline-7">
+Election restriction   
+</h4>
+<div id="outline-text-headline-7" class="outline-text-4">
+<p>
+    raft要求成为leader的资格是它拥有所有节点中committed任期最高的日志，所以一旦一个节点成为leader，不需要再从其他节点把日志同步给leader</p>
+<p>
+    因为一个日志被标记为committed状态的时候，需要得到大部分节点的认可，如果一个没有拥有最新committed的节点票选leader的时候，一定会被这大部分节点拒绝</p>
+<p>
+    RequestVote RPC会包含这个candidate的最新日志信息，收到这个票选请求的节点发现自己的log比candidate新，会拒绝这个票选</p>
+<p>
+    raft比较两份日志谁更新，首先比较最新日志的任期号，大的更新；如果任期号相同，越长越新</p>
+</div>
+</div>
+<div id="outline-container-headline-8" class="outline-4">
+<h4 id="headline-8">
+Committing entries from previous terms
+</h4>
+<div id="outline-text-headline-8" class="outline-text-4">
+<p>
+    leader不应该提交前任没来得及提交的日志，只允许提交现任的东西</p>
+<p>
+    由Log Matching属性保证，只要自己任期中成功提交过东西，前任的日志自动就会被提交掉</p>
+</div>
+</div>
+<div id="outline-container-headline-9" class="outline-4">
+<h4 id="headline-9">
+Safety argument
+</h4>
+<div id="outline-text-headline-9" class="outline-text-4">
+<p>
+    反正Leader Completeness</p>
+<p>
+    假设一个term T和一个最小的term U，满足U&gt;T同时，leader_T的提交不存在leader_U中</p>
+<p>
+    由于leader不可删除或者更改日志，所以一开始(票选leader_U)的阶段就应该出现不一致</p>
+<p>
+    在票选过程中，一定有一个节点先接受了term T的AE，然后接受了term U的RV，如果反过来，AE是不会被接受的(term变大了)</p>
+<p>
+    那么，这个节点在收到RV的时候，leader_U的日志一定比这个节点新，所以分两种情况讨论：</p>
+<ol>
+<li>
+<p>如果leader_U的最新log和这个节点最新log处于相同term</p>
+<p>
+由Log Matching保证日志一致，所以leader_U也一定包含term T已提交的部分，矛盾</p>
+</li>
+<li>
+<p>如果leader_U的最新log的term跟新</p>
+<p>
+那么生成leader_U最新日志的上一个leader，一定是包含term T已提交的部分的，不然违背了U是最小不包含T提交的term</p>
+<p>
+这样leader_U一定也是包含term T已提交的部分，矛盾</p>
+</li>
+</ol>
+<p>
+    Leader Completeness得到证明，然后可以简单推到出State Machine Safety Property也是满足的</p>
+<p>
+    State Machine Safety Property：如果一个服务器把某个日志应用到状态机，那么其他所有服务器在相同的位置也会应用相同的日志</p>
+<ul>
+<li>
+<p>反证</p>
+<p>
+如果某台服务器在某个别的服务器已应用日志的位置上应用了一个不同的日志，由Leader Completeness原理可知道，这个已提交的日志一定会出现在比它更新的服务器上同样的位置，然而那个位置并不是这条日志</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-10" class="outline-3">
+<h3 id="headline-10">
+Follower and candidate crashes
+</h3>
+<div id="outline-text-headline-10" class="outline-text-3">
+<p>
+   主节点无限重试就好了</p>
+</div>
+</div>
+<div id="outline-container-headline-11" class="outline-3">
+<h3 id="headline-11">
+Timing and availability
+</h3>
+<div id="outline-text-headline-11" class="outline-text-3">
+<ul>
+<li>
+<p>broadcastTime</p>
+<p>
+节点并行发送RPCs给其他所有节点并得到回复的平均时间</p>
+</li>
+<li>
+<p>electionTimeout</p>
+<p>
+选举超时</p>
+</li>
+<li>
+<p>MTBF</p>
+<p>
+单个服务器两次故障之间的平均间隔时间</p>
+</li>
+</ul>
+<p>需要满足公式：</p>
+<p>
+   <em>broadcastTime</em> ≪ <em>electionTimeout</em> ≪ <em>MTBF</em></p>
+<p>
+   RPC一般消耗0.5ms~20ms</p>
+<p>
+   所以electionTimeout很多时候被配置成10ms~500ms</p>
+<p>
+   而MTBF通常会很久，比如几个月之类的</p>
+</div>
+</div>
+</div>
+</div>
+
+      </article>
+
+      
+
+      
+
+    </div>
+  </div>
+</div>
+    <footer class="footer">
+      <div class="p2 wrap">
+        <div class="measure mt1 center">
+      <nav class="social-icons icons">
+<a class="fa fa-rss rss" href="/index.xml"></a>
+
+</nav>
+
+          <small>
+            Copyright &#169; 2017<br>
+            Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> &amp; <a href="https://github.com/azmelanar/hugo-theme-pixyll" target="_blank">Pixyll</a>
+          </small>
+        </div>
+      </div>
+    </footer>
+
+    
+    <script src="/js/highlight.pack.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+    
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-156425913-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+
+
+</body>
+</html>
+

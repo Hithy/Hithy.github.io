@@ -6,7 +6,16 @@
     <language>en-us</language>
     
     
-    <updated>Sun, 26 Jul 2020 13:48:14 CST</updated>
+    <updated>Sun, 23 Aug 2020 15:35:31 CST</updated>
+    
+    <item>
+      <title>raft paper note</title>
+      <link>https://home.ya0db9.com/post/raft/</link>
+      <pubDate>Sun, 23 Aug 2020 15:35:31 CST</pubDate>
+      
+      <guid>https://home.ya0db9.com/post/raft/</guid>
+      <description>Replicated state machines 状态机是为了保证确定性，通常用复制日志来实现， 每个服务器都有一个记录着指令序列的日志，这些指令序列作为状态机的输入，不同机器上面的日志</description>
+    </item>
     
     <item>
       <title>xbox加速方案</title>
