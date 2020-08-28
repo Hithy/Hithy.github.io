@@ -90,7 +90,7 @@ leader需要接收客户端的请求，并且复制给其他副本，强制要�
   不变属性：</p>
 <ol>
 <li>
-<p>Election Safty</p>
+<p>Election Safety</p>
 <p>
 一个任期里面最多只有一个leader</p>
 </li>
@@ -333,6 +333,40 @@ Timing and availability
    而MTBF通常会很久，比如几个月之类的</p>
 </div>
 </div>
+</div>
+</div>
+<div id="outline-container-headline-12" class="outline-2">
+<h2 id="headline-12">
+Cluster membership changes
+</h2>
+<div id="outline-text-headline-12" class="outline-text-2">
+<p>
+  直接切换会有一个问题，进入新的配置的节点，和还在旧配置的节点互相注意不到对方，可能产生两个leader</p>
+<p>
+  为了解决这个问题，引入一个中间配置状态，旧的节点进入新的配置之前，必须经过中间配置状态</p>
+<p>
+  在中间配置状态，任何提交需要旧的配置和新的配置的机器一致通过</p>
+<p>
+  当进入中间配置的日志提交之后，节点要成为Leader，一定会有中间配置日志，所以一定能够注意到两边配置的机器</p>
+<p>
+  这时候引入三个问题：</p>
+<ul>
+<li>
+<p>新机器加入的时候，可能没有啥数据</p>
+<p>
+在切换配置之前，这些新机器需要追赶上主节点日志，避免切换阶段因为数据同步卡住不可用</p>
+</li>
+<li>
+<p>旧的机器在提交新配置日志的时候，可能不再属于新的配置的节点</p>
+<p>
+旧leader提交了切换到新配置的日志之后(这之后新配置的集群可以独立工作了)，新配置的节点可能不再能注意到旧的leader，所以需要主动下台</p>
+</li>
+<li>
+<p>旧的机器在移除之前，因为收不到新配置leader的心跳，会发起leader选举，干扰新的机器正常工作</p>
+<p>
+在服务器确信领导活着的时候，设置一个超时，超时时间内不接受leader选举</p>
+</li>
+</ul>
 </div>
 </div>
 
