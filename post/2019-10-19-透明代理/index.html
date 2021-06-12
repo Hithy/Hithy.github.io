@@ -1,56 +1,159 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-cn">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>透明代理(nuc后续) - ya0db9&#39;s Site</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <meta name="keywords" content="">
-  <link rel="canonical" href="https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>透明代理(nuc后续) - ya0db9&#39;s site</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
-  
-  
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
 
-  
-  
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
 
-  
-  
 
-  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//css/combined-min.css">
-  <link rel="stylesheet" type="text/css" href="https://home.ya0db9.com//tipuesearch/tipuesearch.css">
+<meta name="author" content="ya0db9" /><meta name="description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于" /><meta name="keywords" content="ya0db9, blog, org" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.83.1 with theme even" />
+
+
+<link rel="canonical" href="https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+<link href="/sass/main.min.f92fd13721ddf72129410fd8250e73152cc6f2438082b6c0208dc24ee7c13fc4.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.css" integrity="sha256-7TyXnr2YU040zfSP+rEcz29ggW4j56/ujTPwjMzyqFY=" crossorigin="anonymous">
+
+
+<meta property="og:title" content="透明代理(nuc后续)" />
+<meta property="og:description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-10-19T21:17:32&#43;08:00" />
+<meta property="article:modified_time" content="2019-10-19T21:17:32&#43;08:00" />
+
+<meta itemprop="name" content="透明代理(nuc后续)">
+<meta itemprop="description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于"><meta itemprop="datePublished" content="2019-10-19T21:17:32&#43;08:00" />
+<meta itemprop="dateModified" content="2019-10-19T21:17:32&#43;08:00" />
+<meta itemprop="wordCount" content="1352">
+<meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="透明代理(nuc后续)"/>
+<meta name="twitter:description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
 
 </head>
-<body class="">
-
-<div class="site-wrap">
-  <header class="site-header px2 px-responsive">
-  <div class="mt2 wrap">
-    <div class="measure">
-      <a href="https://home.ya0db9.com/" class="site-title">ya0db9&#39;s Site</a>
-      <nav class="site-nav right">
-      <a href="https://home.ya0db9.com//about/">About</a>
-<a href="https://home.ya0db9.com//tags/">Tags</a>
-<a href="https://home.ya0db9.com//contact/">Contact</a>
-</form>
-
-      </nav>
-      <div class="clearfix"></div>
-    </div>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">ya0db9</a>
   </div>
-</header>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/tags/">
+        <li class="mobile-menu-item">Tags</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
 
-  <div class="post p2 p-responsive wrap" role="main">
-    <div class="measure">
-      <div class="post-header mb2">
-        <h1 class="py2">透明代理(nuc后续)</h1>
-        <span class="post-meta">Oct 19, 2019 </span><br>
+  
+
+
+</nav>
+
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">ya0db9</a>
+</div>
+
+
+
+
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/tags/">Tags</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">透明代理(nuc后续)</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2019-10-19 </span>
+        
         
       </div>
+    </header>
 
-      <article class="post-content">
+    <div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">文章目录</h2>
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#headline-1">0x00 前言</a>
+</li>
+<li><a href="#headline-2">0x01 基础网络</a>
+</li>
+<li><a href="#headline-3">0x02 路由</a>
+</li>
+<li><a href="#headline-4">0x03 DNS</a>
+</li>
+<li><a href="#headline-5">0x04 DDNS</a>
+</li>
+</ul>
+</nav>
+  </div>
+</div>
+    <div class="post-content">
       
 <div id="outline-container-headline-1" class="outline-2">
 <h2 id="headline-1">
@@ -78,14 +181,28 @@ DNS: dnsmasq</p>
 vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还是很不稳定，所以加了一层kcptun( <em>apt install kcptun</em> 安装)
 服务端运行：</p>
 <div class="src src-shell">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kcptun-server -t <span style="color:#e6db74">&#34;127.0.0.1:1194&#34;</span> -l <span style="color:#e6db74">&#34;:1234&#34;</span> -mode fast3 -nocomp -sockbuf <span style="color:#ae81ff">16777217</span> -dscp <span style="color:#ae81ff">46</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kcptun-server -t <span class="s2">&#34;127.0.0.1:1194&#34;</span> -l <span class="s2">&#34;:1234&#34;</span> -mode fast3 -nocomp -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>
 将udp的1234端口映射到1194(openvpn)</p>
 <p>
 客户端(本地路由器)运行：</p>
 <div class="src src-shell">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">kcptun-client -r <span style="color:#e6db74">&#34;{vps ip}:1234&#34;</span> -l <span style="color:#e6db74">&#34;127.0.0.1:1024&#34;</span> -mode fast3 -nocomp -autoexpire <span style="color:#ae81ff">900</span> -sockbuf <span style="color:#ae81ff">16777217</span> -dscp <span style="color:#ae81ff">46</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">kcptun-client -r <span class="s2">&#34;{vps ip}:1234&#34;</span> -l <span class="s2">&#34;127.0.0.1:1024&#34;</span> -mode fast3 -nocomp -autoexpire <span class="m">900</span> -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>
 这样就将本地的1024端口映射到vps的1194端口了</p>
@@ -101,22 +218,46 @@ vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还�
 <p>
 这里我们需要根据数据包的目的地进行路由，国内的走我们正常的网关(光猫)，国外的走vps。可以用netfilter的一个扩展 <em>Xtables-addons</em> 来实现，装好xtables之后，iptable就多了一项geoip的模块，以识别ip地址位置。然后需要下载geoip数据并构建，以便geoip模块查询，这里不展开了。iptables命令：</p>
 <div class="src src-shell">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">iptables -t mangle -A OUTPUT -m geoip ! --destination-country CN -j MARK --set-mark <span style="color:#ae81ff">10</span>
-iptables -t mangle -A PREROUTING -m geoip ! --destination-country CN -j MARK --set-mark <span style="color:#ae81ff">10</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">iptables -t mangle -A OUTPUT -m geoip ! --destination-country CN -j MARK --set-mark <span class="m">10</span>
+iptables -t mangle -A PREROUTING -m geoip ! --destination-country CN -j MARK --set-mark <span class="m">10</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>
 这样就给所有目的地不是国内的包打上了标签10(前一条用于nuc，第二条用于内网设备)，接下来就可以跟进标签来查表。</p>
 <div class="src src-shell">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-shell" data-lang="shell">ip rule add fwmark <span style="color:#ae81ff">10</span> lookup <span style="color:#ae81ff">10</span>
-ip route add default via 10.8.0.1 table <span style="color:#ae81ff">10</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">ip rule add fwmark <span class="m">10</span> lookup <span class="m">10</span>
+ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>
 第一条创建了一个编号为10的路由表，所有被mark上10的数据包都会查询这个路由表，第二条增加一条默认路由，所有走这个路由表的数据包都转发到10.8.0.1去(vps端tap设备地址)</p>
 <p>
 基础路由配置就是这样，按需求自行添加。需要注意的是要关掉 <em>rp_filter</em> 内核选项，在 <em>sysctl.conf</em> 中配置：</p>
 <div class="src src-ini">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">net.ipv4.conf.default.rp_filter</span><span style="color:#f92672">=</span><span style="color:#e6db74">0</span>
-<span style="color:#a6e22e">net.ipv4.conf.all.rp_filter</span><span style="color:#f92672">=</span><span style="color:#e6db74">0</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-ini" data-lang="ini"><span class="na">net.ipv4.conf.default.rp_filter</span><span class="o">=</span><span class="s">0</span>
+<span class="na">net.ipv4.conf.all.rp_filter</span><span class="o">=</span><span class="s">0</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>否则内核会丢弃掉从tap设备回来的包。</p>
 <p>
@@ -133,13 +274,26 @@ ip route add default via 10.8.0.1 table <span style="color:#ae81ff">10</span></c
 <p>
 这里就需要做dns分流，默认用国内的dns，国外的网站走8.8.8.8，对每一个需要8.8.8.8解析的域名，在dnsmasq里面加入配置：</p>
 <div class="src src-ini">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ini" data-lang="ini"><span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/google.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/facebook.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/twitter.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/steamcommunity.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/googlevideo.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/youtube.com/8.8.8.8</span>
-<span style="color:#a6e22e">server</span><span style="color:#f92672">=</span><span style="color:#e6db74">/github.com/8.8.8.8</span></code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-ini" data-lang="ini"><span class="na">server</span><span class="o">=</span><span class="s">/google.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/facebook.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/twitter.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/steamcommunity.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/googlevideo.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/youtube.com/8.8.8.8</span>
+<span class="na">server</span><span class="o">=</span><span class="s">/github.com/8.8.8.8</span></code></pre></td></tr></table>
+</div>
+</div>
 </div>
 <p>这里我就手动添加了，如何自动导入啥的等后面有时间再看吧。</p>
 </div>
@@ -152,58 +306,113 @@ ip route add default via 10.8.0.1 table <span style="color:#ae81ff">10</span></c
 <p>
 在配置的透明代理之后，如果ddns客户端是通过web之类的方法获取公网ip，并且web的地址是个国外地址，就会导致ddns被设置成vps的地址。解决办法就是将web获取服务器设置为国内的某个地址，或者vps本身。这里就用后者，直接在vps的nginx配置：</p>
 <div class="src src-nginx">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-nginx" data-lang="nginx"><span style="color:#66d9ef">location</span> <span style="color:#e6db74">/get_ip</span> {
-		<span style="color:#f92672">default_type</span> <span style="color:#e6db74">text/plain</span>;
-		<span style="color:#f92672">return</span> <span style="color:#ae81ff">200</span> <span style="color:#e6db74">&#34;</span>$remote_addr\n&#34;;
-	}</code></pre></div>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">location</span> <span class="s">/get_ip</span> <span class="p">{</span>
+		<span class="kn">default_type</span> <span class="s">text/plain</span><span class="p">;</span>
+		<span class="kn">return</span> <span class="mi">200</span> <span class="s">&#34;</span><span class="nv">$remote_addr\n&#34;</span><span class="p">;</span>
+	<span class="p">}</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
-
-      </article>
-
-      
-
-      
+</div>
+</div>
 
     </div>
-  </div>
+
+    <div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">文章作者</span>
+    <span class="item-content">ya0db9</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">上次更新</span>
+    <span class="item-content">
+        2019-10-19
+        
+    </span>
+  </p>
+  
+  
 </div>
-    <footer class="footer">
-      <div class="p2 wrap">
-        <div class="measure mt1 center">
-      <nav class="social-icons icons">
-<a class="fa fa-rss rss" href="/index.xml"></a>
-
-</nav>
-
-          <small>
-            Copyright &#169; 2017<br>
-            Powered by <a href="http://gohugo.io/" target="_blank">Hugo</a> &amp; <a href="https://github.com/azmelanar/hugo-theme-pixyll" target="_blank">Pixyll</a>
-          </small>
+<footer class="post-footer">
+      
+      <nav class="post-nav">
+        <a class="prev" href="/post/first-hugo-post/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">Hugo &amp; org mode</span>
+            <span class="prev-text nav-mobile">上一篇</span>
+          </a>
+        <a class="next" href="/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/">
+            <span class="next-text nav-default">折腾NUC</span>
+            <span class="next-text nav-mobile">下一篇</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
         </div>
+        
+
+  
+
+  
+
       </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="mailto:huyao0302@hotmail.com" class="iconfont icon-email" title="email"></a>
+  <a href="https://home.ya0db9.com/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://gohugo.io">Hugo</a> 强力驱动
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/olOwOlo/hugo-theme-even">Even</a>
+  </span>
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    2018 - 
+    2021<span class="heart"><i class="iconfont icon-heart"></i></span><span>ya0db9</span>
+  </span>
+</div>
+
     </footer>
 
-    
-    <script src="/js/highlight.pack.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.2.1/dist/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/slideout@1.0.1/dist/slideout.min.js" integrity="sha256-t+zJ/g8/KXIJMjSVQdnibt4dlaDxc9zXr/9oNPeWqdg=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.1.20/dist/jquery.fancybox.min.js" integrity="sha256-XVLffZaxoWfGUEbdzuLi7pwaUJv1cecsQJQqGLe7axY=" crossorigin="anonymous"></script>
 
-    
-    
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-  ga('create', 'UA-156425913-1', 'auto');
-  ga('send', 'pageview');
 
-</script>
+<script type="text/javascript" src="/js/main.min.c99b103c33d1539acf3025e1913697534542c4a5aa5af0ccc20475ed2863603b.js"></script>
+
+
+
+
+
 
 
 
 </body>
 </html>
-

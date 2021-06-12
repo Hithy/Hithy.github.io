@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://home.ya0db9.com/sitemap.xml

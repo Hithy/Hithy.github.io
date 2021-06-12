@@ -1,17 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-      <title>ya0db9&#39;s Site on ya0db9&#39;s Site </title>
-      <generator uri="https://gohugo.io">Hugo</generator>
+    <title>ya0db9&#39;s site</title>
     <link>https://home.ya0db9.com/</link>
-    <language>en-us</language>
-    
-    
-    <updated>Sun, 23 Aug 2020 15:35:31 CST</updated>
-    
+    <description>Recent content on ya0db9&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>cn</language>
+    <lastBuildDate>Sun, 23 Aug 2020 15:35:31 +0800</lastBuildDate><atom:link href="https://home.ya0db9.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>raft paper note</title>
       <link>https://home.ya0db9.com/post/raft/</link>
-      <pubDate>Sun, 23 Aug 2020 15:35:31 CST</pubDate>
+      <pubDate>Sun, 23 Aug 2020 15:35:31 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/raft/</guid>
       <description>Replicated state machines 状态机是为了保证确定性，通常用复制日志来实现， 每个服务器都有一个记录着指令序列的日志，这些指令序列作为状态机的输入，不同机器上面的日志</description>
@@ -20,7 +19,7 @@
     <item>
       <title>xbox加速方案</title>
       <link>https://home.ya0db9.com/post/xbox_cname/</link>
-      <pubDate>Sun, 26 Jul 2020 13:48:14 CST</pubDate>
+      <pubDate>Sun, 26 Jul 2020 13:48:14 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/xbox_cname/</guid>
       <description>0x00 需求 周末基佬打开了吃灰N久的xbox，发现有几十个G的更新，而更新速度只有两三兆，应该是默认走了科学线路，因为路由器的性能限制，最多也就这</description>
@@ -29,7 +28,7 @@
     <item>
       <title>DDIA Note</title>
       <link>https://home.ya0db9.com/post/ddia/</link>
-      <pubDate>Tue, 21 Jul 2020 21:47:16 CST</pubDate>
+      <pubDate>Tue, 21 Jul 2020 21:47:16 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/ddia/</guid>
       <description>Ch-5 Replication Leaders and Followers(主从模式) 同步复制 pros 用户读到的数据永远是最新的 主节点挂了之后，从节点还是有最新的数据的 cons 慢 只要一个从节点有问题，</description>
@@ -38,7 +37,7 @@
     <item>
       <title>透明代理(TPROXY)</title>
       <link>https://home.ya0db9.com/post/tproxy/</link>
-      <pubDate>Sat, 18 Apr 2020 18:04:34 CST</pubDate>
+      <pubDate>Sat, 18 Apr 2020 18:04:34 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/tproxy/</guid>
       <description>现状 之前实现了基于vpn协议的透明代理，其优势在于与传统的网络设备兼容，原生支持iptables，不过有几个问题却没有得到解决： 信道不稳定，</description>
@@ -47,7 +46,7 @@
     <item>
       <title>无线网络升级</title>
       <link>https://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</link>
-      <pubDate>Sat, 29 Feb 2020 17:20:34 CST</pubDate>
+      <pubDate>Sat, 29 Feb 2020 17:20:34 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</guid>
       <description>0x00 现有问题 现有的网络，是从弱电箱的软路由拉了一根网线到卧室，接交换机到极路由(用于ap)和pc。带来两个问题： 老的极路由只有百兆上联接口，跑</description>
@@ -56,7 +55,7 @@
     <item>
       <title>Effective C&#43;&#43;笔记</title>
       <link>https://home.ya0db9.com/post/effective-cxx/</link>
-      <pubDate>Mon, 03 Feb 2020 16:10:46 CST</pubDate>
+      <pubDate>Mon, 03 Feb 2020 16:10:46 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/effective-cxx/</guid>
       <description>effecitve c++ 笔记 Ch-1 Item 1: view C++ as a federation of languages c++继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:</description>
@@ -65,7 +64,7 @@
     <item>
       <title>Hugo &amp; org mode</title>
       <link>https://home.ya0db9.com/post/first-hugo-post/</link>
-      <pubDate>Thu, 09 Jan 2020 20:16:41 CST</pubDate>
+      <pubDate>Thu, 09 Jan 2020 20:16:41 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/first-hugo-post/</guid>
       <description>Happy hacking, Emacs ♥ you!</description>
@@ -74,7 +73,7 @@
     <item>
       <title>透明代理(nuc后续)</title>
       <link>https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</link>
-      <pubDate>Sat, 19 Oct 2019 21:17:32 CST</pubDate>
+      <pubDate>Sat, 19 Oct 2019 21:17:32 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</guid>
       <description>0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于</description>
@@ -83,7 +82,7 @@
     <item>
       <title>折腾NUC</title>
       <link>https://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</link>
-      <pubDate>Mon, 25 Mar 2019 00:25:17 CST</pubDate>
+      <pubDate>Mon, 25 Mar 2019 00:25:17 +0800</pubDate>
       
       <guid>https://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</guid>
       <description>0x00 前言 从过年回来到现在，一直在寻找路由器的替代品，一台设备集成路由、防火墙和基础的私有云。因为现在还不稳定的原因，不能组一台高性能网关（没地</description>
@@ -91,4 +90,3 @@
     
   </channel>
 </rss>
-

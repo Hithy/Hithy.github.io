@@ -1,0 +1,93 @@
+<?xml-stylesheet type="text/xsl" href="https://home.ya0db9.com/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/</loc>
+    <lastmod>2020-08-23T15:35:31+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/raft/</loc>
+    <lastmod>2020-08-23T15:35:31+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/</loc>
+    <lastmod>2020-08-23T15:35:31+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/xbox_cname/</loc>
+    <lastmod>2020-07-26T13:48:14+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/ddia/</loc>
+    <lastmod>2020-07-21T21:47:16+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/tproxy/</loc>
+    <lastmod>2020-04-18T18:04:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/%E6%97%A0%E7%BA%BF%E7%BD%91%E7%BB%9C%E5%8D%87%E7%BA%A7/</loc>
+    <lastmod>2020-02-29T17:20:34+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/effective-cxx/</loc>
+    <lastmod>2020-02-03T16:10:46+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/first-hugo-post/</loc>
+    <lastmod>2020-01-09T20:16:41+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/</loc>
+    <lastmod>2019-10-19T21:17:32+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/post/2019-03-25-%E6%8A%98%E8%85%BEnuc/</loc>
+    <lastmod>2019-03-25T00:25:17+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/categories/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://home.ya0db9.com/tags/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+</urlset>
