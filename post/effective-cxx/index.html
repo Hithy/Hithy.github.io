@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.83.1 with theme even" />
+<meta name="generator" content="Hugo 0.89.4 with theme even" />
 
 
 <link rel="canonical" href="https://home.ya0db9.com/post/effective-cxx/" />
@@ -43,12 +43,12 @@
 <meta property="og:description" content="effecitve c&#43;&#43; 笔记 Ch-1 Item 1: view C&#43;&#43; as a federation of languages c&#43;&#43;继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://home.ya0db9.com/post/effective-cxx/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2020-02-03T16:10:46&#43;08:00" />
-<meta property="article:modified_time" content="2020-02-03T16:10:46&#43;08:00" />
+<meta property="article:published_time" content="2020-02-03T16:10:46+08:00" />
+<meta property="article:modified_time" content="2020-02-03T16:10:46+08:00" />
 
 <meta itemprop="name" content="Effective C&#43;&#43;笔记">
-<meta itemprop="description" content="effecitve c&#43;&#43; 笔记 Ch-1 Item 1: view C&#43;&#43; as a federation of languages c&#43;&#43;继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:"><meta itemprop="datePublished" content="2020-02-03T16:10:46&#43;08:00" />
-<meta itemprop="dateModified" content="2020-02-03T16:10:46&#43;08:00" />
+<meta itemprop="description" content="effecitve c&#43;&#43; 笔记 Ch-1 Item 1: view C&#43;&#43; as a federation of languages c&#43;&#43;继承了c的部分，增加了面向对象的设计，增加了模板，以及标准模板库 这四个部分可以看做四种子语言，相对独立 Item 2:"><meta itemprop="datePublished" content="2020-02-03T16:10:46+08:00" />
+<meta itemprop="dateModified" content="2020-02-03T16:10:46+08:00" />
 <meta itemprop="wordCount" content="8132">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Effective C&#43;&#43;笔记"/>
@@ -200,56 +200,82 @@
 <li><a href="#headline-24">Item 18: Make interfaces easy to use correctly and hard to use incorrectly</a>
 </li>
 <li><a href="#headline-25">Item 19: Treat class design as type design</a>
+<ul>
+<li><a href="#headline-26">对象是如何创建和删除</a>
 </li>
-<li><a href="#headline-26">Item 20: Prefer pass-by-reference-to-const to pass-by-value</a>
+<li><a href="#headline-27">如何区分对象的初始化和赋值</a>
 </li>
-<li><a href="#headline-27">Item 21: Don&#39;t try to return a reference when you must return an object</a>
+<li><a href="#headline-28">设计的对象按值传递时有什么含义</a>
 </li>
-<li><a href="#headline-28">Item 22: Declare data members private</a>
+<li><a href="#headline-29">类型对值的合法性作何限定</a>
 </li>
-<li><a href="#headline-29">Item 23: Prefer non-member non-friend functions to member functions</a>
+<li><a href="#headline-30">类型是否适合继承图</a>
 </li>
-<li><a href="#headline-30">Item 24: Declare non-member functions when type conversions should apply to all parameters      </a>
+<li><a href="#headline-31">类型能够做哪些类型转换</a>
 </li>
-<li><a href="#headline-31">Item 25: Consider support for a non-throwing swap</a>
+<li><a href="#headline-32">类型支持哪些操作符</a>
+</li>
+<li><a href="#headline-33">哪些标准函数需要禁用</a>
+</li>
+<li><a href="#headline-34">谁能够访问类型的成员</a>
+</li>
+<li><a href="#headline-35">类型有哪些隐性接口</a>
+</li>
+<li><a href="#headline-36">通用性怎么样</a>
+</li>
+<li><a href="#headline-37">真的需要一个新的类型</a>
 </li>
 </ul>
 </li>
-<li><a href="#headline-32">ch-5 Implementations</a>
-<ul>
-<li><a href="#headline-33">Item 26: Postpone variable definitions as long as possible  </a>
+<li><a href="#headline-38">Item 20: Prefer pass-by-reference-to-const to pass-by-value</a>
 </li>
-<li><a href="#headline-34">Item 27: Minimize casting</a>
+<li><a href="#headline-39">Item 21: Don&#39;t try to return a reference when you must return an object</a>
 </li>
-<li><a href="#headline-35">Item 28: Avoid returning &#34;handles&#34; to object internals   </a>
+<li><a href="#headline-40">Item 22: Declare data members private</a>
 </li>
-<li><a href="#headline-36">Item29: Strive for exception-safe code.</a>
+<li><a href="#headline-41">Item 23: Prefer non-member non-friend functions to member functions</a>
 </li>
-<li><a href="#headline-37">Item 30: Understand the ins and outs of inlining.</a>
+<li><a href="#headline-42">Item 24: Declare non-member functions when type conversions should apply to all parameters      </a>
 </li>
-<li><a href="#headline-38">Item31: Minimize compilation dependencies between files.</a>
+<li><a href="#headline-43">Item 25: Consider support for a non-throwing swap</a>
 </li>
 </ul>
 </li>
-<li><a href="#headline-39">Ch-6. Inheritance and Object-Oriented Design</a>
+<li><a href="#headline-44">ch-5 Implementations</a>
 <ul>
-<li><a href="#headline-40">Item 32: Make sure public inheritance models &#34;is-a.&#34;</a>
+<li><a href="#headline-45">Item 26: Postpone variable definitions as long as possible  </a>
 </li>
-<li><a href="#headline-41">Item 33: Avoid hiding inherited names</a>
+<li><a href="#headline-46">Item 27: Minimize casting</a>
 </li>
-<li><a href="#headline-42">Item 34: Differentiate between inheritance of interface and inheritance of implementation</a>
+<li><a href="#headline-47">Item 28: Avoid returning &#34;handles&#34; to object internals   </a>
 </li>
-<li><a href="#headline-43">Item 35: Consider alternatives to virtual functions</a>
+<li><a href="#headline-48">Item29: Strive for exception-safe code.</a>
 </li>
-<li><a href="#headline-44">Item 36: Never redefine an inherited non-virtual function</a>
+<li><a href="#headline-49">Item 30: Understand the ins and outs of inlining.</a>
 </li>
-<li><a href="#headline-45">Item 37: Never redefine a function&#39;s inherited default parameter value</a>
+<li><a href="#headline-50">Item31: Minimize compilation dependencies between files.</a>
 </li>
-<li><a href="#headline-46">Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through composition</a>
+</ul>
 </li>
-<li><a href="#headline-47">Item 39: Use private inheritance judiciously</a>
+<li><a href="#headline-51">Ch-6. Inheritance and Object-Oriented Design</a>
+<ul>
+<li><a href="#headline-52">Item 32: Make sure public inheritance models &#34;is-a.&#34;</a>
 </li>
-<li><a href="#headline-48">Item 40: Use multiple inheritance judiciously   </a>
+<li><a href="#headline-53">Item 33: Avoid hiding inherited names</a>
+</li>
+<li><a href="#headline-54">Item 34: Differentiate between inheritance of interface and inheritance of implementation</a>
+</li>
+<li><a href="#headline-55">Item 35: Consider alternatives to virtual functions</a>
+</li>
+<li><a href="#headline-56">Item 36: Never redefine an inherited non-virtual function</a>
+</li>
+<li><a href="#headline-57">Item 37: Never redefine a function&#39;s inherited default parameter value</a>
+</li>
+<li><a href="#headline-58">Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through composition</a>
+</li>
+<li><a href="#headline-59">Item 39: Use private inheritance judiciously</a>
+</li>
+<li><a href="#headline-60">Item 40: Use multiple inheritance judiciously   </a>
 </li>
 </ul>
 </li>
@@ -294,14 +320,14 @@ Item 2: Prefer consts, enums, and inlines to #defines
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">GamePlayer</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">GamePlayer</span> <span class="p">{</span>
   <span class="k">private</span><span class="o">:</span>
       <span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">NumTurns</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span> <span class="c1">// constant declaration
 </span><span class="c1"></span>      <span class="kt">int</span> <span class="n">scores</span><span class="p">[</span><span class="n">NumTurns</span><span class="p">];</span> <span class="c1">// use of constant
@@ -314,10 +340,10 @@ Item 2: Prefer consts, enums, and inlines to #defines
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="kt">int</span> <span class="n">GamePlayer</span><span class="o">::</span><span class="n">NumTruns</span><span class="p">;</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="kt">int</span> <span class="n">GamePlayer</span><span class="o">::</span><span class="n">NumTruns</span><span class="p">;</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -326,7 +352,7 @@ Item 2: Prefer consts, enums, and inlines to #defines
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -334,7 +360,7 @@ Item 2: Prefer consts, enums, and inlines to #defines
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">GamePlayer</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">GamePlayer</span> <span class="p">{</span>
   <span class="k">private</span><span class="o">:</span>
       <span class="k">enum</span> <span class="p">{</span> <span class="n">NumTurns</span> <span class="o">=</span> <span class="mi">5</span> <span class="p">};</span> <span class="c1">// &#34;the enum hack&#34; — makes
 </span><span class="c1"></span>      <span class="c1">// NumTurns a symbolic name for 5
@@ -364,7 +390,7 @@ Item 3: Use const whenever possible
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -373,7 +399,7 @@ Item 3: Use const whenever possible
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;::</span><span class="n">iterator</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">vec</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span>
   <span class="o">*</span><span class="n">iter</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> <span class="c1">// OK, changes what iter points to
 </span><span class="c1"></span>  <span class="o">++</span><span class="n">iter</span><span class="p">;</span> <span class="c1">// error! iter is const
 </span><span class="c1"></span>
@@ -404,7 +430,7 @@ const 成员函数
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -422,7 +448,7 @@ const 成员函数
 </span><span class="lnt">16
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">CTextBlock</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">CTextBlock</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="kt">char</span><span class="o">&amp;</span> <span class="k">operator</span><span class="p">[](</span><span class="n">std</span><span class="o">::</span><span class="n">size_t</span> <span class="n">position</span><span class="p">)</span> <span class="k">const</span> 
       <span class="p">{</span>
@@ -456,7 +482,7 @@ const 成员函数
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -476,7 +502,7 @@ const 成员函数
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">TextBlock</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">TextBlock</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
 
   <span class="k">const</span> <span class="kt">char</span><span class="o">&amp;</span> <span class="k">operator</span><span class="p">[](</span><span class="n">std</span><span class="o">::</span><span class="n">size_t</span> <span class="n">position</span><span class="p">)</span> <span class="k">const</span> <span class="c1">// same as before
@@ -554,7 +580,7 @@ Item 6: Explicitly disallow the use of compiler-generated functions you do not w
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -564,7 +590,7 @@ Item 6: Explicitly disallow the use of compiler-generated functions you do not w
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Uncopyable</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Uncopyable</span> <span class="p">{</span>
   <span class="k">protected</span><span class="o">:</span> <span class="c1">// allow construction
 </span><span class="c1"></span>      <span class="n">Uncopyable</span><span class="p">()</span> <span class="p">{}</span> <span class="c1">// and destruction of
 </span><span class="c1"></span>      <span class="o">~</span><span class="n">Uncopyable</span><span class="p">()</span> <span class="p">{}</span> <span class="c1">// derived objects...
@@ -661,7 +687,7 @@ Item 13: Use objects to manage resources.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -669,7 +695,7 @@ Item 13: Use objects to manage resources.
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
   <span class="p">{</span>
       <span class="n">Investment</span> <span class="o">*</span><span class="n">pInv</span> <span class="o">=</span> <span class="n">createInvestment</span><span class="p">();</span> <span class="c1">// call factory function
 </span><span class="c1"></span>      <span class="c1">// use pInv
@@ -683,7 +709,7 @@ Item 13: Use objects to manage resources.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -692,7 +718,7 @@ Item 13: Use objects to manage resources.
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="kt">void</span> <span class="nf">f</span><span class="p">()</span>
   <span class="p">{</span>
       <span class="n">std</span><span class="o">::</span><span class="n">auto_ptr</span><span class="o">&lt;</span><span class="n">Investment</span><span class="o">&gt;</span> <span class="n">pInv</span><span class="p">(</span><span class="n">createInvestment</span><span class="p">());</span> <span class="c1">// call factory
 </span><span class="c1"></span>      <span class="c1">// function
@@ -725,7 +751,7 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -736,7 +762,7 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Lock</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Lock</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
   <span class="k">explicit</span> <span class="n">Lock</span><span class="p">(</span><span class="n">Mutex</span> <span class="o">*</span><span class="n">pm</span><span class="p">)</span>
   <span class="o">:</span> <span class="n">mutexPtr</span><span class="p">(</span><span class="n">pm</span><span class="p">)</span>
@@ -755,7 +781,7 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -767,7 +793,7 @@ Item 14: Think carefully about copying behavior in resource-managing classes.
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Lock</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Lock</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">explicit</span> <span class="n">Lock</span><span class="p">(</span><span class="n">Mutex</span> <span class="o">*</span><span class="n">pm</span><span class="p">)</span> <span class="c1">// init shared_ptr with the Mutex
 </span><span class="c1"></span>          <span class="o">:</span> <span class="n">mutexPtr</span><span class="p">(</span><span class="n">pm</span><span class="p">,</span> <span class="n">unlock</span><span class="p">)</span> <span class="c1">// to point to and the unlock func
@@ -802,7 +828,7 @@ Item 15: Provide access to raw resources in resource-managing classes.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -818,7 +844,7 @@ Item 15: Provide access to raw resources in resource-managing classes.
 </span><span class="lnt">14
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Font</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Font</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">operator</span> <span class="n">FontHandle</span><span class="p">()</span> <span class="k">const</span> <span class="p">{</span> <span class="k">return</span> <span class="n">f</span><span class="p">;</span> <span class="p">}</span> <span class="c1">// implicit conversion function
 </span><span class="c1"></span>  <span class="k">private</span><span class="o">:</span>
@@ -856,10 +882,10 @@ Item 17: Store newed objects in smart pointers in standalone statements.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">processWidget</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Widget</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Widget</span><span class="p">),</span> <span class="n">priority</span><span class="p">());</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">processWidget</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Widget</span><span class="o">&gt;</span><span class="p">(</span><span class="k">new</span> <span class="n">Widget</span><span class="p">),</span> <span class="n">priority</span><span class="p">());</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -880,13 +906,13 @@ Item 17: Store newed objects in smart pointers in standalone statements.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Widget</span><span class="o">&gt;</span> <span class="n">pw</span><span class="p">(</span><span class="k">new</span> <span class="n">Widget</span><span class="p">);</span> <span class="c1">// store newed object
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Widget</span><span class="o">&gt;</span> <span class="n">pw</span><span class="p">(</span><span class="k">new</span> <span class="n">Widget</span><span class="p">);</span> <span class="c1">// store newed object
 </span><span class="c1"></span>  <span class="c1">// in a smart pointer in a
 </span><span class="c1"></span>  <span class="c1">// standalone statement
 </span><span class="c1"></span>  <span class="n">processWidget</span><span class="p">(</span><span class="n">pw</span><span class="p">,</span> <span class="n">priority</span><span class="p">());</span> <span class="c1">// this call won&#39;t leak
@@ -916,14 +942,14 @@ Item 18: Make interfaces easy to use correctly and hard to use incorrectly
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="n">Date</span><span class="p">(</span><span class="kt">int</span> <span class="n">month</span><span class="p">,</span> <span class="kt">int</span> <span class="n">day</span><span class="p">,</span> <span class="kt">int</span> <span class="n">year</span><span class="p">);</span>
       <span class="p">...</span>
@@ -934,7 +960,7 @@ Item 18: Make interfaces easy to use correctly and hard to use incorrectly
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -944,7 +970,7 @@ Item 18: Make interfaces easy to use correctly and hard to use incorrectly
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="n">Date</span><span class="p">(</span><span class="k">const</span> <span class="n">Month</span><span class="o">&amp;</span> <span class="n">m</span><span class="p">,</span> <span class="k">const</span> <span class="n">Day</span><span class="o">&amp;</span> <span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="n">Year</span><span class="o">&amp;</span> <span class="n">y</span><span class="p">);</span>
       <span class="p">...</span>
@@ -972,75 +998,109 @@ Item 19: Treat class design as type design
 </h3>
 <div id="outline-text-headline-25" class="outline-text-3">
 <p>类的设计相当于类型设计，需要考虑到一下一些因素：</p>
-<ul>
-<li>
-<p>对象是如何创建和删除</p>
-<p>
-这将影响到构造和析构函数的设计，也影响到内存分配的选择</p>
-</li>
-<li>
-<p>如何区分对象的初始化和赋值</p>
-<p>
-这个区别实际上就是构造函数和拷贝函数的区别</p>
-</li>
-<li>
-<p>设计的对象按值传递时有什么含义</p>
-<p>
-拷贝构造函数决定了按值传递的实现</p>
-</li>
-<li>
-<p>类型对值的合法性作何限定</p>
-<p>
-数据成员的值组合，只有一部分是合法的，这些组合决定了类型需要维护的不变量，而这些不变量决定了怎样做错误检查，并影响异常的实现</p>
-</li>
-<li>
-<p>类型是否适合继承图</p>
-<p>
-如果继承于已有的类，这些类会有一些束缚，例如它们的函数是否虚化？如果允许别的类继承自己的类，自身的函数是否要虚化，尤其是析构函数？</p>
-</li>
-<li>
-<p>类型能够做哪些类型转换</p>
-<p>
-能否转换？隐式的？显式的？</p>
-</li>
-<li>
-<p>类型支持哪些操作符</p>
-<p>
-+,-,*,/……</p>
-</li>
-<li>
-<p>哪些标准函数需要禁用</p>
-<p>
-声明为private并只做声明不实现</p>
-</li>
-<li>
-<p>谁能够访问类型的成员</p>
-<p>
-这将决定public、protected和private的使用</p>
-</li>
-<li>
-<p>类型有哪些隐性接口</p>
-<p>
-例如提供了哪些保证(guarantees)，包括对性能、异常安全以及资源使用(锁、动态内存分配)，这些保证将是在实现时候的约束</p>
-</li>
-<li>
-<p>通用性怎么样</p>
-<p>
-是否考虑用模板</p>
-</li>
-<li>
-<p>真的需要一个新的类型</p>
-<p>
-也许只需要定义成非成员函数或者模板就能实现？</p>
-</li>
-</ul>
+<div id="outline-container-headline-26" class="outline-4">
+<h4 id="headline-26">
+对象是如何创建和删除
+</h4>
+<div id="outline-text-headline-26" class="outline-text-4">
+<p>这将影响到构造和析构函数的设计，也影响到内存分配的选择</p>
 </div>
 </div>
-<div id="outline-container-headline-26" class="outline-3">
-<h3 id="headline-26">
+<div id="outline-container-headline-27" class="outline-4">
+<h4 id="headline-27">
+如何区分对象的初始化和赋值
+</h4>
+<div id="outline-text-headline-27" class="outline-text-4">
+<p>这个区别实际上就是构造函数和拷贝函数的区别</p>
+</div>
+</div>
+<div id="outline-container-headline-28" class="outline-4">
+<h4 id="headline-28">
+设计的对象按值传递时有什么含义
+</h4>
+<div id="outline-text-headline-28" class="outline-text-4">
+<p>拷贝构造函数决定了按值传递的实现</p>
+</div>
+</div>
+<div id="outline-container-headline-29" class="outline-4">
+<h4 id="headline-29">
+类型对值的合法性作何限定
+</h4>
+<div id="outline-text-headline-29" class="outline-text-4">
+<p>数据成员的值组合，只有一部分是合法的，这些组合决定了类型需要维护的不变量，而这些不变量决定了怎样做错误检查，并影响异常的实现</p>
+</div>
+</div>
+<div id="outline-container-headline-30" class="outline-4">
+<h4 id="headline-30">
+类型是否适合继承图
+</h4>
+<div id="outline-text-headline-30" class="outline-text-4">
+<p>如果继承于已有的类，这些类会有一些束缚，例如它们的函数是否虚化？如果允许别的类继承自己的类，自身的函数是否要虚化，尤其是析构函数？</p>
+</div>
+</div>
+<div id="outline-container-headline-31" class="outline-4">
+<h4 id="headline-31">
+类型能够做哪些类型转换
+</h4>
+<div id="outline-text-headline-31" class="outline-text-4">
+<p>能否转换？隐式的？显式的？</p>
+</div>
+</div>
+<div id="outline-container-headline-32" class="outline-4">
+<h4 id="headline-32">
+类型支持哪些操作符
+</h4>
+<div id="outline-text-headline-32" class="outline-text-4">
+<p>+,-,*,/……</p>
+</div>
+</div>
+<div id="outline-container-headline-33" class="outline-4">
+<h4 id="headline-33">
+哪些标准函数需要禁用
+</h4>
+<div id="outline-text-headline-33" class="outline-text-4">
+<p>声明为private并只做声明不实现</p>
+</div>
+</div>
+<div id="outline-container-headline-34" class="outline-4">
+<h4 id="headline-34">
+谁能够访问类型的成员
+</h4>
+<div id="outline-text-headline-34" class="outline-text-4">
+<p>这将决定public、protected和private的使用</p>
+</div>
+</div>
+<div id="outline-container-headline-35" class="outline-4">
+<h4 id="headline-35">
+类型有哪些隐性接口
+</h4>
+<div id="outline-text-headline-35" class="outline-text-4">
+<p>例如提供了哪些保证(guarantees)，包括对性能、异常安全以及资源使用(锁、动态内存分配)，这些保证将是在实现时候的约束</p>
+</div>
+</div>
+<div id="outline-container-headline-36" class="outline-4">
+<h4 id="headline-36">
+通用性怎么样
+</h4>
+<div id="outline-text-headline-36" class="outline-text-4">
+<p>是否考虑用模板</p>
+</div>
+</div>
+<div id="outline-container-headline-37" class="outline-4">
+<h4 id="headline-37">
+真的需要一个新的类型
+</h4>
+<div id="outline-text-headline-37" class="outline-text-4">
+<p>也许只需要定义成非成员函数或者模板就能实现？</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-38" class="outline-3">
+<h3 id="headline-38">
 Item 20: Prefer pass-by-reference-to-const to pass-by-value
 </h3>
-<div id="outline-text-headline-26" class="outline-text-3">
+<div id="outline-text-headline-38" class="outline-text-3">
 <ul>
 <li>
 <p>自定义类型即便很小，也建议传const引用，因为自定义变量很可能随着时间有变化</p>
@@ -1054,19 +1114,19 @@ Item 20: Prefer pass-by-reference-to-const to pass-by-value
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-27" class="outline-3">
-<h3 id="headline-27">
+<div id="outline-container-headline-39" class="outline-3">
+<h3 id="headline-39">
 Item 21: Don&#39;t try to return a reference when you must return an object
 </h3>
-<div id="outline-text-headline-27" class="outline-text-3">
+<div id="outline-text-headline-39" class="outline-text-3">
 <p>避免返回栈上对象的引用、函数静态成员以及new出来的对象</p>
 </div>
 </div>
-<div id="outline-container-headline-28" class="outline-3">
-<h3 id="headline-28">
+<div id="outline-container-headline-40" class="outline-3">
+<h3 id="headline-40">
 Item 22: Declare data members private
 </h3>
-<div id="outline-text-headline-28" class="outline-text-3">
+<div id="outline-text-headline-40" class="outline-text-3">
 <ul>
 <li>
 <p>unencapsulated means unchangeable</p>
@@ -1077,11 +1137,11 @@ Item 22: Declare data members private
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-29" class="outline-3">
-<h3 id="headline-29">
+<div id="outline-container-headline-41" class="outline-3">
+<h3 id="headline-41">
 Item 23: Prefer non-member non-friend functions to member functions
 </h3>
-<div id="outline-text-headline-29" class="outline-text-3">
+<div id="outline-text-headline-41" class="outline-text-3">
 <ul>
 <li>
 <p>非友元并且非成员函数不会增加访问私有变量的接口，提高了封装性，注意一定是非友元并且非成员</p>
@@ -1095,15 +1155,15 @@ Item 23: Prefer non-member non-friend functions to member functions
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-30" class="outline-3">
-<h3 id="headline-30">
+<div id="outline-container-headline-42" class="outline-3">
+<h3 id="headline-42">
 Item 24: Declare non-member functions when type conversions should apply to all parameters      
 </h3>
-<div id="outline-text-headline-30" class="outline-text-3">
+<div id="outline-text-headline-42" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1111,7 +1171,7 @@ Item 24: Declare non-member functions when type conversions should apply to all 
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="n">Rational</span> <span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span> <span class="n">lhs</span><span class="p">,</span> <span class="c1">// now a non-member
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">const</span> <span class="n">Rational</span> <span class="k">operator</span><span class="o">*</span><span class="p">(</span><span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span> <span class="n">lhs</span><span class="p">,</span> <span class="c1">// now a non-member
 </span><span class="c1"></span>                           <span class="k">const</span> <span class="n">Rational</span><span class="o">&amp;</span> <span class="n">rhs</span><span class="p">)</span> <span class="c1">// function
 </span><span class="c1"></span>  <span class="p">{</span>
       <span class="k">return</span> <span class="nf">Rational</span><span class="p">(</span><span class="n">lhs</span><span class="p">.</span><span class="n">numerator</span><span class="p">()</span> <span class="o">*</span> <span class="n">rhs</span><span class="p">.</span><span class="n">numerator</span><span class="p">(),</span>
@@ -1124,11 +1184,11 @@ Item 24: Declare non-member functions when type conversions should apply to all 
    如果*操作符作为Raitonal的成员函数，第一个参数就定死为this了，无法处理int * Ratinal的情况，除此之外，不必是友元函数。</p>
 </div>
 </div>
-<div id="outline-container-headline-31" class="outline-3">
-<h3 id="headline-31">
+<div id="outline-container-headline-43" class="outline-3">
+<h3 id="headline-43">
 Item 25: Consider support for a non-throwing swap
 </h3>
-<div id="outline-text-headline-31" class="outline-text-3">
+<div id="outline-text-headline-43" class="outline-text-3">
 <p>要实现一个自定义swap，三步：</p>
 <ol>
 <li>
@@ -1146,26 +1206,26 @@ Item 25: Consider support for a non-throwing swap
 </div>
 </div>
 </div>
-<div id="outline-container-headline-32" class="outline-2">
-<h2 id="headline-32">
+<div id="outline-container-headline-44" class="outline-2">
+<h2 id="headline-44">
 ch-5 Implementations
 </h2>
-<div id="outline-text-headline-32" class="outline-text-2">
-<div id="outline-container-headline-33" class="outline-3">
-<h3 id="headline-33">
+<div id="outline-text-headline-44" class="outline-text-2">
+<div id="outline-container-headline-45" class="outline-3">
+<h3 id="headline-45">
 Item 26: Postpone variable definitions as long as possible  
 </h3>
-<div id="outline-text-headline-33" class="outline-text-3">
+<div id="outline-text-headline-45" class="outline-text-3">
 <p>一些局部变量放到需要的时候才初始化，避免不必要的构造开销</p>
 <p>
    循环变量的定义位置跟构造函数和赋值操作的性能相关，如果构造的开销小于赋值，则放在里面</p>
 </div>
 </div>
-<div id="outline-container-headline-34" class="outline-3">
-<h3 id="headline-34">
+<div id="outline-container-headline-46" class="outline-3">
+<h3 id="headline-46">
 Item 27: Minimize casting
 </h3>
-<div id="outline-text-headline-34" class="outline-text-3">
+<div id="outline-text-headline-46" class="outline-text-3">
 <p>几种cast:</p>
 <ol>
 <li>
@@ -1187,7 +1247,7 @@ Item 27: Minimize casting
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1204,7 +1264,7 @@ Item 27: Minimize casting
 </span><span class="lnt">15
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Window</span> <span class="p">{</span> <span class="c1">// base class
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Window</span> <span class="p">{</span> <span class="c1">// base class
 </span><span class="c1"></span>  <span class="k">public</span><span class="o">:</span>
       <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onResize</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span> <span class="c1">// base onResize impl
 </span><span class="c1"></span>      <span class="p">...</span>
@@ -1227,7 +1287,7 @@ Item 27: Minimize casting
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1237,7 +1297,7 @@ Item 27: Minimize casting
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">SpecialWindow</span><span class="o">:</span> <span class="k">public</span> <span class="n">Window</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">SpecialWindow</span><span class="o">:</span> <span class="k">public</span> <span class="n">Window</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">virtual</span> <span class="kt">void</span> <span class="n">onResize</span><span class="p">()</span> <span class="p">{</span>
           <span class="n">Window</span><span class="o">::</span><span class="n">onResize</span><span class="p">();</span> <span class="c1">// call Window::onResize
@@ -1255,7 +1315,7 @@ Item 27: Minimize casting
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1269,7 +1329,7 @@ Item 27: Minimize casting
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tr1</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Window</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">VPW</span><span class="p">;</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">tr1</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Window</span><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="n">VPW</span><span class="p">;</span>
   <span class="n">VPW</span> <span class="n">winPtrs</span><span class="p">;</span>
 
   <span class="k">for</span> <span class="p">(</span><span class="n">VPW</span><span class="o">::</span><span class="n">iterator</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">winPtrs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">iter</span> <span class="o">!=</span> <span class="n">winPtrs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="o">++</span><span class="n">iter</span><span class="p">)</span>
@@ -1297,19 +1357,19 @@ Item 27: Minimize casting
 </ul>
 </div>
 </div>
-<div id="outline-container-headline-35" class="outline-3">
-<h3 id="headline-35">
+<div id="outline-container-headline-47" class="outline-3">
+<h3 id="headline-47">
 Item 28: Avoid returning &#34;handles&#34; to object internals   
 </h3>
-<div id="outline-text-headline-35" class="outline-text-3">
+<div id="outline-text-headline-47" class="outline-text-3">
 <p>不要返回任何对象内部的句柄(引用、指针或者迭代器)，一方面破坏封装，另一方面生命周期不可预期。</p>
 </div>
 </div>
-<div id="outline-container-headline-36" class="outline-3">
-<h3 id="headline-36">
+<div id="outline-container-headline-48" class="outline-3">
+<h3 id="headline-48">
 Item29: Strive for exception-safe code.
 </h3>
-<div id="outline-text-headline-36" class="outline-text-3">
+<div id="outline-text-headline-48" class="outline-text-3">
 <p>尽量写异常安全代码，异常安全有三个级别：</p>
 <ul>
 <li>
@@ -1331,26 +1391,26 @@ Item29: Strive for exception-safe code.
    如果函数调用了很多不同异常安全等级的子函数，该函数的安全等级不会高于最低的子函数</p>
 </div>
 </div>
-<div id="outline-container-headline-37" class="outline-3">
-<h3 id="headline-37">
+<div id="outline-container-headline-49" class="outline-3">
+<h3 id="headline-49">
 Item 30: Understand the ins and outs of inlining.
 </h3>
-<div id="outline-text-headline-37" class="outline-text-3">
+<div id="outline-text-headline-49" class="outline-text-3">
 <p>只在真正有需要的地方，对函数进行内联，避免滥用</p>
 <p>
    inline函数一旦发布出去，后期有修改的话，所有调用到该函数的代码都需要重新编译</p>
 </div>
 </div>
-<div id="outline-container-headline-38" class="outline-3">
-<h3 id="headline-38">
+<div id="outline-container-headline-50" class="outline-3">
+<h3 id="headline-50">
 Item31: Minimize compilation dependencies between files.
 </h3>
-<div id="outline-text-headline-38" class="outline-text-3">
+<div id="outline-text-headline-50" class="outline-text-3">
 <p>默认c++类对接口和实现的分离做得并不好</p>
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1365,7 +1425,7 @@ Item31: Minimize compilation dependencies between files.
 </span><span class="lnt">13
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="n">Person</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">name</span><span class="p">,</span> <span class="k">const</span> <span class="n">Date</span><span class="o">&amp;</span> <span class="n">birthday</span><span class="p">,</span>
              <span class="k">const</span> <span class="n">Address</span><span class="o">&amp;</span> <span class="n">addr</span><span class="p">);</span>
@@ -1398,7 +1458,7 @@ Item31: Minimize compilation dependencies between files.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1419,7 +1479,7 @@ Item31: Minimize compilation dependencies between files.
 </span><span class="lnt">19
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="cp">#include</span> <span class="cpf">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span class="cp">
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="cp">#include</span> <span class="cpf">&lt;string&gt; // standard library components shouldn&#39;t be forward-declared</span><span class="cp">
 </span><span class="cp"></span>  <span class="cp">#include</span> <span class="cpf">&lt;memory&gt; // for tr1::shared_ptr; see below</span><span class="cp">
 </span><span class="cp"></span>
   <span class="k">class</span> <span class="nc">PersonImpl</span><span class="p">;</span> <span class="c1">// forward decl of Person impl. class
@@ -1457,13 +1517,13 @@ Item31: Minimize compilation dependencies between files.
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span><span class="p">;</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Date</span><span class="p">;</span>
 
   <span class="n">Date</span> <span class="nf">today</span><span class="p">();</span>
   <span class="kt">void</span> <span class="nf">clearAppointmets</span><span class="p">(</span><span class="n">Date</span> <span class="n">d</span><span class="p">);</span></code></pre></td></tr></table>
@@ -1487,16 +1547,16 @@ Item31: Minimize compilation dependencies between files.
 </div>
 </div>
 </div>
-<div id="outline-container-headline-39" class="outline-2">
-<h2 id="headline-39">
+<div id="outline-container-headline-51" class="outline-2">
+<h2 id="headline-51">
 Ch-6. Inheritance and Object-Oriented Design
 </h2>
-<div id="outline-text-headline-39" class="outline-text-2">
-<div id="outline-container-headline-40" class="outline-3">
-<h3 id="headline-40">
+<div id="outline-text-headline-51" class="outline-text-2">
+<div id="outline-container-headline-52" class="outline-3">
+<h3 id="headline-52">
 Item 32: Make sure public inheritance models &#34;is-a.&#34;
 </h3>
-<div id="outline-text-headline-40" class="outline-text-3">
+<div id="outline-text-headline-52" class="outline-text-3">
 <p>
    public继承最关键的一点: <em><strong>is-a</strong></em></p>
 <p>
@@ -1505,15 +1565,15 @@ Item 32: Make sure public inheritance models &#34;is-a.&#34;
    public继承要求，任何基类的方法，都能够无歧义地应用到派生类</p>
 </div>
 </div>
-<div id="outline-container-headline-41" class="outline-3">
-<h3 id="headline-41">
+<div id="outline-container-headline-53" class="outline-3">
+<h3 id="headline-53">
 Item 33: Avoid hiding inherited names
 </h3>
-<div id="outline-text-headline-41" class="outline-text-3">
+<div id="outline-text-headline-53" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1533,7 +1593,7 @@ Item 33: Avoid hiding inherited names
 </span><span class="lnt">18
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Base</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Base</span> <span class="p">{</span>
   <span class="k">private</span><span class="o">:</span>
       <span class="kt">int</span> <span class="n">x</span><span class="p">;</span>
   <span class="k">public</span><span class="o">:</span>
@@ -1558,13 +1618,13 @@ Item 33: Avoid hiding inherited names
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">Derived</span> <span class="n">d</span><span class="p">;</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="n">Derived</span> <span class="n">d</span><span class="p">;</span>
 
   <span class="n">d</span><span class="p">.</span><span class="n">mf1</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
   <span class="n">d</span><span class="p">.</span><span class="n">mf4</span><span class="p">(</span><span class="mf">1.0</span><span class="p">);</span></code></pre></td></tr></table>
@@ -1576,7 +1636,7 @@ Item 33: Avoid hiding inherited names
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1586,7 +1646,7 @@ Item 33: Avoid hiding inherited names
 </span><span class="lnt">8
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">public</span> <span class="n">Base</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">public</span> <span class="n">Base</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">mf1</span><span class="p">;</span> <span class="c1">// make all things in Base named mf1 and mf3
 </span><span class="c1"></span>      <span class="k">using</span> <span class="n">Base</span><span class="o">::</span><span class="n">mf3</span><span class="p">;</span> <span class="c1">// visible (and public) in Derived&#39;s scope
@@ -1602,7 +1662,7 @@ Item 33: Avoid hiding inherited names
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1610,7 +1670,7 @@ Item 33: Avoid hiding inherited names
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">private</span> <span class="n">Base</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Derived</span><span class="o">:</span> <span class="k">private</span> <span class="n">Base</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">virtual</span> <span class="kt">void</span> <span class="n">mf1</span><span class="p">()</span> <span class="c1">// forwarding function; implicitly
 </span><span class="c1"></span>      <span class="p">{</span> <span class="n">Base</span><span class="o">::</span><span class="n">mf1</span><span class="p">();</span> <span class="p">}</span> <span class="c1">// inline (see Item 30)
@@ -1623,15 +1683,15 @@ Item 33: Avoid hiding inherited names
    PS：using是受public和private的限制的</p>
 </div>
 </div>
-<div id="outline-container-headline-42" class="outline-3">
-<h3 id="headline-42">
+<div id="outline-container-headline-54" class="outline-3">
+<h3 id="headline-54">
 Item 34: Differentiate between inheritance of interface and inheritance of implementation
 </h3>
-<div id="outline-text-headline-42" class="outline-text-3">
+<div id="outline-text-headline-54" class="outline-text-3">
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1639,7 +1699,7 @@ Item 34: Differentiate between inheritance of interface and inheritance of imple
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Shape</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Shape</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">virtual</span> <span class="kt">void</span> <span class="n">draw</span><span class="p">()</span> <span class="k">const</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
       <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">error</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span> <span class="n">msg</span><span class="p">);</span>
@@ -1671,11 +1731,11 @@ Item 34: Differentiate between inheritance of interface and inheritance of imple
 </ol>
 </div>
 </div>
-<div id="outline-container-headline-43" class="outline-3">
-<h3 id="headline-43">
+<div id="outline-container-headline-55" class="outline-3">
+<h3 id="headline-55">
 Item 35: Consider alternatives to virtual functions
 </h3>
-<div id="outline-text-headline-43" class="outline-text-3">
+<div id="outline-text-headline-55" class="outline-text-3">
 <p>虚函数有很多替代的方案</p>
 <ol>
 <li>
@@ -1705,31 +1765,31 @@ public接口使用非虚函数实现，通过调用真正有功能的虚函数�
 </ol>
 </div>
 </div>
-<div id="outline-container-headline-44" class="outline-3">
-<h3 id="headline-44">
+<div id="outline-container-headline-56" class="outline-3">
+<h3 id="headline-56">
 Item 36: Never redefine an inherited non-virtual function
 </h3>
-<div id="outline-text-headline-44" class="outline-text-3">
+<div id="outline-text-headline-56" class="outline-text-3">
 <p>
    如题，违反了公有继承的原则</p>
 </div>
 </div>
-<div id="outline-container-headline-45" class="outline-3">
-<h3 id="headline-45">
+<div id="outline-container-headline-57" class="outline-3">
+<h3 id="headline-57">
 Item 37: Never redefine a function&#39;s inherited default parameter value
 </h3>
-<div id="outline-text-headline-45" class="outline-text-3">
+<div id="outline-text-headline-57" class="outline-text-3">
 <p>
    虚函数是动态绑定，但是默认参数却是静态绑定。在调用虚函数时，会根据当前指针类型决定默认参数。</p>
 <p>
    要保证接口的一致性，所有派生类在重定义的时候，需要指定同样的默认参数，但是这样在改的时候很容易改漏掉部分函数。解决办法是使用NVI，用非虚函数实现接口，指定默认参数，然后在虚函数中实现功能，虚函数不设默认参数</p>
 </div>
 </div>
-<div id="outline-container-headline-46" class="outline-3">
-<h3 id="headline-46">
+<div id="outline-container-headline-58" class="outline-3">
+<h3 id="headline-58">
 Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through composition
 </h3>
-<div id="outline-text-headline-46" class="outline-text-3">
+<div id="outline-text-headline-58" class="outline-text-3">
 <p>复合(composition)是类型之间的一种关系，是一种完全不同于公有继承的建模</p>
 <p>
    人、交通工具、视频帧这样的属于应用领域(<em>application domain</em>)，复合意味着&#34;<em><strong>has-a</strong></em>&#34;的关系。</p>
@@ -1740,7 +1800,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -1751,7 +1811,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </span><span class="lnt">9
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Person</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="p">...</span>
   <span class="k">private</span><span class="o">:</span>
@@ -1768,7 +1828,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1780,7 +1840,7 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </span><span class="lnt">10
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="c1">// the right way to use list for Set
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">template</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">T</span><span class="o">&gt;</span> <span class="c1">// the right way to use list for Set
 </span><span class="c1"></span>  <span class="k">class</span> <span class="nc">Set</span> <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="kt">bool</span> <span class="n">member</span><span class="p">(</span><span class="k">const</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">item</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
@@ -1795,11 +1855,11 @@ Item 38: Model &#34;has-a&#34; or &#34;is-implemented-in-terms-of&#34; through c
 </div>
 </div>
 </div>
-<div id="outline-container-headline-47" class="outline-3">
-<h3 id="headline-47">
+<div id="outline-container-headline-59" class="outline-3">
+<h3 id="headline-59">
 Item 39: Use private inheritance judiciously
 </h3>
-<div id="outline-text-headline-47" class="outline-text-3">
+<div id="outline-text-headline-59" class="outline-text-3">
 <p>
    私有继承意味着 <em>is-implemented-in-terms-of</em> ，只有在软件实现中有意义，而在软件设计中并没有。私有继承往往可以使用 <em>item 38</em> 中的composition来取代：</p>
 <ul>
@@ -1814,7 +1874,7 @@ Item 39: Use private inheritance judiciously
 <div class="src src-c++">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt"> 1
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
 </span><span class="lnt"> 2
 </span><span class="lnt"> 3
 </span><span class="lnt"> 4
@@ -1828,7 +1888,7 @@ Item 39: Use private inheritance judiciously
 </span><span class="lnt">12
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Empty</span> <span class="p">{};</span> <span class="c1">// has no data, so objects should
+<pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">  <span class="k">class</span> <span class="nc">Empty</span> <span class="p">{};</span> <span class="c1">// has no data, so objects should
 </span><span class="c1"></span>  <span class="c1">// use no memory
 </span><span class="c1"></span>  <span class="k">class</span> <span class="nc">HoldsAnInt</span> <span class="p">{</span> <span class="c1">// should need only space for an int
 </span><span class="c1"></span>  <span class="k">private</span><span class="o">:</span>
@@ -1847,11 +1907,11 @@ Item 39: Use private inheritance judiciously
    第一种方式使用composition，sizeof(HoldsAnInt) &gt; sizeof(int)； 而第二种使用私有继承，借助于 <em>empty base optimization</em> (EBO)优化策略 ，sizeof(HoldsAnInt) = sizeof(int)</p>
 </div>
 </div>
-<div id="outline-container-headline-48" class="outline-3">
-<h3 id="headline-48">
+<div id="outline-container-headline-60" class="outline-3">
+<h3 id="headline-60">
 Item 40: Use multiple inheritance judiciously   
 </h3>
-<div id="outline-text-headline-48" class="outline-text-3">
+<div id="outline-text-headline-60" class="outline-text-3">
 <p>
    多重继承可能存在命名冲突，这时候需要带上对应类型的名字，例如mp.BorrowableItem::checkOut();</p>
 <p>

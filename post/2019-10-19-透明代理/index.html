@@ -23,7 +23,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.83.1 with theme even" />
+<meta name="generator" content="Hugo 0.89.4 with theme even" />
 
 
 <link rel="canonical" href="https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/" />
@@ -43,12 +43,12 @@
 <meta property="og:description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://home.ya0db9.com/post/2019-10-19-%E9%80%8F%E6%98%8E%E4%BB%A3%E7%90%86/" /><meta property="article:section" content="post" />
-<meta property="article:published_time" content="2019-10-19T21:17:32&#43;08:00" />
-<meta property="article:modified_time" content="2019-10-19T21:17:32&#43;08:00" />
+<meta property="article:published_time" content="2019-10-19T21:17:32+08:00" />
+<meta property="article:modified_time" content="2019-10-19T21:17:32+08:00" />
 
 <meta itemprop="name" content="透明代理(nuc后续)">
-<meta itemprop="description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于"><meta itemprop="datePublished" content="2019-10-19T21:17:32&#43;08:00" />
-<meta itemprop="dateModified" content="2019-10-19T21:17:32&#43;08:00" />
+<meta itemprop="description" content="0x00 前言 nuc用了一段时间了，路由功能还是很稳定，用之前的方案做透明代理还是挺折腾的，一直搁置了。 不过最近找到了一个裸延迟20ms的vps，于"><meta itemprop="datePublished" content="2019-10-19T21:17:32+08:00" />
+<meta itemprop="dateModified" content="2019-10-19T21:17:32+08:00" />
 <meta itemprop="wordCount" content="1352">
 <meta itemprop="keywords" content="" /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="透明代理(nuc后续)"/>
@@ -187,10 +187,10 @@ vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还�
 <div class="src src-shell">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">kcptun-server -t <span class="s2">&#34;127.0.0.1:1194&#34;</span> -l <span class="s2">&#34;:1234&#34;</span> -mode fast3 -nocomp -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">kcptun-server -t <span class="s2">&#34;127.0.0.1:1194&#34;</span> -l <span class="s2">&#34;:1234&#34;</span> -mode fast3 -nocomp -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -201,10 +201,10 @@ vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还�
 <div class="src src-shell">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">kcptun-client -r <span class="s2">&#34;{vps ip}:1234&#34;</span> -l <span class="s2">&#34;127.0.0.1:1024&#34;</span> -mode fast3 -nocomp -autoexpire <span class="m">900</span> -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">kcptun-client -r <span class="s2">&#34;{vps ip}:1234&#34;</span> -l <span class="s2">&#34;127.0.0.1:1024&#34;</span> -mode fast3 -nocomp -autoexpire <span class="m">900</span> -sockbuf <span class="m">16777217</span> -dscp <span class="m">46</span></code></pre></td></tr></table>
 </div>
 </div>
 </div>
@@ -224,11 +224,11 @@ vps的延迟本身还是很低的，但是由于某些原因，tcp的连接还�
 <div class="src src-shell">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">iptables -t mangle -A OUTPUT -m geoip ! --destination-country CN -j MARK --set-mark <span class="m">10</span>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">iptables -t mangle -A OUTPUT -m geoip ! --destination-country CN -j MARK --set-mark <span class="m">10</span>
 iptables -t mangle -A PREROUTING -m geoip ! --destination-country CN -j MARK --set-mark <span class="m">10</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -238,11 +238,11 @@ iptables -t mangle -A PREROUTING -m geoip ! --destination-country CN -j MARK --s
 <div class="src src-shell">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-shell" data-lang="shell">ip rule add fwmark <span class="m">10</span> lookup <span class="m">10</span>
+<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">ip rule add fwmark <span class="m">10</span> lookup <span class="m">10</span>
 ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -254,11 +254,11 @@ ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></
 <div class="src src-ini">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-ini" data-lang="ini"><span class="na">net.ipv4.conf.default.rp_filter</span><span class="o">=</span><span class="s">0</span>
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="na">net.ipv4.conf.default.rp_filter</span><span class="o">=</span><span class="s">0</span>
 <span class="na">net.ipv4.conf.all.rp_filter</span><span class="o">=</span><span class="s">0</span></code></pre></td></tr></table>
 </div>
 </div>
@@ -280,7 +280,7 @@ ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></
 <div class="src src-ini">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
@@ -289,7 +289,7 @@ ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></
 </span><span class="lnt">7
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-ini" data-lang="ini"><span class="na">server</span><span class="o">=</span><span class="s">/google.com/8.8.8.8</span>
+<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="na">server</span><span class="o">=</span><span class="s">/google.com/8.8.8.8</span>
 <span class="na">server</span><span class="o">=</span><span class="s">/facebook.com/8.8.8.8</span>
 <span class="na">server</span><span class="o">=</span><span class="s">/twitter.com/8.8.8.8</span>
 <span class="na">server</span><span class="o">=</span><span class="s">/steamcommunity.com/8.8.8.8</span>
@@ -312,13 +312,13 @@ ip route add default via 10.8.0.1 table <span class="m">10</span></code></pre></
 <div class="src src-nginx">
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
 </span><span class="lnt">2
 </span><span class="lnt">3
 </span><span class="lnt">4
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">location</span> <span class="s">/get_ip</span> <span class="p">{</span>
+<pre tabindex="0" class="chroma"><code class="language-nginx" data-lang="nginx"><span class="k">location</span> <span class="s">/get_ip</span> <span class="p">{</span>
 		<span class="kn">default_type</span> <span class="s">text/plain</span><span class="p">;</span>
 		<span class="kn">return</span> <span class="mi">200</span> <span class="s">&#34;</span><span class="nv">$remote_addr\n&#34;</span><span class="p">;</span>
 	<span class="p">}</span></code></pre></td></tr></table>

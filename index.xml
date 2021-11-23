@@ -6,7 +6,7 @@
     <description>Recent content on ya0db9&#39;s site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>cn</language>
-    <lastBuildDate>Sun, 23 Aug 2020 15:35:31 +0800</lastBuildDate><atom:link href="https://home.ya0db9.com/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Oct 2021 23:03:31 +0800</lastBuildDate><atom:link href="https://home.ya0db9.com/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About</title>
       <link>https://home.ya0db9.com/about/</link>
@@ -16,6 +16,15 @@
       <description>Hugo is a static site engine written in Go.
 It makes use of a variety of open source projects including:
  Cobra Viper J Walter Weatherman Cast  Learn more and contribute on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>cpython c&#43;&#43; binding</title>
+      <link>https://home.ya0db9.com/post/cpython-binding/</link>
+      <pubDate>Mon, 04 Oct 2021 23:03:31 +0800</pubDate>
+      
+      <guid>https://home.ya0db9.com/post/cpython-binding/</guid>
+      <description>TL;DR cpython官方提供了一套接口，用于在c++层定义一个python类型、实现一个函数，并导出给python脚本用，但是这套接口直接用于开</description>
     </item>
     
     <item>
